@@ -1,12 +1,9 @@
 import { Outlet } from "react-router-dom";
 
-function App() {
+export default function UsersPage() {
   return (
     <div>
-      <div>Header</div>
       <Outlet />
     </div>
   );
 }
-
-export default App;
