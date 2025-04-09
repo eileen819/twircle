@@ -14,8 +14,13 @@ import LoginPage from "pages/users/login";
 import SignupPage from "pages/users/signup";
 import NotificationsPage from "pages/notifications";
 import PostsList from "pages/posts/list";
+import { User } from "firebase/auth";
 
-const createAppRouter = () =>
+interface ICreateAppRouterProps {
+  user: User | null;
+}
+
+const createAppRouter = ({ user }: ICreateAppRouterProps) =>
   createBrowserRouter([
     {
       path: "/",
@@ -66,6 +71,10 @@ const createAppRouter = () =>
           element: <SearchPage />,
         },
         {
+          path: "notifications",
+          element: <NotificationsPage />,
+        },
+        {
           path: "users",
           element: <UsersPage />,
           children: [
@@ -82,10 +91,6 @@ const createAppRouter = () =>
               element: <SignupPage />,
             },
           ],
-        },
-        {
-          path: "notifications",
-          element: <NotificationsPage />,
         },
         {
           path: "*",
