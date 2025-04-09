@@ -14,89 +14,95 @@ import LoginPage from "pages/users/login";
 import SignupPage from "pages/users/signup";
 import NotificationsPage from "pages/notifications";
 import PostsList from "pages/posts/list";
-import { User } from "firebase/auth";
 
-interface ICreateAppRouterProps {
-  user: User | null;
-}
-
-const createAppRouter = ({ user }: ICreateAppRouterProps) =>
+const createAppRouter = (isAuthenticated: boolean) =>
   createBrowserRouter([
     {
       path: "/",
       element: <App />,
-      children: [
-        {
-          path: "",
-          element: <Home />,
-        },
-        {
-          path: "posts",
-          element: <PostsPage />,
-          children: [
+      children: isAuthenticated
+        ? [
             {
               path: "",
-              element: <PostsList />,
+              element: <Home />,
             },
             {
-              path: ":id",
-              element: <PostDetail />,
+              path: "posts",
+              element: <PostsPage />,
+              children: [
+                {
+                  path: "",
+                  element: <PostsList />,
+                },
+                {
+                  path: ":id",
+                  element: <PostDetail />,
+                },
+                {
+                  path: "new",
+                  element: <PostNew />,
+                },
+                {
+                  path: "edit/:id",
+                  element: <PostEdit />,
+                },
+              ],
             },
             {
-              path: "new",
-              element: <PostNew />,
+              path: "profile",
+              element: <ProfilePage />,
+              children: [
+                {
+                  path: "",
+                  element: <ProfileDetail />,
+                },
+                {
+                  path: "edit",
+                  element: <ProfileEdit />,
+                },
+              ],
             },
             {
-              path: "edit/:id",
-              element: <PostEdit />,
+              path: "search",
+              element: <SearchPage />,
             },
-          ],
-        },
-        {
-          path: "profile",
-          element: <ProfilePage />,
-          children: [
+            {
+              path: "notifications",
+              element: <NotificationsPage />,
+            },
+            {
+              path: "*",
+              element: <Navigate replace to="/" />,
+            },
+          ]
+        : [
             {
               path: "",
-              element: <ProfileDetail />,
+              element: <Navigate replace to="/users/login" />,
             },
             {
-              path: "edit",
-              element: <ProfileEdit />,
+              path: "users",
+              element: <UsersPage />,
+              children: [
+                {
+                  path: "",
+                  element: <Navigate replace to="login" />,
+                },
+                {
+                  path: "login",
+                  element: <LoginPage />,
+                },
+                {
+                  path: "signup",
+                  element: <SignupPage />,
+                },
+              ],
+            },
+            {
+              path: "*",
+              element: <Navigate replace to="/users/login" />,
             },
           ],
-        },
-        {
-          path: "search",
-          element: <SearchPage />,
-        },
-        {
-          path: "notifications",
-          element: <NotificationsPage />,
-        },
-        {
-          path: "users",
-          element: <UsersPage />,
-          children: [
-            {
-              path: "",
-              element: <Navigate replace to="login" />,
-            },
-            {
-              path: "login",
-              element: <LoginPage />,
-            },
-            {
-              path: "signup",
-              element: <SignupPage />,
-            },
-          ],
-        },
-        {
-          path: "*",
-          element: <Navigate replace to="/" />,
-        },
-      ],
       errorElement: <div>앗! 문제가 발생했어요!</div>,
     },
   ]);

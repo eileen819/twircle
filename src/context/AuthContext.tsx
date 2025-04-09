@@ -30,3 +30,5 @@ export const AuthContextProvider = ({ children }: IContextProps) => {
     </AuthContext.Provider>
   );
 };
+
+export default AuthContext;
