@@ -1,110 +1,57 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
-import App from "App";
+import Layout from "components/Layout";
 import Home from "pages/home";
+import NotificationsPage from "pages/notifications";
 import PostsPage from "pages/posts";
-import ProfilePage from "pages/profile";
-import UsersPage from "pages/users";
 import PostDetail from "pages/posts/detail";
-import PostNew from "pages/posts/new";
 import PostEdit from "pages/posts/edit";
+import PostsList from "pages/posts/list";
+import PostNew from "pages/posts/new";
+import ProfilePage from "pages/profile";
+import ProfileDetail from "pages/profile/detail";
 import ProfileEdit from "pages/profile/edit";
 import SearchPage from "pages/search";
-import ProfileDetail from "pages/profile/detail";
 import LoginPage from "pages/users/login";
 import SignupPage from "pages/users/signup";
-import NotificationsPage from "pages/notifications";
-import PostsList from "pages/posts/list";
+import { Navigate, Route, Routes } from "react-router-dom";
 
-const createAppRouter = (isAuthenticated: boolean) =>
-  createBrowserRouter([
-    {
-      path: "/",
-      element: <App />,
-      children: isAuthenticated
-        ? [
-            {
-              path: "",
-              element: <Home />,
-            },
-            {
-              path: "posts",
-              element: <PostsPage />,
-              children: [
-                {
-                  path: "",
-                  element: <PostsList />,
-                },
-                {
-                  path: ":id",
-                  element: <PostDetail />,
-                },
-                {
-                  path: "new",
-                  element: <PostNew />,
-                },
-                {
-                  path: "edit/:id",
-                  element: <PostEdit />,
-                },
-              ],
-            },
-            {
-              path: "profile",
-              element: <ProfilePage />,
-              children: [
-                {
-                  path: "",
-                  element: <ProfileDetail />,
-                },
-                {
-                  path: "edit",
-                  element: <ProfileEdit />,
-                },
-              ],
-            },
-            {
-              path: "search",
-              element: <SearchPage />,
-            },
-            {
-              path: "notifications",
-              element: <NotificationsPage />,
-            },
-            {
-              path: "*",
-              element: <Navigate replace to="/" />,
-            },
-          ]
-        : [
-            {
-              path: "",
-              element: <Navigate replace to="/users/login" />,
-            },
-            {
-              path: "users",
-              element: <UsersPage />,
-              children: [
-                {
-                  path: "",
-                  element: <Navigate replace to="login" />,
-                },
-                {
-                  path: "login",
-                  element: <LoginPage />,
-                },
-                {
-                  path: "signup",
-                  element: <SignupPage />,
-                },
-              ],
-            },
-            {
-              path: "*",
-              element: <Navigate replace to="/users/login" />,
-            },
-          ],
-      errorElement: <div>앗! 문제가 발생했어요!</div>,
-    },
-  ]);
+interface IRouterProps {
+  isAuthenticated: boolean;
+}
 
-export default createAppRouter;
+function Router({ isAuthenticated }: IRouterProps) {
+  return (
+    <Routes>
+      {isAuthenticated ? (
+        <>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="posts" element={<PostsPage />}>
+              <Route index element={<PostsList />} />
+              <Route path=":id" element={<PostDetail />} />
+              <Route path="new" element={<PostNew />} />
+              <Route path="edit/:id" element={<PostEdit />} />
+            </Route>
+            <Route path="profile" element={<ProfilePage />}>
+              <Route index element={<ProfileDetail />} />
+              <Route path="edit" element={<ProfileEdit />} />
+            </Route>
+            <Route path="search" element={<SearchPage />} />
+            <Route path="notifications" element={<NotificationsPage />} />
+            <Route path="*" element={<Navigate replace to="/" />} />
+          </Route>
+        </>
+      ) : (
+        <>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Navigate replace to="/users/login" />} />
+            <Route path="/users/login" element={<LoginPage />} />
+            <Route path="/users/signup" element={<SignupPage />} />
+            <Route path="*" element={<Navigate replace to="/users/login" />} />
+          </Route>
+        </>
+      )}
+    </Routes>
+  );
+}
+
+export default Router;

@@ -1,21 +1,15 @@
-import MenuBar from "components/Menu";
 import AuthContext from "context/AuthContext";
 import { useContext } from "react";
-import { Outlet } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import Router from "routes/Router";
 
 function App() {
-  const { user, isLoading } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   return (
-    <div className="layout">
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <>
-          <Outlet />
-          {user && <MenuBar />}
-        </>
-      )}
-    </div>
+    <>
+      <ToastContainer />
+      <Router isAuthenticated={!!user} />
+    </>
   );
 }
 

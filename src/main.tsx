@@ -2,11 +2,14 @@
 import { createRoot } from "react-dom/client";
 import "styles/reset.css";
 import "index.scss";
-import AppRouter from "routes/AppRouter";
 import { AuthContextProvider } from "context/AuthContext";
+import { BrowserRouter } from "react-router-dom";
+import App from "App";
 
 createRoot(document.getElementById("root")!).render(
   <AuthContextProvider>
-    <AppRouter />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </AuthContextProvider>
 );
