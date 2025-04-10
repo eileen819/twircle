@@ -95,7 +95,7 @@ export default function SignupForm() {
         </Link>
       </div>
       <div className="form__block">
-        <button type="submit" className="form__btn-submit" disabled={!isValid}>
+        <button type="submit" className="form__btn--submit" disabled={!isValid}>
           회원가입
         </button>
       </div>

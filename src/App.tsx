@@ -7,7 +7,12 @@ function App() {
   const { user } = useContext(AuthContext);
   return (
     <>
-      <ToastContainer />
+      <ToastContainer
+        theme="dark"
+        autoClose={1000}
+        hideProgressBar
+        newestOnTop
+      />
       <Router isAuthenticated={!!user} />
     </>
   );
