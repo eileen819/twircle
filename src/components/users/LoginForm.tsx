@@ -1,4 +1,10 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  AuthProvider,
+  GithubAuthProvider,
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
 import { auth } from "firebaseApp";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -24,8 +30,45 @@ export default function LoginForm() {
       reset();
       navigate("/");
       toast.success("성공적으로 로그인이 되었습니다.");
-    } catch (error: any) {
-      toast.error(error?.code);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log(error);
+        toast.error(error.message);
+      } else {
+        toast.error("로그인 중 오류가 발생했습니다.");
+      }
+    }
+  };
+
+  const handleSocialSignIn = async (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    const {
+      currentTarget: { name },
+    } = event;
+
+    let provider: AuthProvider | undefined;
+    if (name === "google") {
+      provider = new GoogleAuthProvider();
+    } else if (name === "github") {
+      provider = new GithubAuthProvider();
+    }
+
+    if (!provider) {
+      toast.error("지원하지 않는 로그인 방식입니다.");
+      return;
+    }
+
+    try {
+      await signInWithPopup(auth, provider);
+      toast.success("로그인 되었습니다.");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error);
+        toast.error(error.message);
+      } else {
+        toast.error("로그인 중 오류가 발생했습니다.");
+      }
     }
   };
 
@@ -37,6 +80,7 @@ export default function LoginForm() {
         <input
           type="text"
           id="email"
+          autoComplete="off"
           {...register("email", {
             required: "이메일을 입력해주세요",
             pattern: {
@@ -53,6 +97,7 @@ export default function LoginForm() {
         <input
           type="password"
           id="password"
+          autoComplete="off"
           {...register("password", {
             required: "비밀번호를 입력해주세요",
             minLength: {
@@ -72,6 +117,26 @@ export default function LoginForm() {
       <div className="form__block">
         <button type="submit" className="form__btn--submit" disabled={!isValid}>
           로그인
+        </button>
+      </div>
+      <div className="form__block">
+        <button
+          type="button"
+          name="google"
+          className="form__btn--google"
+          onClick={handleSocialSignIn}
+        >
+          Google로 로그인
+        </button>
+      </div>
+      <div className="form__block">
+        <button
+          type="button"
+          name="github"
+          className="form__btn--github"
+          onClick={handleSocialSignIn}
+        >
+          Github으로 로그인
         </button>
       </div>
     </form>

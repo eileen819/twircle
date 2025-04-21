@@ -1,13 +1,32 @@
-import { IPostProps } from "pages/home";
 import { AiFillHeart } from "react-icons/ai";
 import { FaRegComment, FaUserCircle } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { IPostProps } from "./PostList";
+import { useContext } from "react";
+import AuthContext from "context/AuthContext";
+import { deleteDoc, doc } from "firebase/firestore";
+import { db } from "firebaseApp";
+import { toast } from "react-toastify";
+import PostContent from "./PostContent";
 
 interface IPostBoxProps {
   post: IPostProps;
 }
 
 export default function PostBox({ post }: IPostBoxProps) {
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleDelete = async () => {
+    const confirm = window.confirm("해당 게시글을 삭제하시겠습니까?");
+    if (confirm) {
+      const docRef = doc(db, "posts", post.id);
+      await deleteDoc(docRef);
+      toast.success("게시글을 삭제했습니다.");
+      navigate("/");
+    }
+  };
+
   return (
     <div className="post" key={post.id}>
       <div className="post__profile">
@@ -24,15 +43,19 @@ export default function PostBox({ post }: IPostBoxProps) {
         </Link>
       </div>
       <div className="post-box">
-        <Link to={`/posts/${post.id}`}>
+        <div
+          className="post-box__top"
+          onClick={() => navigate(`/posts/${post?.id}`)}
+        >
           <div className="post-box__profile">
             <div className="post-box__profile-email">{post.email}</div>
             <div className="post-box__profile-createdAt">{post.createdAt}</div>
           </div>
-          <div className="post-box__content">{post.content}</div>
-        </Link>
+          <div className="post-box__content">
+            <PostContent content={post?.content} />
+          </div>
+        </div>
         <div className="post-box__footer">
-          {/* post.uid === user.uid 일 때 */}
           <div className="post-box__footer--left">
             <button className="post__comments">
               <FaRegComment />
@@ -43,14 +66,16 @@ export default function PostBox({ post }: IPostBoxProps) {
               {post.likeCount || "0"}
             </button>
           </div>
-          <div className="post-box__footer--right">
-            <button className="post__edit">
-              <Link to={`/posts/edit/${post?.id}`}>Edit</Link>
-            </button>
-            <button className="post__delete" onClick={() => {}}>
-              Delete
-            </button>
-          </div>
+          {user?.uid === post?.uid && (
+            <div className="post-box__footer--right">
+              <button className="post__edit">
+                <Link to={`/posts/edit/${post?.id}`}>Edit</Link>
+              </button>
+              <button className="post__delete" onClick={handleDelete}>
+                Delete
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

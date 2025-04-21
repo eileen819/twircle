@@ -48,8 +48,23 @@ a {
   color: inherit;
 }
 
-// home
-.home {
+.hashtag-link {
+  color: $primaryBlue;
+  cursor: pointer;
+  &:hover,
+  &:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+  }
+}
+
+// Home Header
+.home__header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  backdrop-filter: blur(10px);
+
   &__title {
     padding: 16px;
     font-weight: 700;
@@ -128,12 +143,16 @@ a {
     border: none;
     outline: none;
     resize: none;
-    font-size: 20px;
+    font-size: 16px;
     border-bottom: 1px solid $borderColor;
 
     &::placeholder {
       color: $grayText;
-      font-size: 20px;
+      font-size: 16px;
+    }
+
+    .hashtag {
+      color: $primaryBlue;
     }
   }
   &__submit-area {
@@ -175,9 +194,8 @@ a {
     }
   }
 }
-
-//posts-list
-.posts-list {
+//post-list
+.post-list {
   padding-bottom: 40px;
 }
 
@@ -203,6 +221,10 @@ a {
   display: flex;
   flex-direction: column;
   margin-right: 16px;
+
+  &__top {
+    cursor: pointer;
+  }
 
   &__profile {
     margin-top: 15px;
@@ -281,6 +303,105 @@ a {
   }
 }
 
+.post-list__no-posts {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 14px;
+}
+
+// post-detail
+.post-detail {
+  padding: 16px;
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 40px;
+    font-size: 20px;
+    margin-bottom: 20px;
+    position: relative;
+
+    .post-detail__back {
+      cursor: pointer;
+    }
+
+    .post-detail__dots {
+      svg {
+        cursor: pointer;
+      }
+    }
+
+    .post-detail__dots-box {
+      background-color: #353537;
+      position: absolute;
+      top: 30px;
+      right: 0px;
+      padding: 10px;
+      border: 1px solid $borderColor;
+      border-radius: 10px;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 5px;
+      z-index: 10;
+
+      button {
+        cursor: pointer;
+        border: none;
+        outline: none;
+        background-color: transparent;
+        padding: 0;
+        color: $white;
+
+        &:hover,
+        &:focus {
+          color: $primaryBlue;
+        }
+      }
+    }
+  }
+
+  &__profile-box {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+  }
+
+  &__content {
+    margin-bottom: 40px;
+  }
+
+  &__date {
+    font-size: 12px;
+    color: $grayText;
+    margin-bottom: 5px;
+  }
+  &__footer {
+    display: flex;
+    align-items: self-end;
+    justify-content: end;
+    gap: 30px;
+
+    &__comments,
+    &__likes {
+      border: none;
+      outline: none;
+      background-color: transparent;
+      color: #b6b6b6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 0px;
+      cursor: pointer;
+    }
+  }
+}
+
 // signup-form
 .form {
   width: 100%;
@@ -347,10 +468,36 @@ a {
     color: $white;
     background-color: $primaryBlue;
     margin-top: 10px;
+    border-radius: 10px;
 
     &:hover,
     &:focus {
       background-color: $activeBlue;
+    }
+  }
+
+  &__btn--google {
+    @extend .form__btn--submit;
+    background-color: $white;
+    color: $primaryBlue;
+    margin-top: 0px;
+
+    &:hover,
+    &:focus {
+      background-color: $primaryBlue;
+      color: $white;
+    }
+  }
+
+  &__btn--github {
+    @extend .form__btn--submit;
+    background-color: #1b1c1c;
+    color: white;
+    margin-top: 0px;
+
+    &:hover,
+    &:focus {
+      background-color: #3f4548;
     }
   }
 }

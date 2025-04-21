@@ -1,4 +1,9 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  GithubAuthProvider,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
 import { auth } from "firebaseApp";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -30,8 +35,46 @@ export default function SignupForm() {
       reset();
       navigate("/");
       toast.success("성공적으로 회원가입이 되었습니다.");
-    } catch (error: any) {
-      toast.error(error.code);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log(error);
+        toast.error(error.message);
+      } else {
+        toast.error("회원가입 중 오류가 발생했습니다.");
+      }
+    }
+  };
+
+  const handleSocialSignIn = async (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    const {
+      currentTarget: { name },
+    } = event;
+
+    let provider;
+    if (name === "google") {
+      provider = new GoogleAuthProvider();
+    }
+
+    if (name === "github") {
+      provider = new GithubAuthProvider();
+    }
+
+    try {
+      const result = await signInWithPopup(
+        auth,
+        provider as GithubAuthProvider | GoogleAuthProvider
+      );
+      console.log(result);
+      toast.success("로그인 되었습니다.");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error);
+        toast.error(error.message);
+      } else {
+        toast.error("로그인 중 오류가 발생했습니다.");
+      }
     }
   };
 
@@ -43,6 +86,7 @@ export default function SignupForm() {
         <input
           type="text"
           id="email"
+          autoComplete="off"
           {...register("email", {
             required: "이메일을 입력해주세요.",
             pattern: {
@@ -59,6 +103,7 @@ export default function SignupForm() {
         <input
           type="password"
           id="password"
+          autoComplete="off"
           {...register("password", {
             required: "비밀번호를 입력해주세요.",
             minLength: {
@@ -74,6 +119,7 @@ export default function SignupForm() {
         <input
           type="password"
           id="confirmPassword"
+          autoComplete="off"
           {...register("confirmPassword", {
             required: "비밀번호 확인이 필요합니다.",
             minLength: {
@@ -97,6 +143,26 @@ export default function SignupForm() {
       <div className="form__block">
         <button type="submit" className="form__btn--submit" disabled={!isValid}>
           회원가입
+        </button>
+      </div>
+      <div className="form__block">
+        <button
+          type="button"
+          name="google"
+          className="form__btn--google"
+          onClick={handleSocialSignIn}
+        >
+          Google로 회원가입
+        </button>
+      </div>
+      <div className="form__block">
+        <button
+          type="button"
+          name="github"
+          className="form__btn--github"
+          onClick={handleSocialSignIn}
+        >
+          Github으로 회원가입
         </button>
       </div>
     </form>

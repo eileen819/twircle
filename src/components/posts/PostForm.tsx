@@ -1,14 +1,126 @@
+import AuthContext from "context/AuthContext";
+import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "firebaseApp";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { FiImage } from "react-icons/fi";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { IPostProps } from "./PostList";
+import { highlightHashtags, placeCursorToEnd } from "utils";
 
 export default function PostForm() {
+  const textAreaRef = useRef<HTMLDivElement | null>(null);
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [post, setPost] = useState<IPostProps | null>(null);
+  const [content, setContent] = useState("");
+  const [isComposing, setIsComposing] = useState(false);
+  const { user } = useContext(AuthContext);
+
+  const handleCompositionStart = () => setIsComposing(true);
+  const handleCompositionEnd = () => {
+    setIsComposing(false);
+    if (textAreaRef.current) {
+      const text = textAreaRef.current.innerText;
+      setContent(text);
+      textAreaRef.current.innerHTML = highlightHashtags(text);
+      placeCursorToEnd(textAreaRef.current);
+    }
+  };
+
+  // 폼 제출
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (textAreaRef.current) {
+      const finalContent = textAreaRef.current.innerText;
+      setContent(finalContent);
+    }
+
+    try {
+      if (post && post?.id) {
+        const editDocRef = doc(db, "posts", post.id);
+        await updateDoc(editDocRef, {
+          content,
+          updatedAt: new Date().toLocaleString(),
+        });
+        navigate(`/posts/${post.id}`);
+        toast.success("게시글을 수정했습니다.");
+      } else {
+        await addDoc(collection(db, "posts"), {
+          content: content,
+          createdAt: new Date().toLocaleString(),
+          uid: user?.uid,
+          email: user?.email,
+        });
+        if (textAreaRef.current) {
+          textAreaRef.current.innerText = "";
+        }
+        setContent("");
+        toast.success("게시글을 생성했습니다.");
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log(error);
+        toast.error(error.message);
+      } else {
+        toast.error("게시글 작성 중에 오류가 발생했습니다.");
+      }
+    }
+  };
+
+  // onInput 이벤트
+  const onInput = (event: React.FormEvent<HTMLDivElement>) => {
+    if (isComposing) return;
+
+    const div = event.currentTarget;
+    const text = div.innerText;
+    setContent(text);
+    div.innerHTML = highlightHashtags(text);
+    placeCursorToEnd(div);
+  };
+
+  // edit 모드일 때, 문서 데이터 가지고 오기
+  useEffect(() => {
+    const getPost = async (id: string) => {
+      const postRef = doc(db, "posts", id);
+      const docSnap = await getDoc(postRef);
+      if (docSnap.exists()) {
+        const postData = { id: docSnap.id, ...docSnap.data() } as IPostProps;
+        setPost(postData);
+      } else {
+        toast.error("해당 게시글을 찾을 수 없습니다.");
+        navigate("/");
+      }
+    };
+    if (id) {
+      getPost(id);
+    }
+  }, [id, navigate]);
+
+  // edit 모드일 때, post 내용을 textarea에 넣어주기
+  useEffect(() => {
+    if (post && textAreaRef.current) {
+      const text = post.content;
+      setContent(text);
+      textAreaRef.current.innerHTML = highlightHashtags(text);
+      placeCursorToEnd(textAreaRef.current);
+    }
+  }, [post]);
+
+  console.log(content);
+
   return (
-    <form className="post-form">
-      <textarea
-        name="content"
+    <form className="post-form" onSubmit={onSubmit}>
+      <div
+        ref={textAreaRef}
         id="content"
         className="post-form__textarea"
-        required
-        placeholder="What is happening?"
+        contentEditable
+        suppressContentEditableWarning
+        onInput={onInput}
+        onCompositionStart={handleCompositionStart}
+        onCompositionEnd={handleCompositionEnd}
+        // placeholder="what's happening"
       />
       <div className="post-form__submit-area">
         <label htmlFor="file-input" className="post-form__file">
@@ -22,8 +134,190 @@ export default function PostForm() {
           onChange={() => {}}
           className="hidden"
         />
-        <input type="submit" value="Tweet" className="post-form__submit-btn" />
+        <input
+          type="submit"
+          value={!post ? "Tweet" : "Edit"}
+          className="post-form__submit-btn"
+        />
       </div>
     </form>
   );
 }
+
+/* 
+<form className="post-form" onSubmit={handleSubmit(onValid)}>
+      <textarea
+        id="content"
+        className="post-form__textarea"
+        placeholder="What is happening?"
+        {...register("content", { required: "게시글을 작성해주세요." })}
+      />
+      <div className="post-form__submit-area">
+        <label htmlFor="file-input" className="post-form__file">
+          <FiImage className="post-form__file-icon" />
+        </label>
+        <input
+          type="file"
+          id="file-input"
+          name="file-input"
+          accept="image/*"
+          onChange={() => {}}
+          className="hidden"
+        />
+        <input
+          type="submit"
+          value={!post ? "Tweet" : "Edit"}
+          className="post-form__submit-btn"
+        />
+      </div>
+
+      <div>
+        <input type="text" onChange={onChangeTag} value={hashTag} />
+      </div>
+    </form>
+*/
+
+/* 
+export default function PostForm() {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [post, setPost] = useState<IPostProps | null>(null);
+  // const { handleSubmit, reset, setValue } = useForm<IContentFormData>();
+  const { user } = useContext(AuthContext);
+
+  // 폼 제출
+  const onValid = async ({ content }: IContentFormData) => {
+    console.log(content);
+    try {
+      if (post && post?.id) {
+        const editDocRef = doc(db, "posts", post.id);
+        await updateDoc(editDocRef, {
+          content,
+          updatedAt: new Date().toLocaleString(),
+        });
+        navigate(`/posts/${post.id}`);
+        toast.success("게시글을 수정했습니다.");
+      } else {
+        await addDoc(collection(db, "posts"), {
+          content: content,
+          createdAt: new Date().toLocaleString(),
+          uid: user?.uid,
+          email: user?.email,
+        });
+        reset();
+        toast.success("게시글을 생성했습니다.");
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log(error);
+        toast.error(error.message);
+      } else {
+        toast.error("게시글 작성 중에 오류가 발생했습니다.");
+      }
+    }
+  };
+
+  // edit 모드일 때, 문서 데이터 가지고 오기
+  useEffect(() => {
+    const getPost = async (id: string) => {
+      const postRef = doc(db, "posts", id);
+      const docSnap = await getDoc(postRef);
+      if (docSnap.exists()) {
+        const postData = { id: docSnap.id, ...docSnap.data() } as IPostProps;
+        setPost(postData);
+      } else {
+        toast.error("해당 게시글을 찾을 수 없습니다.");
+        navigate("/");
+      }
+    };
+    if (id) {
+      getPost(id);
+    }
+  }, [id, navigate]);
+
+  // edit 모드일 때, post 내용을 textare에 넣어주기
+  useEffect(() => {
+    if (post && textAreaRef.current) {
+      const text = post.content;
+      setRawcontent(text);
+      const highlighted = text.replace(
+        /(#[\w가-힣]+)/g,
+        `<span class="hashtag">$1</span>`
+      );
+      textAreaRef.current.innerHTML = highlighted;
+      placeCursorToEnd(textAreaRef.current);
+      setValue("content", text);
+      // setValue("content", post.content);
+      // setFocus("content");
+    }
+  }, [post, setValue]);
+
+  // textarea 영역
+  const textAreaRef = useRef<HTMLDivElement | null>(null);
+  const [rawContent, setRawcontent] = useState("");
+  const [isComposing, setIsComposing] = useState(false);
+
+  const handleCompositionStart = () => setIsComposing(true);
+  const handleCompositionEnd = () => {
+    setIsComposing(false);
+    // e: React.CompositionEvent
+    // 컴포지션 종료 시 수동으로 입력 이벤트 트리거
+    // const fakeEvent = {
+    //   currentTarget: e.currentTarget,
+    // } as React.FormEvent<HTMLDivElement>;
+    // onInput(fakeEvent);
+  };
+
+  const onInput = (event: React.FormEvent<HTMLDivElement>) => {
+    if (isComposing) {
+      // setRawcontent(event.currentTarget.innerText);
+      return;
+    }
+
+    const div = event.currentTarget;
+    const text = div.innerText;
+    setRawcontent(text);
+    const highlighted = text.replace(
+      /(#[\w가-힣]+)/g,
+      `<span class="hashtag">$1</span>`
+    );
+    div.innerHTML = highlighted;
+    placeCursorToEnd(div);
+    setValue("content", text);
+  };
+
+  return (
+    <form className="post-form" onSubmit={handleSubmit(onValid)}>
+      <div
+        ref={textAreaRef}
+        id="content"
+        className="post-form__textarea"
+        contentEditable
+        suppressContentEditableWarning
+        onInput={onInput}
+        onCompositionStart={handleCompositionStart}
+        onCompositionEnd={handleCompositionEnd}
+        // placeholder="what's happening"
+      />
+      <div className="post-form__submit-area">
+        <label htmlFor="file-input" className="post-form__file">
+          <FiImage className="post-form__file-icon" />
+        </label>
+        <input
+          type="file"
+          id="file-input"
+          name="file-input"
+          accept="image/*"
+          onChange={() => {}}
+          className="hidden"
+        />
+        <input
+          type="submit"
+          value={!post ? "Tweet" : "Edit"}
+          className="post-form__submit-btn"
+        />
+      </div>
+    </form>
+  );
+}
+*/
