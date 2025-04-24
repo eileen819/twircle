@@ -1,6 +1,7 @@
 import { signOut } from "firebase/auth";
 import { auth } from "firebaseApp";
 import { FiUser } from "react-icons/fi";
+import { IoSearch } from "react-icons/io5";
 import { MdLogout } from "react-icons/md";
 import { RiHome2Line } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +22,9 @@ export default function MenuBar() {
         onClick={() => navigate("/")}
       >
         <RiHome2Line />
+      </button>
+      <button className="footer__icon" onClick={() => navigate("/search")}>
+        <IoSearch />
       </button>
       <button className="footer__icon" onClick={() => navigate("/profile")}>
         <FiUser />

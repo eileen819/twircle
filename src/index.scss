@@ -103,7 +103,7 @@ a {
   width: 100%;
   z-index: 10;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   backdrop-filter: blur(5px);
   // border-top: 1px solid $borderColor;
   // background-color: $bgColor;
@@ -146,9 +146,9 @@ a {
     font-size: 16px;
     border-bottom: 1px solid $borderColor;
 
-    &::placeholder {
+    &[contentEditable="true"]:empty:not(:focus)::before {
+      content: "What's happening?";
       color: $grayText;
-      font-size: 16px;
     }
 
     .hashtag {
@@ -498,6 +498,54 @@ a {
     &:hover,
     &:focus {
       background-color: #3f4548;
+    }
+  }
+}
+
+// search
+.search {
+  &__header {
+    @extend.home__header;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
+  &__box {
+    display: flex;
+    align-items: center;
+    background-color: $activeBgColor;
+    border: 1px solid $grayText;
+    border-radius: 30px;
+    width: 80%;
+
+    svg {
+      margin: 0px 20px;
+    }
+
+    &__input {
+      padding: 10px 20px 10px 0px;
+      flex-grow: 1;
+      font-size: 16px;
+      height: 100%;
+      background-color: transparent;
+      border: none;
+      outline: none;
+      color: $white;
+    }
+
+    &:focus-within {
+      border-color: $primaryBlue;
+      .search__box__refresh-icon {
+        display: none;
+      }
+    }
+
+    &__refresh-icon {
+      cursor: pointer;
+      &:active {
+        transform: rotate(270deg);
+        transition: transform 0.3s ease-in-out;
+      }
     }
   }
 }

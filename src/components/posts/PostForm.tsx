@@ -6,17 +6,70 @@ import { FiImage } from "react-icons/fi";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { IPostProps } from "./PostList";
-import { highlightHashtags, placeCursorToEnd } from "utils";
+import {
+  extractHashtags,
+  generateKeywords,
+  highlightHashtags,
+  placeCursorToEnd,
+} from "utils";
 
 export default function PostForm() {
+  const { user } = useContext(AuthContext);
+  const { id } = useParams();
   const textAreaRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
-  const { id } = useParams();
   const [post, setPost] = useState<IPostProps | null>(null);
-  const [content, setContent] = useState("");
+  const [, setContent] = useState("");
   const [isComposing, setIsComposing] = useState(false);
-  const { user } = useContext(AuthContext);
 
+  // 폼 제출
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (textAreaRef.current) {
+      const finalContent = textAreaRef.current.innerText;
+      const hashTags = extractHashtags(finalContent);
+      const keywords = generateKeywords(finalContent);
+
+      try {
+        if (post && post?.id) {
+          const editDocRef = doc(db, "posts", post.id);
+          await updateDoc(editDocRef, {
+            content: finalContent,
+            hashTags,
+            updatedAt: new Date().toLocaleString(),
+            keywords,
+          });
+          navigate(`/posts/${post.id}`);
+          toast.success("게시글을 수정했습니다.");
+        } else {
+          await addDoc(collection(db, "posts"), {
+            content: finalContent,
+            keywords,
+            hashTags,
+            createdAt: new Date().toLocaleString(),
+            uid: user?.uid,
+            email: user?.email,
+          });
+          if (textAreaRef.current) {
+            textAreaRef.current.innerText = "";
+          }
+          setContent("");
+          toast.success("게시글을 생성했습니다.");
+        }
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.log(error);
+          toast.error(error.message);
+        } else {
+          toast.error("게시글 작성 중에 오류가 발생했습니다.");
+        }
+      }
+
+      setContent(finalContent);
+    }
+  };
+
+  // composition 이벤트
   const handleCompositionStart = () => setIsComposing(true);
   const handleCompositionEnd = () => {
     setIsComposing(false);
@@ -25,46 +78,6 @@ export default function PostForm() {
       setContent(text);
       textAreaRef.current.innerHTML = highlightHashtags(text);
       placeCursorToEnd(textAreaRef.current);
-    }
-  };
-
-  // 폼 제출
-  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (textAreaRef.current) {
-      const finalContent = textAreaRef.current.innerText;
-      setContent(finalContent);
-    }
-
-    try {
-      if (post && post?.id) {
-        const editDocRef = doc(db, "posts", post.id);
-        await updateDoc(editDocRef, {
-          content,
-          updatedAt: new Date().toLocaleString(),
-        });
-        navigate(`/posts/${post.id}`);
-        toast.success("게시글을 수정했습니다.");
-      } else {
-        await addDoc(collection(db, "posts"), {
-          content: content,
-          createdAt: new Date().toLocaleString(),
-          uid: user?.uid,
-          email: user?.email,
-        });
-        if (textAreaRef.current) {
-          textAreaRef.current.innerText = "";
-        }
-        setContent("");
-        toast.success("게시글을 생성했습니다.");
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.log(error);
-        toast.error(error.message);
-      } else {
-        toast.error("게시글 작성 중에 오류가 발생했습니다.");
-      }
     }
   };
 
@@ -107,8 +120,6 @@ export default function PostForm() {
     }
   }, [post]);
 
-  console.log(content);
-
   return (
     <form className="post-form" onSubmit={onSubmit}>
       <div
@@ -120,7 +131,6 @@ export default function PostForm() {
         onInput={onInput}
         onCompositionStart={handleCompositionStart}
         onCompositionEnd={handleCompositionEnd}
-        // placeholder="what's happening"
       />
       <div className="post-form__submit-area">
         <label htmlFor="file-input" className="post-form__file">

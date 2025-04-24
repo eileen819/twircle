@@ -1,13 +1,13 @@
 import HomeHeader from "components/HomeHeader";
 import PostForm from "components/posts/PostForm";
-import PostList from "components/posts/PostList";
+import PostsList from "pages/posts/list";
 
 export default function Home() {
   return (
     <>
       <HomeHeader />
       <PostForm />
-      <PostList />
+      <PostsList />
     </>
   );
 }
