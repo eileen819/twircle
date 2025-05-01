@@ -9,7 +9,7 @@ function App() {
     <>
       <ToastContainer
         theme="dark"
-        autoClose={1000}
+        autoClose={10000}
         hideProgressBar
         newestOnTop
       />

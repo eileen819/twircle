@@ -5,7 +5,8 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
-import { auth } from "firebaseApp";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { auth, db } from "firebaseApp";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -28,7 +29,7 @@ export default function LoginForm() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       reset();
-      navigate("/");
+      navigate("/", { replace: true });
       toast.success("성공적으로 로그인이 되었습니다.");
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -60,8 +61,31 @@ export default function LoginForm() {
     }
 
     try {
-      await signInWithPopup(auth, provider);
-      toast.success("로그인 되었습니다.");
+      const result = await signInWithPopup(
+        auth,
+        provider as GithubAuthProvider | GoogleAuthProvider
+      );
+      const user = result.user;
+
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+      if (!userDocSnap.exists()) {
+        await setDoc(userDocRef, {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          bio: "",
+          photoURL: user.photoURL,
+          photoPath: "",
+          updatedAt: new Date().toLocaleString(),
+        });
+        if (!user.displayName) {
+          navigate("/profile/edit", { replace: true });
+        }
+      } else {
+        navigate("/", { replace: true });
+        toast.success("로그인 되었습니다.");
+      }
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(error);

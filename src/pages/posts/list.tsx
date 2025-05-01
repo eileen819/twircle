@@ -4,6 +4,7 @@ import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { db } from "firebaseApp";
 import { useContext, useEffect, useState } from "react";
 
+// PostsList는 페이지가 아니기 때문에 해당 부분은 home/index.tsx에서 PostList 컴포넌트를 이용해서 구현함
 export default function PostsList() {
   const [posts, setPosts] = useState<IPostProps[]>([]);
   const { user } = useContext(AuthContext);

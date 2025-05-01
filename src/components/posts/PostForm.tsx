@@ -1,6 +1,6 @@
 import AuthContext from "context/AuthContext";
 import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "firebaseApp";
+import { db, storage } from "firebaseApp";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { FiImage } from "react-icons/fi";
 import { useNavigate, useParams } from "react-router-dom";
@@ -12,8 +12,18 @@ import {
   highlightHashtags,
   placeCursorToEnd,
 } from "utils";
+import { MdCancel } from "react-icons/md";
+import { v4 as uuidv4 } from "uuid";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadString,
+} from "firebase/storage";
+import Loader from "components/loader/Loader";
 
 export default function PostForm() {
+  const fileRef = useRef<HTMLInputElement | null>(null);
   const { user } = useContext(AuthContext);
   const { id } = useParams();
   const textAreaRef = useRef<HTMLDivElement | null>(null);
@@ -21,27 +31,106 @@ export default function PostForm() {
   const [post, setPost] = useState<IPostProps | null>(null);
   const [, setContent] = useState("");
   const [isComposing, setIsComposing] = useState(false);
+  const [imageFile, setImageFile] = useState<string | null>(null);
+  const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const {
+      target: { files },
+    } = event;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (typeof reader.result === "string") {
+        setImageFile(reader.result);
+        if (originalImageUrl) {
+          setOriginalImageUrl(null);
+        }
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleClearImg = async () => {
+    if (fileRef.current) {
+      fileRef.current.value = "";
+    }
+    setImageFile(null);
+    setOriginalImageUrl(null);
+  };
 
   // 폼 제출
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsSubmitting(true);
+
     if (textAreaRef.current) {
       const finalContent = textAreaRef.current.innerText;
       const hashTags = extractHashtags(finalContent);
       const keywords = generateKeywords(finalContent);
 
       try {
+        let imageUrl = "";
+        let imagePath = "";
+
         if (post && post?.id) {
+          if (!originalImageUrl && !imageFile) {
+            // 게시글의 이미지 삭제(only text만 남김)
+            if (post.imageUrl && post.imagePath) {
+              // storage에서 삭제
+              await deleteObject(ref(storage, post.imagePath));
+            }
+            imageUrl = "";
+            imagePath = "";
+          } else if (
+            // 게시글 이미지의 유지 (새 파일이 아니라면 기존 경로 유지)
+            originalImageUrl &&
+            post.imageUrl &&
+            post.imagePath &&
+            !imageFile
+          ) {
+            imageUrl = post.imageUrl;
+            imagePath = post.imagePath;
+          } else {
+            // 게시글 이미지의 교체 또는 추가
+            if (imageFile && !originalImageUrl) {
+              if (post.imageUrl && post.imagePath) {
+                await deleteObject(ref(storage, post.imagePath));
+              }
+              imagePath = `${user?.uid}/${uuidv4()}`;
+              const storageRef = ref(storage, imagePath);
+              await uploadString(storageRef, imageFile, "data_url");
+              imageUrl = await getDownloadURL(storageRef);
+            }
+          }
+
           const editDocRef = doc(db, "posts", post.id);
           await updateDoc(editDocRef, {
             content: finalContent,
             hashTags,
             updatedAt: new Date().toLocaleString(),
             keywords,
+            imageUrl,
+            imagePath,
           });
-          navigate(`/posts/${post.id}`);
+          setContent("");
+          if (fileRef.current) {
+            fileRef.current.value = "";
+            setImageFile(null);
+          }
+          navigate(`/posts/${post.id}`, { replace: true });
           toast.success("게시글을 수정했습니다.");
         } else {
+          if (imageFile) {
+            imagePath = `${user?.uid}/${uuidv4()}`;
+            const storageRef = ref(storage, imagePath);
+            await uploadString(storageRef, imageFile, "data_url");
+            imageUrl = await getDownloadURL(storageRef);
+          }
+
           await addDoc(collection(db, "posts"), {
             content: finalContent,
             keywords,
@@ -49,11 +138,18 @@ export default function PostForm() {
             createdAt: new Date().toLocaleString(),
             uid: user?.uid,
             email: user?.email,
+            imageUrl,
+            imagePath,
           });
           if (textAreaRef.current) {
             textAreaRef.current.innerText = "";
           }
           setContent("");
+          if (fileRef.current) {
+            fileRef.current.value = "";
+            setImageFile(null);
+          }
+          setImageFile(null);
           toast.success("게시글을 생성했습니다.");
         }
       } catch (error: unknown) {
@@ -63,6 +159,8 @@ export default function PostForm() {
         } else {
           toast.error("게시글 작성 중에 오류가 발생했습니다.");
         }
+      } finally {
+        setIsSubmitting(false);
       }
 
       setContent(finalContent);
@@ -117,8 +215,14 @@ export default function PostForm() {
       setContent(text);
       textAreaRef.current.innerHTML = highlightHashtags(text);
       placeCursorToEnd(textAreaRef.current);
+      // setImageFile(post.imageUrl ?? null);
+      setOriginalImageUrl(post.imageUrl ?? null);
     }
   }, [post]);
+
+  console.log("imageFile", imageFile);
+  console.log("originalImageUrl", originalImageUrl);
+  console.log("file:", fileRef.current?.value);
 
   return (
     <form className="post-form" onSubmit={onSubmit}>
@@ -132,24 +236,41 @@ export default function PostForm() {
         onCompositionStart={handleCompositionStart}
         onCompositionEnd={handleCompositionEnd}
       />
+      {(imageFile || originalImageUrl) && (
+        <div className="post-form__attachment">
+          <div className="post-form__attachment-preview">
+            <img src={imageFile ?? post?.imageUrl} alt="attachment" />
+            <MdCancel size={18} onClick={handleClearImg} />
+          </div>
+        </div>
+      )}
       <div className="post-form__submit-area">
-        <label htmlFor="file-input" className="post-form__file">
-          <FiImage className="post-form__file-icon" />
-        </label>
-        <input
-          type="file"
-          id="file-input"
-          name="file-input"
-          accept="image/*"
-          onChange={() => {}}
-          className="hidden"
-        />
+        <div className="post-form__image-area">
+          <label htmlFor="file-input" className="post-form__file">
+            <FiImage className="post-form__file-icon" />
+          </label>
+          <input
+            ref={fileRef}
+            type="file"
+            id="file-input"
+            name="file-input"
+            accept="image/*"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
+        </div>
         <input
           type="submit"
-          value={!post ? "Tweet" : "Edit"}
+          value={!post ? (!isSubmitting ? "Tweet" : "Tweeting") : "Edit"}
           className="post-form__submit-btn"
+          disabled={isSubmitting}
         />
       </div>
+      {isSubmitting && (
+        <div className="loader__wrapper">
+          <Loader />
+        </div>
+      )}
     </form>
   );
 }

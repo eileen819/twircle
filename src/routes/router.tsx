@@ -6,6 +6,7 @@ import PostDetail from "pages/posts/detail";
 import PostEdit from "pages/posts/edit";
 import PostsList from "pages/posts/list";
 import PostNew from "pages/posts/new";
+import PhotoDetail from "pages/posts/photoDetail";
 import ProfilePage from "pages/profile";
 import ProfileDetail from "pages/profile/detail";
 import ProfileEdit from "pages/profile/edit";
@@ -28,6 +29,7 @@ function Router({ isAuthenticated }: IRouterProps) {
             <Route path="posts" element={<PostsPage />}>
               <Route index element={<PostsList />} />
               <Route path=":id" element={<PostDetail />} />
+              <Route path=":id/photo" element={<PhotoDetail />} />
               <Route path="new" element={<PostNew />} />
               <Route path="edit/:id" element={<PostEdit />} />
             </Route>

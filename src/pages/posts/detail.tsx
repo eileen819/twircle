@@ -2,7 +2,8 @@ import Loader from "components/loader/Loader";
 import PostContent from "components/posts/PostContent";
 import { IPostProps } from "components/posts/PostList";
 import { deleteDoc, doc, getDoc } from "firebase/firestore";
-import { db } from "firebaseApp";
+import { deleteObject, ref } from "firebase/storage";
+import { db, storage } from "firebaseApp";
 import { useEffect, useRef, useState } from "react";
 import { AiFillHeart } from "react-icons/ai";
 import { BsThreeDots } from "react-icons/bs";
@@ -18,16 +19,38 @@ export default function PostDetail() {
   const navigate = useNavigate();
   const [post, setPost] = useState<IPostProps | null>(null);
   const [isShow, setIsShow] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
-    const confirm = window.confirm("해당 게시글을 삭제하시겠습니까?");
-    if (confirm) {
-      if (post && post.id) {
+    const isConfirmed = window.confirm("해당 게시글을 삭제하시겠습니까?");
+    if (!isConfirmed || !post) return;
+    setIsDeleting(true);
+
+    try {
+      if (post.imagePath && post.imagePath.trim() !== "") {
+        try {
+          const imageRef = ref(storage, post.imagePath);
+          await deleteObject(imageRef);
+        } catch (error) {
+          console.log("이미지 삭제 오류:", error);
+        }
+      }
+
+      if (post.id) {
         await deleteDoc(doc(db, "posts", post?.id));
         toast.success("게시글을 삭제했습니다.");
         navigate("/");
       }
+    } catch (error) {
+      console.log("문서 삭제 오류:", error);
+      toast.error("게시글 삭제에 실패했습니다.");
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const handleImgModal = () => {
+    navigate(`/posts/${post?.id}/photo`, { state: { image: post?.imageUrl } });
   };
 
   useEffect(() => {
@@ -78,11 +101,15 @@ export default function PostDetail() {
         </div>
         {isShow && (
           <div ref={menuRef} className="post-detail__dots-box">
-            <button className="dots-box__edit">
+            <button className="post-detail__dots-box__edit">
               <Link to={`/posts/edit/${post?.id}`}>Edit</Link>
             </button>
-            <button className="dots-box__delete" onClick={handleDelete}>
-              Delete
+            <button
+              className="post-detail__dots-box__delete"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
             </button>
           </div>
         )}
@@ -105,8 +132,15 @@ export default function PostDetail() {
               <div className="post__profile-email">{post?.email}</div>
             </Link>
           </div>
-          <div className="post-detail__content">
-            <PostContent content={post?.content} />
+          <div className="post-detail__main">
+            <div className="post-detail__content">
+              <PostContent content={post?.content} />
+            </div>
+            {post.imageUrl && post.imageUrl !== "" && (
+              <div className="post-detail__image" onClick={handleImgModal}>
+                <img src={post.imageUrl} alt={`${post.id}-img`} />
+              </div>
+            )}
           </div>
           <div className="post-detail__date">{post?.createdAt}</div>
           <div className="post-detail__footer">

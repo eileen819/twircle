@@ -12,6 +12,8 @@ export interface IPostProps {
   comments?: string;
   hashtags?: string[];
   keywords?: string[];
+  imageUrl?: string;
+  imagePath?: string;
 }
 
 interface IPostListProps {

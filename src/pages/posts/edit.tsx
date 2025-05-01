@@ -1,4 +1,5 @@
 import PostForm from "components/posts/PostForm";
+import { IoArrowBack } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 
 export default function PostEdit() {
@@ -6,8 +7,8 @@ export default function PostEdit() {
   const onPrev = () => navigate(-1);
   return (
     <>
-      <div style={{ border: "1px solid white", padding: 16 }} onClick={onPrev}>
-        cancel
+      <div className="post-edit__header">
+        <IoArrowBack size={20} onClick={onPrev} />
       </div>
       <PostForm />
     </>

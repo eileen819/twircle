@@ -3,12 +3,15 @@ import {
   GithubAuthProvider,
   GoogleAuthProvider,
   signInWithPopup,
+  updateProfile,
 } from "firebase/auth";
-import { auth } from "firebaseApp";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { auth, db } from "firebaseApp";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
+export const DEFAULT_PROFILE_IMG_URL = "/public/user.png";
 interface ISignUpFormData {
   email: string;
   password: string;
@@ -31,9 +34,30 @@ export default function SignupForm() {
 
   const onValid = async ({ email, password }: ISignUpFormData) => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      await updateProfile(user, {
+        displayName: user.email,
+        photoURL: DEFAULT_PROFILE_IMG_URL,
+      });
+
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        bio: "",
+        photoURL: user.photoURL,
+        photoPath: "",
+        updatedAt: new Date().toLocaleString(),
+      });
+
       reset();
-      navigate("/");
+      navigate("/", { replace: true });
       toast.success("성공적으로 회원가입이 되었습니다.");
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -41,6 +65,7 @@ export default function SignupForm() {
         toast.error(error.message);
       } else {
         toast.error("회원가입 중 오류가 발생했습니다.");
+        console.log(error);
       }
     }
   };
@@ -61,13 +86,37 @@ export default function SignupForm() {
       provider = new GithubAuthProvider();
     }
 
+    if (!provider) {
+      toast.error("지원하지 않는 로그인 방식입니다.");
+      return;
+    }
+
     try {
       const result = await signInWithPopup(
         auth,
         provider as GithubAuthProvider | GoogleAuthProvider
       );
-      console.log(result);
-      toast.success("로그인 되었습니다.");
+      const user = result.user;
+
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+      if (!userDocSnap.exists()) {
+        await setDoc(userDocRef, {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          bio: "",
+          photoURL: user.photoURL,
+          photoPath: "",
+          updatedAt: new Date().toLocaleString(),
+        });
+        if (!user.displayName || !user.photoURL) {
+          navigate("/profile/edit", { replace: true });
+        }
+      } else {
+        navigate("/", { replace: true });
+        toast.success("로그인 되었습니다.");
+      }
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(error);
