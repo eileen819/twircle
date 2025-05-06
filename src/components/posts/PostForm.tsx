@@ -220,10 +220,6 @@ export default function PostForm() {
     }
   }, [post]);
 
-  console.log("imageFile", imageFile);
-  console.log("originalImageUrl", originalImageUrl);
-  console.log("file:", fileRef.current?.value);
-
   return (
     <form className="post-form" onSubmit={onSubmit}>
       <div

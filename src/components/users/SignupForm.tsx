@@ -46,15 +46,19 @@ export default function SignupForm() {
         photoURL: DEFAULT_PROFILE_IMG_URL,
       });
 
-      await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        bio: "",
-        photoURL: user.photoURL,
-        photoPath: "",
-        updatedAt: new Date().toLocaleString(),
-      });
+      await setDoc(
+        doc(db, "users", user.uid),
+        {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          bio: "",
+          photoURL: user.photoURL,
+          photoPath: "",
+          updatedAt: new Date().toLocaleString(),
+        },
+        { merge: true }
+      );
 
       reset();
       navigate("/", { replace: true });
@@ -98,6 +102,13 @@ export default function SignupForm() {
       );
       const user = result.user;
 
+      if (!user.displayName || !user.photoURL) {
+        await updateProfile(user, {
+          displayName: user.displayName || user.email,
+          photoURL: user.photoURL || DEFAULT_PROFILE_IMG_URL,
+        });
+      }
+
       const userDocRef = doc(db, "users", user.uid);
       const userDocSnap = await getDoc(userDocRef);
       if (!userDocSnap.exists()) {
@@ -106,17 +117,13 @@ export default function SignupForm() {
           email: user.email,
           displayName: user.displayName,
           bio: "",
-          photoURL: user.photoURL,
+          photoURL: user.photoURL || DEFAULT_PROFILE_IMG_URL,
           photoPath: "",
           updatedAt: new Date().toLocaleString(),
         });
-        if (!user.displayName || !user.photoURL) {
-          navigate("/profile/edit", { replace: true });
-        }
-      } else {
-        navigate("/", { replace: true });
-        toast.success("로그인 되었습니다.");
       }
+      navigate("/", { replace: true });
+      toast.success("로그인 되었습니다.");
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(error);

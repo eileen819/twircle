@@ -33,6 +33,8 @@ export interface IUserProps {
   updatedAt: string;
 }
 
+const STORAGE_DOWNLOAD_URL_STR = "https://firebasestorage.googleapis.com";
+
 export default function ProfileEdit() {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
@@ -79,8 +81,12 @@ export default function ProfileEdit() {
             profileImageUrl = userProfile.photoURL;
             profileImagePath = userProfile.photoPath;
           } else {
+            // 2. 새로운 프로필 이미지를 등록하는 경우
             if (imageFile && !originalImageUrl) {
-              if (userProfile.photoURL) {
+              if (
+                userProfile.photoURL &&
+                userProfile.photoURL.includes(STORAGE_DOWNLOAD_URL_STR)
+              ) {
                 // 기존 이미지 삭제
                 const oldProfileImageRef = ref(
                   storage,
@@ -94,7 +100,6 @@ export default function ProfileEdit() {
               profileImageUrl = await getDownloadURL(storageRef);
             }
           }
-          // 2. 새로운 프로필 이미지를 등록하는 경우
 
           // 그외 프로필 내용의 수정
           await updateProfile(user, {
@@ -113,11 +118,16 @@ export default function ProfileEdit() {
 
           setpreviewImage(null);
           reset();
-          // setValue("imageFile", "");
           navigate("/profile", { replace: true });
+          toast.success("프로필을 수정했습니다.");
         }
-      } catch (error) {
-        console.log(error);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.log(error);
+          toast.error(error.message);
+        } else {
+          toast.error("프로필 수정 중에 오류가 발생했습니다.");
+        }
       }
     }
   };
@@ -169,7 +179,6 @@ export default function ProfileEdit() {
       </div>
       <div className="profile-edit__input__wrapper">
         <div className="profile-edit__image-area">
-          {/* <MdCancel size={18} onClick={() => {}} /> */}
           <label htmlFor="file-input" className="profile-edit__file-input">
             {previewImage || originalImageUrl ? (
               <img
