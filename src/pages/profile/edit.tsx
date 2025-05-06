@@ -118,7 +118,7 @@ export default function ProfileEdit() {
 
           setpreviewImage(null);
           reset();
-          navigate("/profile", { replace: true });
+          navigate(`/profile/${user.uid}`, { replace: true });
           toast.success("프로필을 수정했습니다.");
         }
       } catch (error: unknown) {

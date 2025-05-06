@@ -1,5 +1,7 @@
+import AuthContext from "context/AuthContext";
 import { signOut } from "firebase/auth";
 import { auth } from "firebaseApp";
+import { useContext } from "react";
 import { FiUser } from "react-icons/fi";
 import { IoSearch } from "react-icons/io5";
 import { MdLogout } from "react-icons/md";
@@ -9,6 +11,7 @@ import { toast } from "react-toastify";
 
 export default function MenuBar() {
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
 
   const onSignOut = async () => {
     await signOut(auth);
@@ -26,7 +29,10 @@ export default function MenuBar() {
       <button className="footer__icon" onClick={() => navigate("/search")}>
         <IoSearch />
       </button>
-      <button className="footer__icon" onClick={() => navigate("/profile")}>
+      <button
+        className="footer__icon"
+        onClick={() => navigate(`/profile/${user?.uid}`)}
+      >
         <FiUser />
       </button>
       <button className="footer__icon" onClick={onSignOut}>

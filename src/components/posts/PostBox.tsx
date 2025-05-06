@@ -1,5 +1,5 @@
 import { AiFillHeart } from "react-icons/ai";
-import { FaRegComment, FaUserCircle } from "react-icons/fa";
+import { FaRegComment } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { IPostProps } from "./PostList";
 import { useContext, useState } from "react";
@@ -57,16 +57,14 @@ export default function PostBox({ post }: IPostBoxProps) {
     <>
       <div className="post" key={post.id}>
         <div className="post__profile">
-          <Link to="/profile">
-            {post.profileUrl ? (
+          <Link to={`/profile/${post.uid}`}>
+            <div className="post__profile__img">
               <img
                 src={post.profileUrl}
                 alt="profile"
-                className="post__profile-img"
+                className="post__profile__img--user"
               />
-            ) : (
-              <FaUserCircle className="post__profile-icon" />
-            )}
+            </div>
           </Link>
         </div>
         <div className="post-box">
@@ -75,6 +73,7 @@ export default function PostBox({ post }: IPostBoxProps) {
             onClick={() => navigate(`/posts/${post?.id}`)}
           >
             <div className="post-box__profile">
+              <div className="post-box__profile-name">{post.profileName}</div>
               <div className="post-box__profile-email">{post.email}</div>
               <div className="post-box__profile-createdAt">
                 {post.createdAt}

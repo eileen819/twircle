@@ -33,7 +33,7 @@ function Router({ isAuthenticated }: IRouterProps) {
               <Route path="new" element={<PostNew />} />
               <Route path="edit/:id" element={<PostEdit />} />
             </Route>
-            <Route path="profile" element={<ProfilePage />}>
+            <Route path="profile/:uid" element={<ProfilePage />}>
               <Route index element={<ProfileDetail />} />
               <Route path="edit" element={<ProfileEdit />} />
             </Route>

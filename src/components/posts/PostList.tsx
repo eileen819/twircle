@@ -6,6 +6,7 @@ export interface IPostProps {
   content: string;
   createdAt: string;
   uid: string;
+  profileName?: string;
   profileUrl?: string;
   likes?: string[];
   likeCount?: number;

@@ -7,7 +7,7 @@ import { db, storage } from "firebaseApp";
 import { useEffect, useRef, useState } from "react";
 import { AiFillHeart } from "react-icons/ai";
 import { BsThreeDots } from "react-icons/bs";
-import { FaRegComment, FaUserCircle } from "react-icons/fa";
+import { FaRegComment } from "react-icons/fa";
 import { IoArrowBack } from "react-icons/io5";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -116,22 +116,21 @@ export default function PostDetail() {
       </div>
       {post ? (
         <>
-          <div className="post-detail__profile-box">
-            <Link to="/profile">
-              {post?.profileUrl ? (
-                <img
-                  src={post?.profileUrl}
-                  alt="profile"
-                  className="post__profile-img"
-                />
-              ) : (
-                <FaUserCircle className="post__profile-icon" />
-              )}
-            </Link>
-            <Link to="/profile">
-              <div className="post__profile-email">{post?.email}</div>
-            </Link>
-          </div>
+          <Link to={`/profile/${post.uid}`}>
+            <div className="post-detail__profile-box">
+              <div className="post-detail__profile-box__img">
+                <img src={post?.profileUrl} alt="profile" />
+              </div>
+              <div className="post-detail__profile-box__text">
+                <div className="post-detail__profile-box__name">
+                  {post.profileName}
+                </div>
+                <div className="post-detail__profile-box__email">
+                  {post?.email}
+                </div>
+              </div>
+            </div>
+          </Link>
           <div className="post-detail__main">
             <div className="post-detail__content">
               <PostContent content={post?.content} />

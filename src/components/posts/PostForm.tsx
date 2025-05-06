@@ -140,6 +140,8 @@ export default function PostForm() {
             email: user?.email,
             imageUrl,
             imagePath,
+            profileName: user?.displayName,
+            profileUrl: user?.photoURL,
           });
           if (textAreaRef.current) {
             textAreaRef.current.innerText = "";

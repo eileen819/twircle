@@ -12,12 +12,13 @@ import {
 import { db } from "firebaseApp";
 import { useContext, useEffect, useState } from "react";
 import { IoArrowBack } from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { IUserProps } from "./edit";
 import { DEFAULT_PROFILE_IMG_URL } from "components/users/SignupForm";
 
 export default function ProfileDetail() {
   const navigate = useNavigate();
+  const { uid } = useParams();
   const { user } = useContext(AuthContext);
   const [post, setPost] = useState<IPostProps[]>([]);
   const [userProfile, setUserProfile] = useState<IUserProps | null>(null);
@@ -34,13 +35,13 @@ export default function ProfileDetail() {
           setUserProfile(userDate);
         }
       };
-      if (user.uid) {
-        getUser(user.uid);
+      if (uid) {
+        getUser(uid);
       }
       const postsRef = collection(db, "posts");
       const postsQuery = query(
         postsRef,
-        where("uid", "==", user.uid),
+        where("uid", "==", uid),
         orderBy("createdAt", "desc")
       );
       const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
@@ -52,7 +53,7 @@ export default function ProfileDetail() {
       });
       return () => unsubscribe();
     }
-  }, [user]);
+  }, [uid, user]);
 
   return (
     <div className="profile">
@@ -60,9 +61,7 @@ export default function ProfileDetail() {
         <div className="profile__header__back" onClick={() => navigate(-1)}>
           <IoArrowBack size={20} />
         </div>
-        <div className="profile__header__title">
-          {user?.displayName || userProfile?.displayName}
-        </div>
+        <div className="profile__header__title">{userProfile?.displayName}</div>
       </div>
       <div className="profile__my-profile">
         <div className="profile__my-profile__box">
@@ -74,26 +73,29 @@ export default function ProfileDetail() {
                 className="profile__image"
               />
             ) : (
+              // 이 부분을 로더로 변경하기
               <img
-                src={user?.photoURL || DEFAULT_PROFILE_IMG_URL}
+                src={DEFAULT_PROFILE_IMG_URL}
                 alt="profile-img"
                 className="profile__image__default"
               />
             )}
           </div>
-          <button
-            className="profile__my-profile__box__edit-btn"
-            onClick={() => navigate("/profile/edit")}
-          >
-            Profile Edit
-          </button>
+          {uid === user?.uid && (
+            <button
+              className="profile__my-profile__box__edit-btn"
+              onClick={() => navigate(`/profile/${user?.uid}/edit`)}
+            >
+              Profile Edit
+            </button>
+          )}
         </div>
         <div className="profile__my-profile__text">
           <div className="profile__my-profile__text__userName">
-            {userProfile?.displayName || user?.displayName}
+            {userProfile?.displayName}
           </div>
           <div className="profile__my-profile__text__userEmail">
-            {userProfile?.email || user?.email}
+            {userProfile?.email}
           </div>
           <div className="profile__my-profile__text__userBio">
             {userProfile?.bio || ""}
