@@ -363,6 +363,10 @@ a {
         &:focus {
           color: $white;
         }
+
+        &.active {
+          color: #f24965;
+        }
       }
 
       &.post__edit {
@@ -529,6 +533,10 @@ a {
       gap: 5px;
       padding: 0px;
       cursor: pointer;
+
+      &.active {
+        color: #f24965;
+      }
     }
   }
 }
@@ -820,7 +828,9 @@ a {
     font-weight: 500;
     padding: 16px;
     cursor: pointer;
-    &--active {
+
+    &.active {
+      @extend .profile__tab;
       font-weight: 700;
       border-bottom: 2px solid $activeBlue;
     }

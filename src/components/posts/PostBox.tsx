@@ -1,14 +1,22 @@
-import { AiFillHeart } from "react-icons/ai";
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { FaRegComment } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { IPostProps } from "./PostList";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import AuthContext from "context/AuthContext";
-import { deleteDoc, doc } from "firebase/firestore";
+import {
+  arrayRemove,
+  arrayUnion,
+  deleteDoc,
+  doc,
+  increment,
+  runTransaction,
+} from "firebase/firestore";
 import { db, storage } from "firebaseApp";
 import { toast } from "react-toastify";
 import PostContent from "./PostContent";
 import { deleteObject, ref } from "firebase/storage";
+import { motion } from "framer-motion";
 
 interface IPostBoxProps {
   post: IPostProps;
@@ -18,6 +26,8 @@ export default function PostBox({ post }: IPostBoxProps) {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
+  const liked = user && post.likes?.includes(user.uid);
 
   const handleDelete = async () => {
     const isConfirmed = window.confirm("해당 게시글을 삭제하시겠습니까?");
@@ -52,6 +62,57 @@ export default function PostBox({ post }: IPostBoxProps) {
     event.stopPropagation();
     navigate(`/posts/${post.id}/photo`, { state: { image: post.imageUrl } });
   };
+
+  const toggleLikes = async () => {
+    if (!post || !post.id || !user) return;
+    try {
+      await runTransaction(db, async (transaction) => {
+        const postRef = doc(db, "posts", post.id);
+        const postSnap = await transaction.get(postRef);
+        if (!postSnap.exists()) throw new Error("게시글이 없습니다.");
+
+        const likes = postSnap.data().likes || [];
+
+        if (likes.includes(user.uid)) {
+          transaction.update(postRef, {
+            likes: arrayRemove(user.uid),
+            likeCount: increment(-1),
+          });
+        } else {
+          transaction.update(postRef, {
+            likes: arrayUnion(user.uid),
+            likeCount: increment(1),
+          });
+        }
+      });
+    } catch (error) {
+      console.error("좋아요 토글 실패:", error);
+      toast.error("좋아요 처리 중에 요류가 발생했습니다.");
+    }
+  };
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  /* const toggleLikes = async () => {
+    if (!post) return;
+    const postRef = doc(db, "posts", post.id);
+
+    if (user?.uid && post.likes?.includes(user.uid)) {
+      // user가 좋아요를 취소할 경우
+      await updateDoc(postRef, {
+        likes: arrayRemove(user.uid),
+        likeCount: post.likeCount ? post.likeCount - 1 : 0,
+      });
+    } else {
+      // user가 좋아요를 누를 경우
+      await updateDoc(postRef, {
+        likes: arrayUnion(user?.uid),
+        likeCount: post.likeCount ? post.likeCount + 1 : 1,
+      });
+    }
+  }; */
 
   return (
     <>
@@ -94,10 +155,22 @@ export default function PostBox({ post }: IPostBoxProps) {
                 <FaRegComment />
                 {post.comments || "0"}
               </button>
-              <button className="post__likes">
-                <AiFillHeart />
+              <motion.button
+                key={liked ? "liked" : "unlike"}
+                initial={hasMounted ? { scale: 1 } : false}
+                animate={{ scale: [1.2, 1] }}
+                transition={{
+                  duration: 0.3,
+                  type: "spring",
+                  stiffness: 500,
+                  damping: 20,
+                }}
+                className={`post__likes ${liked ? "active" : ""}`}
+                onClick={toggleLikes}
+              >
+                {liked ? <AiFillHeart /> : <AiOutlineHeart />}
                 {post.likeCount || "0"}
-              </button>
+              </motion.button>
             </div>
             {user?.uid === post?.uid && (
               <div className="post-box__footer--right">

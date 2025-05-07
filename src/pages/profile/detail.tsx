@@ -16,44 +16,59 @@ import { useNavigate, useParams } from "react-router-dom";
 import { IUserProps } from "./edit";
 import { DEFAULT_PROFILE_IMG_URL } from "components/users/SignupForm";
 
+type TabType = "my" | "likes";
+
 export default function ProfileDetail() {
   const navigate = useNavigate();
   const { uid } = useParams();
   const { user } = useContext(AuthContext);
+  const [activeTab, setActiveTab] = useState<TabType>("my");
   const [post, setPost] = useState<IPostProps[]>([]);
   const [userProfile, setUserProfile] = useState<IUserProps | null>(null);
 
   useEffect(() => {
-    if (user) {
-      const getUser = async (uid: string) => {
-        const userRef = doc(db, "users", uid);
-        const userDocSnap = await getDoc(userRef);
-        if (userDocSnap.exists()) {
-          const userDate = {
-            ...userDocSnap.data(),
-          } as IUserProps;
-          setUserProfile(userDate);
-        }
-      };
-      if (uid) {
-        getUser(uid);
+    if (!user || !uid) return;
+
+    const getUser = async (uid: string) => {
+      const userRef = doc(db, "users", uid);
+      const userDocSnap = await getDoc(userRef);
+      if (userDocSnap.exists()) {
+        const userDate = {
+          ...userDocSnap.data(),
+        } as IUserProps;
+        setUserProfile(userDate);
       }
-      const postsRef = collection(db, "posts");
-      const postsQuery = query(
+    };
+    if (uid) {
+      getUser(uid);
+    }
+
+    const postsRef = collection(db, "posts");
+    let postsQuery;
+
+    if (activeTab === "my") {
+      postsQuery = query(
         postsRef,
         where("uid", "==", uid),
         orderBy("createdAt", "desc")
       );
-      const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
-        const dataObj = snapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-        setPost(dataObj as IPostProps[]);
-      });
-      return () => unsubscribe();
+    } else {
+      postsQuery = query(
+        postsRef,
+        where("likes", "array-contains", uid),
+        orderBy("createdAt", "desc")
+      );
     }
-  }, [uid, user]);
+
+    const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
+      const dataObj = snapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      setPost(dataObj as IPostProps[]);
+    });
+    return () => unsubscribe();
+  }, [activeTab, uid, user]);
 
   return (
     <div className="profile">
@@ -103,11 +118,28 @@ export default function ProfileDetail() {
         </div>
       </div>
       <div className="profile__tabs">
-        <div className="profile__tab profile__tab--active">Posts</div>
-        <div className="profile__tab">Likes</div>
+        <div
+          className={`profile__tab ${activeTab === "my" ? "active" : ""}`}
+          onClick={() => setActiveTab("my")}
+        >
+          Posts
+        </div>
+        <div
+          className={`profile__tab ${activeTab === "likes" ? "active" : ""}`}
+          onClick={() => setActiveTab("likes")}
+        >
+          Likes
+        </div>
       </div>
       <div className="profile__post-list">
-        <PostList posts={post} noPostsMessage="게시글이 없습니다." />
+        <PostList
+          posts={post}
+          noPostsMessage={
+            activeTab === "my"
+              ? "게시글이 없습니다."
+              : "'좋아요'를 누른 게시글이 없습니다."
+          }
+        />
       </div>
     </div>
   );
