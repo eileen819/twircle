@@ -1,3 +1,4 @@
+import styles from "./postBox.module.scss";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { FaRegComment } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
@@ -20,9 +21,10 @@ import { motion } from "framer-motion";
 
 interface IPostBoxProps {
   post: IPostProps;
+  handleComment: () => void;
 }
 
-export default function PostBox({ post }: IPostBoxProps) {
+export default function PostBox({ post, handleComment }: IPostBoxProps) {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -95,63 +97,38 @@ export default function PostBox({ post }: IPostBoxProps) {
     setHasMounted(true);
   }, []);
 
-  /* const toggleLikes = async () => {
-    if (!post) return;
-    const postRef = doc(db, "posts", post.id);
-
-    if (user?.uid && post.likes?.includes(user.uid)) {
-      // user가 좋아요를 취소할 경우
-      await updateDoc(postRef, {
-        likes: arrayRemove(user.uid),
-        likeCount: post.likeCount ? post.likeCount - 1 : 0,
-      });
-    } else {
-      // user가 좋아요를 누를 경우
-      await updateDoc(postRef, {
-        likes: arrayUnion(user?.uid),
-        likeCount: post.likeCount ? post.likeCount + 1 : 1,
-      });
-    }
-  }; */
-
   return (
     <>
-      <div className="post" key={post.id}>
-        <div className="post__profile">
+      <div className={styles.post}>
+        <div className={styles.profile}>
           <Link to={`/profile/${post.uid}`}>
-            <div className="post__profile__img">
-              <img
-                src={post.profileUrl}
-                alt="profile"
-                className="post__profile__img--user"
-              />
+            <div className={styles.profile__img}>
+              <img src={post.userInfo.profileUrl} alt="profile" />
             </div>
           </Link>
         </div>
-        <div className="post-box">
+        <div className={styles.postBox}>
           <div
-            className="post-box__main"
+            className={styles.wrapper}
             onClick={() => navigate(`/posts/${post?.id}`)}
           >
-            <div className="post-box__profile">
-              <div className="post-box__profile-name">{post.profileName}</div>
-              <div className="post-box__profile-email">{post.email}</div>
-              <div className="post-box__profile-createdAt">
-                {post.createdAt}
-              </div>
+            <div className={styles.profileInfo}>
+              <div className={styles.name}>{post.userInfo.profileName}</div>
+              <div className={styles.email}>{post.email}</div>
+              <div className={styles.createdAt}>{post.createdAt}</div>
             </div>
-            <div className="post-box__content">
+            <div className={styles.content}>
               <PostContent content={post?.content} />
             </div>
             {post.imageUrl && post.imageUrl !== "" && (
-              <div className="post-box__image" onClick={handleImgModal}>
+              <div className={styles.image} onClick={handleImgModal}>
                 <img src={post.imageUrl} alt={`${post.id}-img`} />
               </div>
             )}
           </div>
-          <div className="post-box__footer">
-            <div className="post-box__footer--left">
-              <button className="post__comments">
+          <div className={styles.footer}>
+            <div className={styles.footer__left}>
+              <button className={styles.commentsBtn} onClick={handleComment}>
                 <FaRegComment />
                 {post.comments || "0"}
               </button>
@@ -165,7 +142,7 @@ export default function PostBox({ post }: IPostBoxProps) {
                   stiffness: 500,
                   damping: 20,
                 }}
-                className={`post__likes ${liked ? "active" : ""}`}
+                className={`${styles.likesBtn} ${liked ? styles.active : ""}`}
                 onClick={toggleLikes}
               >
                 {liked ? <AiFillHeart /> : <AiOutlineHeart />}
@@ -173,14 +150,12 @@ export default function PostBox({ post }: IPostBoxProps) {
               </motion.button>
             </div>
             {user?.uid === post?.uid && (
-              <div className="post-box__footer--right">
-                <button className="post__edit">
+              <div className={styles.footer__right}>
+                <button className={styles.editBtn}>
                   <Link to={`/posts/edit/${post?.id}`}>Edit</Link>
                 </button>
                 <button
-                  className={
-                    isDeleting ? "post__delete--active" : "post__delete"
-                  }
+                  className={`${isDeleting ? styles.active : styles.deleteBtn}`}
                   onClick={handleDelete}
                   disabled={isDeleting}
                 >

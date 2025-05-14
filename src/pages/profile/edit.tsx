@@ -1,3 +1,4 @@
+import styles from "./edit.module.scss";
 import AuthContext from "context/AuthContext";
 import { useContext, useEffect, useState } from "react";
 import { FiImage } from "react-icons/fi";
@@ -13,7 +14,16 @@ import {
   uploadString,
 } from "firebase/storage";
 import { db, storage } from "firebaseApp";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+  writeBatch,
+} from "firebase/firestore";
 import { toast } from "react-toastify";
 import { DEFAULT_PROFILE_IMG_URL } from "components/users/SignupForm";
 
@@ -101,12 +111,13 @@ export default function ProfileEdit() {
             }
           }
 
-          // 그외 프로필 내용의 수정
+          // auth의 프로필 수정
           await updateProfile(user, {
             displayName: userName,
             photoURL: profileImageUrl,
           });
 
+          // firestore의 users 안의 문서 수정
           const userDocRef = doc(db, "users", user.uid);
           await updateDoc(userDocRef, {
             displayName: userName,
@@ -115,6 +126,24 @@ export default function ProfileEdit() {
             photoPath: profileImagePath,
             updatedAt: new Date().toLocaleString(),
           });
+
+          // firestore의 user가 작성한 posts 컬렉션의 문서들의 프로필 정보 수정
+          const userPostsRef = query(
+            collection(db, "posts"),
+            where("uid", "==", user.uid)
+          );
+          const userPostSnap = await getDocs(userPostsRef);
+          const batch = writeBatch(db);
+          userPostSnap.forEach((docSnap) => {
+            const userPostRef = doc(db, "posts", docSnap.id);
+            batch.update(userPostRef, {
+              userInfo: {
+                profileName: userName,
+                profileUrl: profileImageUrl,
+              },
+            });
+          });
+          await batch.commit();
 
           setpreviewImage(null);
           reset();
@@ -160,41 +189,32 @@ export default function ProfileEdit() {
   }, [userProfile, setValue]);
 
   return (
-    <form className="profile-edit__form" onSubmit={handleSubmit(onValid)}>
-      <div className="profile-edit__header">
-        <div className="profile-edit__header__left">
-          <div
-            className="profile-edit__header__back"
-            onClick={() => navigate(-1)}
-          >
-            <IoArrowBack size={20} />
-          </div>
-          <div className="profile-edit__header__title">Profile Edit</div>
+    <form className={styles.editForm} onSubmit={handleSubmit(onValid)}>
+      <div className={styles.header}>
+        <div className={styles.back__icon} onClick={() => navigate(-1)}>
+          <IoArrowBack size={20} />
         </div>
-        <input
-          type="submit"
-          className="profile-edit__submit-btn"
-          value="Edit"
-        />
+        <div className={styles.title}>Profile Edit</div>
+        <input type="submit" className={styles.submitBtn} value="Edit" />
       </div>
-      <div className="profile-edit__input__wrapper">
-        <div className="profile-edit__image-area">
-          <label htmlFor="file-input" className="profile-edit__file-input">
+      <div className={styles.wrapper}>
+        <div className={styles.imageArea}>
+          <label htmlFor="file-input" className={styles.file}>
             {previewImage || originalImageUrl ? (
               <img
                 src={previewImage ?? originalImageUrl ?? ""}
                 alt="attachment"
-                className="selected_profile_img"
+                className={styles.selectedImg}
               />
             ) : (
               <img
-                className="default_profile_img"
                 src={user?.photoURL || DEFAULT_PROFILE_IMG_URL}
                 alt="attachment"
+                className={styles.defaultImg}
               />
             )}
 
-            <FiImage className="profile-edit__file-icon" />
+            <FiImage className={styles.file__icon} />
           </label>
           <input
             {...register("imageFile", {
@@ -206,9 +226,9 @@ export default function ProfileEdit() {
             className="hidden"
           />
         </div>
-        <div className="profile-edit__input-area">
-          <div className="profile-edit__input-block">
-            <div className="profile-edit__input-block-title">Name</div>
+        <div className={styles.inputArea}>
+          <div className={styles.input__block}>
+            <div className={styles.input__title}>Name</div>
             <input
               {...register("userName", {
                 required: "이름을 입력해주세요.",
@@ -223,12 +243,12 @@ export default function ProfileEdit() {
                 }
               }}
               type="text"
-              className="profile-edit__input-block-input"
+              className={styles.input__el}
               autoComplete="off"
             />
           </div>
-          <div className="profile-edit__input-block">
-            <div className="profile-edit__input-block-title">Bio</div>
+          <div className={styles.input__block}>
+            <div className={styles.input__title}>Bio</div>
             <input
               {...register("bio", { maxLength: 50 })}
               onFocus={() => {
@@ -237,7 +257,7 @@ export default function ProfileEdit() {
                 }
               }}
               type="text"
-              className="profile-edit__input-block-input"
+              className={styles.input__el}
               autoComplete="off"
             />
           </div>

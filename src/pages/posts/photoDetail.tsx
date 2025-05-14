@@ -1,3 +1,4 @@
+import styles from "./photoDetail.module.scss";
 import { IPostProps } from "components/posts/PostList";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "firebaseApp";
@@ -21,7 +22,7 @@ export default function PhotoDetail() {
       const docRef = doc(db, "posts", id);
       const postRef = await getDoc(docRef);
       if (postRef.exists()) {
-        const postObj = { ...postRef.data(), id: id } as IPostProps;
+        const postObj = { ...postRef.data(), id: postRef.id } as IPostProps;
         setPost(postObj);
       } else {
         toast.error("해당 게시글을 찾을 수 없습니다.");
@@ -34,25 +35,25 @@ export default function PhotoDetail() {
   }, [id, navigate]);
 
   return (
-    <div className="post-image">
-      <div className="post-image__header">
-        <div className="post-image__back" onClick={() => navigate(-1)}>
+    <>
+      <div className={styles.header}>
+        <div className={styles.back__icon} onClick={() => navigate(-1)}>
           <IoArrowBack size={20} />
         </div>
       </div>
-      <div className="post-image__original-img">
+      <div className={styles.originalImg}>
         <img src={image ?? post?.imageUrl} alt={`${id}_original_img`} />
       </div>
-      <div className="post-image__footer">
-        <button className="post__comments">
+      <div className={styles.footer}>
+        <button className={styles.commentsBtn}>
           <FaRegComment />
           {post?.comments || "0"}
         </button>
-        <button className="post__likes">
+        <button className={`${styles.likesBtn} ${styles.active}`}>
           <AiFillHeart />
           {post?.likeCount || "0"}
         </button>
       </div>
-    </div>
+    </>
   );
 }

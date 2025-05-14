@@ -1,3 +1,4 @@
+import styles from "./detail.module.scss";
 import Loader from "components/loader/Loader";
 import PostContent from "components/posts/PostContent";
 import { IPostProps } from "components/posts/PostList";
@@ -5,10 +6,13 @@ import AuthContext from "context/AuthContext";
 import {
   arrayRemove,
   arrayUnion,
+  collection,
   deleteDoc,
   doc,
   increment,
   onSnapshot,
+  orderBy,
+  query,
   runTransaction,
 } from "firebase/firestore";
 import { deleteObject, ref } from "firebase/storage";
@@ -21,6 +25,28 @@ import { IoArrowBack } from "react-icons/io5";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
+import PostComment from "components/posts/PostComment";
+import CommentModal from "components/comment/CommentModal";
+
+export interface IComment {
+  id: string;
+  email: string;
+  content: string;
+  createdAt: string;
+  uid: string;
+  userInfo: {
+    profileName?: string;
+    profileUrl?: string;
+  };
+  likes?: string[];
+  likeCount?: number;
+  comments?: string;
+  hashtags?: string[];
+  keywords?: string[];
+  imageUrl?: string;
+  imagePath?: string;
+  parentId: string | null;
+}
 
 export default function PostDetail() {
   const menuRef = useRef<HTMLDivElement>(null);
@@ -29,10 +55,21 @@ export default function PostDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState<IPostProps | null>(null);
+  const [comments, setComments] = useState<IComment[]>([]);
   const [isShow, setIsShow] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
   const liked = user && post?.likes?.includes(user.uid);
+  const [selectedComment, setSelectedComment] = useState<IComment | null>(null);
+
+  const handleComment = (commentId: string) => {
+    const selectedCommentData = comments.find(
+      (comment) => comment.id === commentId
+    );
+    if (selectedCommentData) {
+      setSelectedComment(selectedCommentData);
+    }
+  };
 
   const handleDelete = async () => {
     const isConfirmed = window.confirm("해당 게시글을 삭제하시겠습니까?");
@@ -98,7 +135,14 @@ export default function PostDetail() {
   useEffect(() => {
     if (!id) return;
     const docRef = doc(db, "posts", id);
-    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+    const commentsCollection = collection(db, "posts", id, "comments");
+    const commentsQuery = query(
+      commentsCollection,
+      orderBy("createdAt", "asc")
+    );
+
+    // 트윗 게시글 구독
+    const unSubscribePost = onSnapshot(docRef, (docSnap) => {
       if (docSnap.exists()) {
         const postData = { ...docSnap.data(), id: docSnap.id } as IPostProps;
         setPost(postData);
@@ -107,7 +151,22 @@ export default function PostDetail() {
         navigate("/");
       }
     });
-    return () => unsubscribe();
+
+    // 해당 게시글의 댓글 구독
+    const unSubscribeComments = onSnapshot(commentsQuery, (snapshot) => {
+      const comments = snapshot.docs.map(
+        (doc) =>
+          ({
+            id: doc.id,
+            ...doc.data(),
+          } as IComment)
+      );
+      setComments(comments);
+    });
+    return () => {
+      unSubscribePost();
+      unSubscribeComments();
+    };
   }, [id, navigate]);
 
   useEffect(() => {
@@ -131,26 +190,26 @@ export default function PostDetail() {
   }, []);
 
   return (
-    <div className="post-detail">
-      <div className="post-detail__header">
-        <div className="post-detail__back" onClick={() => navigate(-1)}>
+    <div className={styles.postDetail}>
+      <div className={styles.header}>
+        <div className={styles.back__icon} onClick={() => navigate(-1)}>
           <IoArrowBack />
         </div>
-        <div className="post-detail__title">Tweet</div>
+        <div className={styles.title}>Tweet</div>
         <div
           ref={dotsRef}
-          className="post-detail__dots"
+          className={styles.dots__icon}
           onClick={() => setIsShow((prev) => !prev)}
         >
           <BsThreeDots />
         </div>
         {isShow && (
-          <div ref={menuRef} className="post-detail__dots-box">
-            <button className="post-detail__dots-box__edit">
+          <div ref={menuRef} className={styles.dots__box}>
+            <button className={styles.edit}>
               <Link to={`/posts/edit/${post?.id}`}>Edit</Link>
             </button>
             <button
-              className="post-detail__dots-box__delete"
+              className={styles.delete}
               onClick={handleDelete}
               disabled={isDeleting}
             >
@@ -160,35 +219,31 @@ export default function PostDetail() {
         )}
       </div>
       {post ? (
-        <>
+        <div className={styles.content}>
           <Link to={`/profile/${post.uid}`}>
-            <div className="post-detail__profile-box">
-              <div className="post-detail__profile-box__img">
-                <img src={post?.profileUrl} alt="profile" />
+            <div className={styles.profileBox}>
+              <div className={styles.profileBox__img}>
+                <img src={post?.userInfo.profileUrl} alt="profile" />
               </div>
-              <div className="post-detail__profile-box__text">
-                <div className="post-detail__profile-box__name">
-                  {post.profileName}
-                </div>
-                <div className="post-detail__profile-box__email">
-                  {post?.email}
-                </div>
+              <div className={styles.profileBox__info}>
+                <div className={styles.name}>{post.userInfo.profileName}</div>
+                <div className={styles.email}>{post?.email}</div>
               </div>
             </div>
           </Link>
-          <div className="post-detail__main">
-            <div className="post-detail__content">
+          <div className={styles.main}>
+            <div className="text">
               <PostContent content={post?.content} />
             </div>
             {post.imageUrl && post.imageUrl !== "" && (
-              <div className="post-detail__image" onClick={handleImgModal}>
+              <div className={styles.image} onClick={handleImgModal}>
                 <img src={post.imageUrl} alt={`${post.id}-img`} />
               </div>
             )}
           </div>
-          <div className="post-detail__date">{post?.createdAt}</div>
-          <div className="post-detail__footer">
-            <button className="post-detail__footer__comments">
+          <div className={styles.date}>{post?.createdAt}</div>
+          <div className={styles.footer}>
+            <button className={styles.commentsBtn} onClick={() => {}}>
               <FaRegComment />
               {post?.comments || "0"}
             </button>
@@ -202,16 +257,30 @@ export default function PostDetail() {
                 stiffness: 500,
                 damping: 20,
               }}
-              className={`post-detail__footer__likes ${liked ? "active" : ""}`}
+              className={`${styles.likesBtn} ${liked ? styles.active : ""}`}
               onClick={toggleLikes}
             >
               {liked ? <AiFillHeart /> : <AiOutlineHeart />}
               {post.likeCount || "0"}
             </motion.button>
           </div>
-        </>
+          {comments &&
+            comments.map((comment) => (
+              <PostComment
+                key={comment.id}
+                comment={comment}
+                handleComment={() => handleComment(comment.id)}
+              />
+            ))}
+        </div>
       ) : (
         <Loader />
+      )}
+      {selectedComment && (
+        <CommentModal
+          post={selectedComment}
+          closeModal={() => setSelectedComment(null)}
+        />
       )}
     </div>
   );

@@ -1,0 +1,22 @@
+@use "../../styles/colors" as *;
+
+.layout {
+  max-width: 700px;
+  min-height: 100vh;
+  margin: 0 auto;
+}
+
+.title {
+  padding: 20px;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.main {
+  display: flex;
+
+  .timeLine {
+    padding: 0 30px;
+    width: 100%;
+  }
+}

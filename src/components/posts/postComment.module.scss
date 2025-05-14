@@ -1,0 +1,89 @@
+.wrapper {
+  display: flex;
+
+  .profile {
+    padding: 10px;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+
+    &__imgArea {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+
+      img {
+        width: 100%;
+      }
+    }
+
+    .treeLine {
+      height: 100%;
+      display: flex;
+      justify-content: center;
+
+      div {
+        width: 2px;
+        height: 100%;
+        background-color: rgb(201, 201, 201);
+        margin: 5px 0;
+        border-radius: 3px;
+      }
+    }
+  }
+
+  .comment {
+    flex-grow: 1;
+    padding: 10px 0px;
+    // color: $bgColor;
+
+    &__profile {
+      padding: 10px 0px;
+      display: flex;
+      align-items: flex-end;
+
+      .profileName {
+        font-weight: 700;
+        font-size: 16px;
+      }
+      .profileEmail {
+        font-size: 12px;
+        margin-left: 3px;
+      }
+      .profileCreatedAt {
+        font-size: 12px;
+        color: gray;
+        margin-left: 10px;
+      }
+    }
+
+    &__content {
+      padding-top: 20px;
+      padding-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+
+      span {
+      }
+
+      .comment__image {
+        margin-top: 20px;
+        cursor: pointer;
+        img {
+          width: 100%;
+          max-height: 300px;
+          object-fit: cover;
+          border-radius: 10px;
+        }
+      }
+    }
+  }
+
+  .footer {
+  }
+}

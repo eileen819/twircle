@@ -1,4 +1,4 @@
-import HomeHeader from "components/HomeHeader";
+import HomeHeader from "components/\bheader/HomeHeader";
 import PostForm from "components/posts/PostForm";
 import PostList, { IPostProps } from "components/posts/PostList";
 import AuthContext from "context/AuthContext";

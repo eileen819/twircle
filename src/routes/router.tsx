@@ -1,4 +1,4 @@
-import Layout from "components/Layout";
+import Layout from "components/layout/Layout";
 import Home from "pages/home";
 import NotificationsPage from "pages/notifications";
 import PostsPage from "pages/posts";

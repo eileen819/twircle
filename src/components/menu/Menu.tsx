@@ -1,3 +1,4 @@
+import styles from "./menu.module.scss";
 import AuthContext from "context/AuthContext";
 import { signOut } from "firebase/auth";
 import { auth } from "firebaseApp";
@@ -19,23 +20,23 @@ export default function MenuBar() {
   };
 
   return (
-    <div className="footer">
+    <div className={styles.wrapper}>
       <button
-        className="footer__icon footer__icon--active"
+        className={`${styles.icon} ${styles.active}`}
         onClick={() => navigate("/")}
       >
         <RiHome2Line />
       </button>
-      <button className="footer__icon" onClick={() => navigate("/search")}>
+      <button className={styles.icon} onClick={() => navigate("/search")}>
         <IoSearch />
       </button>
       <button
-        className="footer__icon"
+        className={styles.icon}
         onClick={() => navigate(`/profile/${user?.uid}`)}
       >
         <FiUser />
       </button>
-      <button className="footer__icon" onClick={onSignOut}>
+      <button className={styles.icon} onClick={onSignOut}>
         <MdLogout />
       </button>
     </div>

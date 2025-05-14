@@ -23,7 +23,7 @@ export function generateKeywords(text: string) {
     text
       .split(/\s+|#|_/g)
       .flatMap((word) => word.match(/[\w가-힣]+/g) ?? [])
-      .filter((word) => word?.length > 1)
+      .filter((word) => word?.length > 0)
       .map((word) => word?.toLowerCase()) || []
   );
 }

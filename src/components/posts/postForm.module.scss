@@ -1,0 +1,115 @@
+@use "../../styles/colors" as *;
+@use "../../styles/mixins" as *;
+
+// post-form
+.postForm {
+  position: relative;
+  .textArea {
+    background-color: transparent;
+    color: inherit;
+    min-height: 120px;
+    display: block;
+    width: 100%;
+    height: 150px;
+    padding: 16px;
+    border: none;
+    outline: none;
+    resize: none;
+    font-size: 16px;
+    border-bottom: 1px solid $borderGray;
+
+    &[contentEditable="true"]:empty:not(:focus)::before {
+      content: "What's happening?";
+      color: $grayText;
+    }
+
+    :global(.hashtag) {
+      color: $primaryBlue;
+    }
+  }
+
+  .submitArea {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid $borderGray;
+
+    .imageArea {
+      .file {
+        font-size: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0 1rem;
+        cursor: pointer;
+
+        .icon {
+          color: $primaryBlue;
+
+          &:hover,
+          &:active {
+            color: $activeBlue;
+          }
+        }
+      }
+
+      :global(.hidden) {
+        display: none;
+      }
+    }
+
+    .submitBtn {
+      @include btn;
+      color: $white;
+      border-radius: 20px;
+      padding: 0.5rem 1rem;
+      background-color: $primaryBlue;
+
+      &:disabled {
+        background-color: #a0c8f8;
+      }
+
+      &:not(:disabled):hover,
+      &:not(:disabled):focus {
+        background-color: $activeBlue;
+      }
+    }
+  }
+
+  .attachment {
+    border-bottom: 1px solid $borderGray;
+    padding: 10px 20px;
+
+    .preview {
+      width: 100px;
+      position: relative;
+
+      img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border: 1px solid $borderGray;
+        border-radius: 10px;
+      }
+      svg {
+        position: absolute;
+        cursor: pointer;
+        color: $activeBlue;
+        top: 5px;
+        right: 25px;
+      }
+    }
+  }
+
+  .loader__wrapper {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    background-color: rgba(255, 255, 255, 0.2);
+    z-index: 10;
+  }
+}

@@ -1,0 +1,32 @@
+@use "../../styles/colors" as *;
+@use "../../styles/mixins" as *;
+
+// MenuBar
+.wrapper {
+  position: sticky;
+  top: 10px;
+  width: 70px;
+  height: 250px;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: 1px solid $borderGray;
+  z-index: 10;
+  display: grid;
+  grid-template-rows: repeat(4, 1fr);
+
+  button {
+    @include btn;
+  }
+
+  .icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    color: $textBlack;
+
+    &.active {
+      color: $activeBlue;
+    }
+  }
+}
