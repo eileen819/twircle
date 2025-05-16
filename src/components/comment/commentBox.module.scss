@@ -1,7 +1,7 @@
 @use "../../styles/colors" as *;
 @use "../../styles/mixins" as *;
 
-.post {
+.comment {
   padding: 10px 0px;
   display: flex;
   border-bottom: 1px solid $borderGray;
@@ -24,7 +24,7 @@
     }
   }
 
-  .postBox {
+  .commentBox {
     flex-grow: 1;
     display: flex;
     flex-direction: column;

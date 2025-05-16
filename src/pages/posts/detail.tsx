@@ -6,13 +6,10 @@ import AuthContext from "context/AuthContext";
 import {
   arrayRemove,
   arrayUnion,
-  collection,
   deleteDoc,
   doc,
   increment,
   onSnapshot,
-  orderBy,
-  query,
   runTransaction,
 } from "firebase/firestore";
 import { deleteObject, ref } from "firebase/storage";
@@ -25,8 +22,7 @@ import { IoArrowBack } from "react-icons/io5";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
-import PostComment from "components/posts/PostComment";
-import CommentModal from "components/comment/CommentModal";
+import CommentList from "components/comment/CommentList";
 
 export interface IComment {
   id: string;
@@ -46,6 +42,8 @@ export interface IComment {
   imageUrl?: string;
   imagePath?: string;
   parentId: string | null;
+  conversationId: string;
+  postId: string;
 }
 
 export default function PostDetail() {
@@ -55,21 +53,10 @@ export default function PostDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState<IPostProps | null>(null);
-  const [comments, setComments] = useState<IComment[]>([]);
   const [isShow, setIsShow] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
   const liked = user && post?.likes?.includes(user.uid);
-  const [selectedComment, setSelectedComment] = useState<IComment | null>(null);
-
-  const handleComment = (commentId: string) => {
-    const selectedCommentData = comments.find(
-      (comment) => comment.id === commentId
-    );
-    if (selectedCommentData) {
-      setSelectedComment(selectedCommentData);
-    }
-  };
 
   const handleDelete = async () => {
     const isConfirmed = window.confirm("해당 게시글을 삭제하시겠습니까?");
@@ -134,14 +121,8 @@ export default function PostDetail() {
 
   useEffect(() => {
     if (!id) return;
-    const docRef = doc(db, "posts", id);
-    const commentsCollection = collection(db, "posts", id, "comments");
-    const commentsQuery = query(
-      commentsCollection,
-      orderBy("createdAt", "asc")
-    );
-
     // 트윗 게시글 구독
+    const docRef = doc(db, "posts", id);
     const unSubscribePost = onSnapshot(docRef, (docSnap) => {
       if (docSnap.exists()) {
         const postData = { ...docSnap.data(), id: docSnap.id } as IPostProps;
@@ -151,22 +132,7 @@ export default function PostDetail() {
         navigate("/");
       }
     });
-
-    // 해당 게시글의 댓글 구독
-    const unSubscribeComments = onSnapshot(commentsQuery, (snapshot) => {
-      const comments = snapshot.docs.map(
-        (doc) =>
-          ({
-            id: doc.id,
-            ...doc.data(),
-          } as IComment)
-      );
-      setComments(comments);
-    });
-    return () => {
-      unSubscribePost();
-      unSubscribeComments();
-    };
+    return () => unSubscribePost();
   }, [id, navigate]);
 
   useEffect(() => {
@@ -219,68 +185,57 @@ export default function PostDetail() {
         )}
       </div>
       {post ? (
-        <div className={styles.content}>
-          <Link to={`/profile/${post.uid}`}>
-            <div className={styles.profileBox}>
-              <div className={styles.profileBox__img}>
-                <img src={post?.userInfo.profileUrl} alt="profile" />
+        <>
+          <div className={styles.content}>
+            <Link to={`/profile/${post.uid}`}>
+              <div className={styles.profileBox}>
+                <div className={styles.profileBox__img}>
+                  <img src={post?.userInfo.profileUrl} alt="profile" />
+                </div>
+                <div className={styles.profileBox__info}>
+                  <div className={styles.name}>{post.userInfo.profileName}</div>
+                  <div className={styles.email}>{post?.email}</div>
+                </div>
               </div>
-              <div className={styles.profileBox__info}>
-                <div className={styles.name}>{post.userInfo.profileName}</div>
-                <div className={styles.email}>{post?.email}</div>
+            </Link>
+            <div className={styles.main}>
+              <div className="text">
+                <PostContent content={post?.content} />
               </div>
+              {post.imageUrl && post.imageUrl !== "" && (
+                <div className={styles.image} onClick={handleImgModal}>
+                  <img src={post.imageUrl} alt={`${post.id}-img`} />
+                </div>
+              )}
             </div>
-          </Link>
-          <div className={styles.main}>
-            <div className="text">
-              <PostContent content={post?.content} />
+            <div className={styles.date}>{post?.createdAt}</div>
+            <div className={styles.footer}>
+              <button className={styles.commentsBtn} onClick={() => {}}>
+                <FaRegComment />
+                {/* {post?.comments || "0"} */}
+              </button>
+              <motion.button
+                key={liked ? "liked" : "unliked"}
+                initial={hasMounted ? { scale: 1 } : false}
+                animate={{ scale: [1.2, 1] }}
+                transition={{
+                  duration: 0.3,
+                  type: "spring",
+                  stiffness: 500,
+                  damping: 20,
+                }}
+                className={`${styles.likesBtn} ${liked ? styles.active : ""}`}
+                onClick={toggleLikes}
+              >
+                {liked ? <AiFillHeart /> : <AiOutlineHeart />}
+                {post.likeCount || "0"}
+              </motion.button>
             </div>
-            {post.imageUrl && post.imageUrl !== "" && (
-              <div className={styles.image} onClick={handleImgModal}>
-                <img src={post.imageUrl} alt={`${post.id}-img`} />
-              </div>
-            )}
           </div>
-          <div className={styles.date}>{post?.createdAt}</div>
-          <div className={styles.footer}>
-            <button className={styles.commentsBtn} onClick={() => {}}>
-              <FaRegComment />
-              {post?.comments || "0"}
-            </button>
-            <motion.button
-              key={liked ? "liked" : "unliked"}
-              initial={hasMounted ? { scale: 1 } : false}
-              animate={{ scale: [1.2, 1] }}
-              transition={{
-                duration: 0.3,
-                type: "spring",
-                stiffness: 500,
-                damping: 20,
-              }}
-              className={`${styles.likesBtn} ${liked ? styles.active : ""}`}
-              onClick={toggleLikes}
-            >
-              {liked ? <AiFillHeart /> : <AiOutlineHeart />}
-              {post.likeCount || "0"}
-            </motion.button>
-          </div>
-          {comments &&
-            comments.map((comment) => (
-              <PostComment
-                key={comment.id}
-                comment={comment}
-                handleComment={() => handleComment(comment.id)}
-              />
-            ))}
-        </div>
+          <CommentList postId={post.id} />
+        </>
       ) : (
         <Loader />
-      )}
-      {selectedComment && (
-        <CommentModal
-          post={selectedComment}
-          closeModal={() => setSelectedComment(null)}
-        />
       )}
     </div>
   );

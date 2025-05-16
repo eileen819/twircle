@@ -65,8 +65,6 @@
   }
 
   .content {
-    padding: 0px 30px;
-
     .profileBox {
       display: flex;
       align-items: center;
@@ -126,6 +124,8 @@
       align-items: self-end;
       justify-content: end;
       gap: 30px;
+      border-bottom: 1px solid $borderGray;
+      padding: 10px;
 
       .commentsBtn,
       .likesBtn {

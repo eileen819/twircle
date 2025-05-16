@@ -15,7 +15,7 @@ export interface IPostProps {
   };
   likes?: string[];
   likeCount?: number;
-  // comments?: string;
+  comments?: string;
   hashtags?: string[];
   keywords?: string[];
   imageUrl?: string;
@@ -29,20 +29,31 @@ interface IPostListProps {
 
 export default function PostList({ posts, noPostsMessage }: IPostListProps) {
   const [selectedPost, setSelectedPost] = useState<IPostProps | null>(null);
+  const [parentId, setParentId] = useState<string | null>(null);
+  const [conversationId, setConversationId] = useState("");
+
+  const closeModal = () => {
+    setSelectedPost(null);
+  };
+
   const handleComment = (postId: string) => {
+    setParentId(null);
+    setConversationId("");
     const selectedPostData = posts.find((post) => post.id === postId);
     if (selectedPostData) {
       setSelectedPost(selectedPostData);
     }
   };
 
+  // 만약에 handleComment 리팩토링하게 되면 parentId, conversationId 값이 없으면 기본값 주는걸로?(루트댓글)
+
   return (
     <div className={styles.postList}>
       {posts?.length > 0 ? (
         posts?.map((post) => (
           <PostBox
-            post={post}
             key={post.id}
+            post={post}
             handleComment={() => handleComment(post.id)}
           />
         ))
@@ -51,8 +62,12 @@ export default function PostList({ posts, noPostsMessage }: IPostListProps) {
       )}
       {selectedPost && (
         <CommentModal
+          mode="create"
           post={selectedPost}
-          closeModal={() => setSelectedPost(null)}
+          postId={selectedPost.id}
+          parentId={parentId}
+          conversationId={conversationId}
+          closeModal={closeModal}
         />
       )}
     </div>

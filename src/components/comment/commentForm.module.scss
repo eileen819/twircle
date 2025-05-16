@@ -1,0 +1,72 @@
+@use "../../styles/colors" as *;
+
+.commentBox {
+  width: 80%;
+  border: 1px solid $grayText;
+  border-radius: 10px;
+  margin-top: 10px;
+
+  .commentTextArea {
+    width: 100%;
+    min-height: 100px;
+    background-color: transparent;
+    padding: 15px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+
+    &[contentEditable="true"]:empty:not(:focus)::before {
+      content: "답글 게시하기";
+      color: $grayText;
+    }
+
+    :global(.hashtag) {
+      color: $primaryBlue;
+    }
+  }
+
+  .fileArea {
+    padding: 10px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    .fileIcon {
+      color: $primaryBlue;
+      margin: 0 10px;
+      cursor: pointer;
+
+      &:hover,
+      &:focus {
+        color: $activeBlue;
+      }
+    }
+    .imagePreviewArea {
+      .imagePreview {
+        border: 1px solid #d7d7d7;
+        width: 80px;
+        height: 80px;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        svg {
+          position: absolute;
+          top: 5px;
+          right: 5px;
+          cursor: pointer;
+          color: $activeBlue;
+        }
+      }
+    }
+  }
+
+  .hidden {
+    display: none;
+  }
+}

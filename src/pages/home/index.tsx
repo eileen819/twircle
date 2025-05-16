@@ -1,4 +1,4 @@
-import HomeHeader from "components/\bheader/HomeHeader";
+import HomeHeader from "components/header/HomeHeader";
 import PostForm from "components/posts/PostForm";
 import PostList, { IPostProps } from "components/posts/PostList";
 import AuthContext from "context/AuthContext";
@@ -29,7 +29,7 @@ export default function Home() {
   return (
     <>
       <HomeHeader />
-      <PostForm />
+      <PostForm mode="create" />
       <PostList posts={posts} noPostsMessage="게시글이 없습니다." />
     </>
   );
