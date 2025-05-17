@@ -86,6 +86,9 @@ export default function CommentEditForm({
           </div>
         )}
       </div>
+      <button type="button" onClick={() => setIsEdit(false)}>
+        cancel
+      </button>
       <input type="submit" value={"수정"} />
     </form>
   );

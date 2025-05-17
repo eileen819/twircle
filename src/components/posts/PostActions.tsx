@@ -16,14 +16,14 @@ import {
 import { db, storage } from "firebaseApp";
 import { toast } from "react-toastify";
 import { deleteObject, ref } from "firebase/storage";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 
 interface IPostActionsProps {
   post: IPostProps | IComment;
   postType: "posts" | "comments";
   handleComment: () => void;
-  setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsEdit?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function PostActions({
@@ -37,13 +37,14 @@ export default function PostActions({
   const [hasMounted, setHasMounted] = useState(false);
   const navigate = useNavigate();
   const liked = user && post.likes?.includes(user.uid);
+  console.log(typeof setIsEdit);
 
   const onEdit = () => {
     if (postType === "posts") {
       navigate(`/posts/edit/${post?.id}`);
     } else if (postType === "comments") {
       console.log("edit");
-      setIsEdit(true);
+      setIsEdit?.(true);
     }
   };
 

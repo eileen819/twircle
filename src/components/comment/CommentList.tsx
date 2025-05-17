@@ -46,7 +46,7 @@ export default function CommentList({ postId }: ICommentListProps) {
     }
   };
 
-  const handleModal = (newCommentId?: string) => {
+  const closeModal = (newCommentId?: string) => {
     if (newCommentId) {
       setRecentlyCreatedId(newCommentId);
     }
@@ -92,7 +92,7 @@ export default function CommentList({ postId }: ICommentListProps) {
           postId={postId}
           parentId={parentId}
           conversationId={conversationId}
-          onSuccess={handleModal}
+          onSuccess={closeModal}
         />
       )}
     </>

@@ -52,7 +52,11 @@ export default function CommentModal({
     <div className={styles.wrapper}>
       <form className={styles.commentForm} onSubmit={onCreateReply}>
         <div className={styles.commentHeader}>
-          <button className={styles.btn__cancel} onClick={() => onSuccess()}>
+          <button
+            className={styles.btn__cancel}
+            type="button"
+            onClick={() => onSuccess()}
+          >
             <MdOutlineCancel size={22} />
           </button>
           <input

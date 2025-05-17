@@ -3,14 +3,14 @@
 .commentBox {
   width: 80%;
   border: 1px solid $grayText;
-  border-radius: 10px;
-  margin-top: 10px;
+  border-radius: 0 20px 20px 20px;
+  margin-top: 20px;
 
   .commentTextArea {
     width: 100%;
     min-height: 100px;
     background-color: transparent;
-    padding: 15px;
+    padding: 18px;
     border: none;
     outline: none;
     font-size: 16px;

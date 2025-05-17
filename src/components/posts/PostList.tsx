@@ -67,7 +67,7 @@ export default function PostList({ posts, noPostsMessage }: IPostListProps) {
           postId={selectedPost.id}
           parentId={parentId}
           conversationId={conversationId}
-          closeModal={closeModal}
+          onSuccess={closeModal}
         />
       )}
     </div>

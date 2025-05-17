@@ -44,9 +44,9 @@ export function useCommentForm({
   const [imageFile, setImageFile] = useState<string | null>(null);
   const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [recentlyCreatedId, setRecentlyCreatedId] = useState<string | null>(
-    null
-  );
+  // const [recentlyCreatedId, setRecentlyCreatedId] = useState<string | null>(
+  //   null
+  // );
 
   // onInput 이벤트
   const onInput = (event: React.FormEvent<HTMLDivElement>) => {
@@ -106,7 +106,7 @@ export function useCommentForm({
     setIsSubmitting(true);
     if (!user) return;
 
-    if (textAreaRef.current) {
+    if (mode === "create" && textAreaRef.current) {
       const finalContent = textAreaRef.current.innerText;
       const hashTags = extractHashtags(finalContent);
       const keywords = generateKeywords(finalContent);
@@ -259,8 +259,8 @@ export function useCommentForm({
     setOriginalImageUrl,
     isSubmitting,
     setIsSubmitting,
-    recentlyCreatedId,
-    setRecentlyCreatedId,
+    // recentlyCreatedId,
+    // setRecentlyCreatedId,
     textAreaRef,
     fileRef,
     onInput,
