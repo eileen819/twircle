@@ -146,10 +146,7 @@ export function usePostForm({ user, navigate, mode, post }: IUsePostFormProps) {
   };
 
   // 게시글 수정
-  const onUpdate = async (
-    event: React.FormEvent<HTMLFormElement>
-    // post: IPostProps | null
-  ) => {
+  const onUpdate = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
 

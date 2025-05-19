@@ -15,7 +15,7 @@ export interface IPostProps {
   };
   likes?: string[];
   likeCount?: number;
-  comments?: string;
+  replyCount?: string;
   hashtags?: string[];
   keywords?: string[];
   imageUrl?: string;

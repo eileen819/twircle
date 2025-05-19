@@ -5,6 +5,8 @@
 .postForm {
   position: relative;
   .textArea {
+    word-break: break-all;
+    overflow-wrap: break-word;
     background-color: transparent;
     color: inherit;
     min-height: 120px;

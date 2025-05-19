@@ -3,6 +3,7 @@ import { FiImage } from "react-icons/fi";
 import { MdCancel } from "react-icons/md";
 
 interface ICommentForm {
+  commentTo: string;
   textAreaRef: React.RefObject<HTMLDivElement | null>;
   fileRef: React.RefObject<HTMLInputElement | null>;
   onInput: (event: React.FormEvent<HTMLDivElement>) => void;
@@ -15,6 +16,7 @@ interface ICommentForm {
 }
 
 export default function CommentForm({
+  commentTo,
   textAreaRef,
   onInput,
   handleCompositionStart,
@@ -26,39 +28,44 @@ export default function CommentForm({
   originalImageUrl,
 }: ICommentForm) {
   return (
-    <div className={styles.commentBox}>
-      <div
-        ref={textAreaRef}
-        id="content"
-        className={styles.commentTextArea}
-        contentEditable
-        suppressContentEditableWarning
-        onInput={onInput}
-        onCompositionStart={handleCompositionStart}
-        onCompositionEnd={handleCompositionEnd}
-      />
-      <div className={styles.fileArea}>
-        <label htmlFor="commentFile-input">
-          <FiImage size={20} className={styles.fileIcon} />
-        </label>
-        <input
-          ref={fileRef}
-          type="file"
-          id="commentFile-input"
-          name="commentFile-input"
-          accept="image/*"
-          onChange={handleFileUpload}
-          className={styles.hidden}
+    <>
+      <div className={styles.commentBox}>
+        <div
+          className={styles.commentTo}
+        >{`${commentTo} 님에게 보내는 답글`}</div>
+        <div
+          ref={textAreaRef}
+          id="content"
+          className={styles.commentTextArea}
+          contentEditable
+          suppressContentEditableWarning
+          onInput={onInput}
+          onCompositionStart={handleCompositionStart}
+          onCompositionEnd={handleCompositionEnd}
         />
-        {(imageFile || originalImageUrl) && (
-          <div className={styles.imagePreviewArea}>
-            <div className={styles.imagePreview}>
-              <img src={imageFile || ""} alt="attachment" />
-              <MdCancel size={18} onClick={handleClearImg} />
+        <div className={styles.fileArea}>
+          <label htmlFor="commentFile-input">
+            <FiImage size={20} className={styles.fileIcon} />
+          </label>
+          <input
+            ref={fileRef}
+            type="file"
+            id="commentFile-input"
+            name="commentFile-input"
+            accept="image/*"
+            onChange={handleFileUpload}
+            className={styles.hidden}
+          />
+          {(imageFile || originalImageUrl) && (
+            <div className={styles.imagePreviewArea}>
+              <div className={styles.imagePreview}>
+                <img src={imageFile || ""} alt="attachment" />
+                <MdCancel size={18} onClick={handleClearImg} />
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

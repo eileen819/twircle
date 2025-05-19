@@ -4,7 +4,7 @@
 .comment {
   padding: 10px 0px;
   display: flex;
-  border-bottom: 1px solid $borderGray;
+  // border-bottom: 1px solid $borderGray;
 
   .profile {
     margin-left: 16px;
@@ -28,7 +28,11 @@
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    margin-top: 10px;
     margin-right: 16px;
+    border: 1px solid $borderGray;
+    border-radius: 0 10px 10px 10px;
+    padding: 5px 20px 10px 20px;
 
     .wrapper {
       cursor: pointer;

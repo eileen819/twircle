@@ -73,6 +73,7 @@ export default function CommentModal({
             </div>
           </div>
           <CommentForm
+            commentTo={post?.userInfo.profileName || ""}
             textAreaRef={textAreaRef}
             onInput={onInput}
             handleCompositionStart={handleCompositionStart}

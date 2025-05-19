@@ -24,7 +24,15 @@ export default function CommentList({ postId }: ICommentListProps) {
     null
   );
 
-  const rootComments = comments.filter((comment) => comment.parentId === null);
+  // const rootComments = comments.filter((comment) => comment.parentId === null);
+  // 1. 모든 댓글의 id를 집합으로 만듦
+  const commentIds = comments.map((c) => c.id);
+
+  // 2. parentId가 null이거나, parentId가 현재 데이터에 없는 경우를 root로 간주
+  const rootComments = comments.filter(
+    (comment) => !comment.parentId || !commentIds.includes(comment.parentId)
+  );
+
   const repliesMap = useMemo(() => {
     const map = new Map<string, IComment[]>();
     comments.forEach((comment) => {
@@ -81,6 +89,7 @@ export default function CommentList({ postId }: ICommentListProps) {
             key={comment.id}
             comment={comment}
             repliesMap={repliesMap}
+            commentIds={commentIds}
             recentlyCreatedId={recentlyCreatedId}
             handleComment={handleComment}
           />

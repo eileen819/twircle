@@ -36,7 +36,7 @@ export interface IComment {
   };
   likes?: string[];
   likeCount?: number;
-  comments?: string;
+  replyCount?: string;
   hashtags?: string[];
   keywords?: string[];
   imageUrl?: string;
@@ -44,6 +44,7 @@ export interface IComment {
   parentId: string | null;
   conversationId: string;
   postId: string;
+  isDeleted?: boolean;
 }
 
 export default function PostDetail() {

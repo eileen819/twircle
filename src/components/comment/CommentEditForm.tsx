@@ -22,7 +22,7 @@ export default function CommentEditForm({
   const onSuccess = () => {
     setIsEdit(false);
   };
-  console.log(comment.content);
+
   const {
     textAreaRef,
     fileRef,
@@ -54,28 +54,16 @@ export default function CommentEditForm({
 
   return (
     <form className={styles.commentBox} onSubmit={onUpdateReply}>
-      <div
-        ref={textAreaRef}
-        id="content"
-        className={styles.commentTextArea}
-        contentEditable
-        suppressContentEditableWarning
-        onInput={onInput}
-        onCompositionStart={handleCompositionStart}
-        onCompositionEnd={handleCompositionEnd}
-      />
-      <div className={styles.fileArea}>
-        <label htmlFor="commentFile-input">
-          <FiImage size={20} className={styles.fileIcon} />
-        </label>
-        <input
-          ref={fileRef}
-          type="file"
-          id="commentFile-input"
-          name="commentFile-input"
-          accept="image/*"
-          onChange={handleFileUpload}
-          className={styles.hidden}
+      <div className={styles.commentWrapper}>
+        <div
+          ref={textAreaRef}
+          id="content"
+          className={styles.commentTextArea}
+          contentEditable
+          suppressContentEditableWarning
+          onInput={onInput}
+          onCompositionStart={handleCompositionStart}
+          onCompositionEnd={handleCompositionEnd}
         />
         {(imageFile || originalImageUrl) && (
           <div className={styles.imagePreviewArea}>
@@ -86,10 +74,32 @@ export default function CommentEditForm({
           </div>
         )}
       </div>
-      <button type="button" onClick={() => setIsEdit(false)}>
-        cancel
-      </button>
-      <input type="submit" value={"수정"} />
+      <div className={styles.footerWrapper}>
+        <div className={styles.fileArea}>
+          <label htmlFor="commentFile-input">
+            <FiImage size={20} className={styles.fileIcon} />
+          </label>
+          <input
+            ref={fileRef}
+            type="file"
+            id="commentFile-input"
+            name="commentFile-input"
+            accept="image/*"
+            onChange={handleFileUpload}
+            className={styles.hidden}
+          />
+        </div>
+        <div className={styles.btnArea}>
+          <button
+            className={styles.cancelBtn}
+            type="button"
+            onClick={() => setIsEdit(false)}
+          >
+            cancel
+          </button>
+          <input className={styles.submitBtn} type="submit" value={"수정"} />
+        </div>
+      </div>
     </form>
   );
 }

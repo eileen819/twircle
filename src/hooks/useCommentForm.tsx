@@ -1,5 +1,11 @@
 import { User } from "firebase/auth";
-import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  increment,
+  runTransaction,
+  updateDoc,
+} from "firebase/firestore";
 import {
   deleteObject,
   getDownloadURL,
@@ -104,7 +110,7 @@ export function useCommentForm({
   const onCreateReply = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
-    if (!user) return;
+    if (!user || !postId) return;
 
     if (mode === "create" && textAreaRef.current) {
       const finalContent = textAreaRef.current.innerText;
@@ -122,29 +128,76 @@ export function useCommentForm({
           imageUrl = await getDownloadURL(storageRef);
         }
 
-        const commentRef = await addDoc(collection(db, "comments"), {
-          content: finalContent,
-          keywords,
-          hashTags,
-          createdAt: new Date().toLocaleString(),
-          uid: user?.uid,
-          email: user?.email,
-          imageUrl,
-          imagePath,
-          postId,
-          parentId,
-          conversationId,
-          userInfo: {
-            profileName: user?.displayName,
-            profileUrl: user?.photoURL,
-          },
-        });
+        const commentRef = await runTransaction(db, async (transaction) => {
+          const postRef = doc(db, "posts", postId);
+          const postSnap = await transaction.get(postRef);
+          if (!postSnap.exists()) throw new Error("게시글이 없습니다.");
 
-        if (conversationId === "") {
-          await updateDoc(commentRef, {
-            conversationId: commentRef.id,
+          const commentRef = doc(collection(db, "comments"));
+
+          transaction.set(commentRef, {
+            content: finalContent,
+            keywords,
+            hashTags,
+            createdAt: new Date().toLocaleString(),
+            uid: user?.uid,
+            email: user?.email,
+            imageUrl,
+            imagePath,
+            postId,
+            parentId,
+            conversationId:
+              conversationId === "" ? commentRef.id : conversationId,
+            userInfo: {
+              profileName: user?.displayName,
+              profileUrl: user?.photoURL,
+            },
           });
-        }
+          transaction.update(postRef, {
+            replyCount: increment(1),
+          });
+          if (parentId !== null) {
+            const parentCommentRef = doc(db, "comments", parentId!);
+
+            transaction.update(parentCommentRef, {
+              replyCount: increment(1),
+            });
+          }
+          return commentRef;
+        });
+        // const commentRef = await addDoc(collection(db, "comments"), {
+        //   content: finalContent,
+        //   keywords,
+        //   hashTags,
+        //   createdAt: new Date().toLocaleString(),
+        //   uid: user?.uid,
+        //   email: user?.email,
+        //   imageUrl,
+        //   imagePath,
+        //   postId,
+        //   parentId,
+        //   conversationId,
+        //   userInfo: {
+        //     profileName: user?.displayName,
+        //     profileUrl: user?.photoURL,
+        //   },
+        // });
+
+        // if (conversationId === "") {
+        //   await updateDoc(commentRef, {
+        //     conversationId: commentRef.id,
+        //   });
+        // }
+
+        // await runTransaction(db, async (transaction) => {
+        //   const postRef = doc(db, "posts", postId);
+        //   const postSnap = await transaction.get(postRef);
+        //   if (!postSnap.exists()) throw new Error("게시글이 없습니다.");
+
+        //   transaction.update(postRef, {
+        //     comments: increment(1),
+        //   });
+        // });
 
         textAreaRef.current.innerText = "";
         setContent("");
@@ -169,10 +222,7 @@ export function useCommentForm({
   };
 
   // comment 수정
-  const onUpdateReply = async (
-    event: React.FormEvent<HTMLFormElement>
-    // comment: IComment | null
-  ) => {
+  const onUpdateReply = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
 

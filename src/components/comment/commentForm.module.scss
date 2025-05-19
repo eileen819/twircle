@@ -6,11 +6,19 @@
   border-radius: 0 20px 20px 20px;
   margin-top: 20px;
 
+  .commentTo {
+    padding: 10px;
+    color: $primaryBlue;
+    font-size: 14px;
+  }
+
   .commentTextArea {
+    word-break: break-all;
+    overflow-wrap: break-word;
     width: 100%;
     min-height: 100px;
     background-color: transparent;
-    padding: 18px;
+    padding: 0 18px 18px 18px;
     border: none;
     outline: none;
     font-size: 16px;

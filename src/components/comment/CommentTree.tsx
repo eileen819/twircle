@@ -6,6 +6,7 @@ interface ICommentTreeProps {
   repliesMap: Map<string, IComment[]>;
   recentlyCreatedId: string | null;
   handleComment: (commentId: string, conversationId: string) => void;
+  commentIds: string[];
 }
 
 export default function CommentTree({
@@ -13,22 +14,37 @@ export default function CommentTree({
   repliesMap,
   recentlyCreatedId,
   handleComment,
+  commentIds,
 }: ICommentTreeProps) {
+  // const isOrphan = comment.parentId && !commentIds.includes(comment.parentId);
   const replies = repliesMap.get(comment.id) ?? [];
 
   return (
     <>
-      <CommentBox
-        comment={comment}
-        recentlyCreatedId={recentlyCreatedId}
-        handleComment={() => handleComment(comment.id, comment.conversationId)}
-      />
+      {/* {isOrphan && (
+        <p style={{ color: "#aaa", fontStyle: "italic" }}>
+          (부모 댓글이 삭제된 답글)
+        </p>
+      )} */}
+      {comment.isDeleted ? (
+        <p>삭제된 댓글입니다.</p>
+      ) : (
+        <CommentBox
+          comment={comment}
+          recentlyCreatedId={recentlyCreatedId}
+          handleComment={() =>
+            handleComment(comment.id, comment.conversationId)
+          }
+        />
+      )}
+
       <div style={{ marginLeft: "30px" }}>
         {replies.length > 0 &&
           replies.map((reply) => (
             <CommentTree
               key={reply.id}
               comment={reply}
+              commentIds={commentIds}
               recentlyCreatedId={recentlyCreatedId}
               repliesMap={repliesMap}
               handleComment={handleComment}
