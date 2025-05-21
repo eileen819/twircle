@@ -3,17 +3,8 @@ import Loader from "components/loader/Loader";
 import PostContent from "components/posts/PostContent";
 import { IPostProps } from "components/posts/PostList";
 import AuthContext from "context/AuthContext";
-import {
-  arrayRemove,
-  arrayUnion,
-  deleteDoc,
-  doc,
-  increment,
-  onSnapshot,
-  runTransaction,
-} from "firebase/firestore";
-import { deleteObject, ref } from "firebase/storage";
-import { db, storage } from "firebaseApp";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "firebaseApp";
 import { useContext, useEffect, useRef, useState } from "react";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { BsThreeDots } from "react-icons/bs";
@@ -23,6 +14,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import CommentList from "components/comment/CommentList";
+import { useActions } from "hooks/useActions";
+import CommentModal from "components/comment/CommentModal";
 
 export interface IComment {
   id: string;
@@ -54,70 +47,32 @@ export default function PostDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState<IPostProps | null>(null);
-  const [isShow, setIsShow] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [hasMounted, setHasMounted] = useState(false);
+  const [isShowMenu, setIsShowMenu] = useState(false);
+  const [isShowCommentModal, setIsShowCommentModal] = useState(false);
+  const [rootRecentlyCreatedId, setRootRecentlyCreatedId] = useState<
+    string | null
+  >(null);
   const liked = user && post?.likes?.includes(user.uid);
+  const postType = "posts";
+  const { toggleLikes, postDelete, isDeleting, hasMounted } = useActions({
+    user,
+    post,
+    postType,
+  });
 
-  const handleDelete = async () => {
-    const isConfirmed = window.confirm("해당 게시글을 삭제하시겠습니까?");
-    if (!isConfirmed || !post) return;
-    setIsDeleting(true);
+  const handleComment = () => {
+    setIsShowCommentModal(true);
+  };
 
-    try {
-      if (post.imagePath && post.imagePath.trim() !== "") {
-        try {
-          const imageRef = ref(storage, post.imagePath);
-          await deleteObject(imageRef);
-        } catch (error) {
-          console.log("이미지 삭제 오류:", error);
-        }
-      }
-
-      if (post.id) {
-        await deleteDoc(doc(db, "posts", post?.id));
-        toast.success("게시글을 삭제했습니다.");
-        navigate("/");
-      }
-    } catch (error) {
-      console.log("문서 삭제 오류:", error);
-      toast.error("게시글 삭제에 실패했습니다.");
-    } finally {
-      setIsDeleting(false);
+  const closeModal = (newCommentId?: string) => {
+    if (newCommentId) {
+      setRootRecentlyCreatedId(newCommentId);
     }
+    setIsShowCommentModal(false);
   };
 
   const handleImgModal = () => {
     navigate(`/posts/${post?.id}/photo`, { state: { image: post?.imageUrl } });
-  };
-
-  const toggleLikes = async () => {
-    if (!post || !post.id || !user) return;
-
-    try {
-      await runTransaction(db, async (transaction) => {
-        const postRef = doc(db, "posts", post.id);
-        const postSnap = await transaction.get(postRef);
-        if (!postSnap.exists()) throw new Error("문서가 없습니다.");
-
-        const likes = postSnap.data().likes || [];
-
-        if (likes.includes(user.uid)) {
-          transaction.update(postRef, {
-            likes: arrayRemove(user.uid),
-            likeCount: increment(-1),
-          });
-        } else {
-          transaction.update(postRef, {
-            likes: arrayUnion(user.uid),
-            likeCount: increment(1),
-          });
-        }
-      });
-    } catch (error) {
-      console.error("좋아요 토글 실패:", error);
-      toast.error("좋아요 처리 중에 요류가 발생했습니다.");
-    }
   };
 
   useEffect(() => {
@@ -144,16 +99,11 @@ export default function PostDetail() {
         !dotsRef.current.contains(event.target as Node) &&
         !menuRef.current.contains(event.target as Node)
       ) {
-        setIsShow(false);
+        setIsShowMenu(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => setHasMounted(true), 100);
-    return () => clearTimeout(timeout);
   }, []);
 
   return (
@@ -163,21 +113,23 @@ export default function PostDetail() {
           <IoArrowBack />
         </div>
         <div className={styles.title}>Tweet</div>
-        <div
-          ref={dotsRef}
-          className={styles.dots__icon}
-          onClick={() => setIsShow((prev) => !prev)}
-        >
-          <BsThreeDots />
-        </div>
-        {isShow && (
+        {user && user.uid === post?.uid && (
+          <div
+            ref={dotsRef}
+            className={styles.dots__icon}
+            onClick={() => setIsShowMenu((prev) => !prev)}
+          >
+            <BsThreeDots />
+          </div>
+        )}
+        {isShowMenu && (
           <div ref={menuRef} className={styles.dots__box}>
             <button className={styles.edit}>
               <Link to={`/posts/edit/${post?.id}`}>Edit</Link>
             </button>
             <button
               className={styles.delete}
-              onClick={handleDelete}
+              onClick={postDelete}
               disabled={isDeleting}
             >
               {isDeleting ? "Deleting..." : "Delete"}
@@ -211,9 +163,9 @@ export default function PostDetail() {
             </div>
             <div className={styles.date}>{post?.createdAt}</div>
             <div className={styles.footer}>
-              <button className={styles.commentsBtn} onClick={() => {}}>
+              <button className={styles.commentsBtn} onClick={handleComment}>
                 <FaRegComment />
-                {/* {post?.comments || "0"} */}
+                {post?.replyCount || "0"}
               </button>
               <motion.button
                 key={liked ? "liked" : "unliked"}
@@ -233,10 +185,23 @@ export default function PostDetail() {
               </motion.button>
             </div>
           </div>
-          <CommentList postId={post.id} />
+          <CommentList
+            postId={post.id}
+            rootRecentlyCreatedId={rootRecentlyCreatedId}
+          />
         </>
       ) : (
         <Loader />
+      )}
+      {post && isShowCommentModal && (
+        <CommentModal
+          mode="create"
+          post={post}
+          postId={post?.id}
+          conversationId={""}
+          parentId={null}
+          onSuccess={closeModal}
+        />
       )}
     </div>
   );

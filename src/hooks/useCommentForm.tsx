@@ -165,39 +165,6 @@ export function useCommentForm({
           }
           return commentRef;
         });
-        // const commentRef = await addDoc(collection(db, "comments"), {
-        //   content: finalContent,
-        //   keywords,
-        //   hashTags,
-        //   createdAt: new Date().toLocaleString(),
-        //   uid: user?.uid,
-        //   email: user?.email,
-        //   imageUrl,
-        //   imagePath,
-        //   postId,
-        //   parentId,
-        //   conversationId,
-        //   userInfo: {
-        //     profileName: user?.displayName,
-        //     profileUrl: user?.photoURL,
-        //   },
-        // });
-
-        // if (conversationId === "") {
-        //   await updateDoc(commentRef, {
-        //     conversationId: commentRef.id,
-        //   });
-        // }
-
-        // await runTransaction(db, async (transaction) => {
-        //   const postRef = doc(db, "posts", postId);
-        //   const postSnap = await transaction.get(postRef);
-        //   if (!postSnap.exists()) throw new Error("게시글이 없습니다.");
-
-        //   transaction.update(postRef, {
-        //     comments: increment(1),
-        //   });
-        // });
 
         textAreaRef.current.innerText = "";
         setContent("");

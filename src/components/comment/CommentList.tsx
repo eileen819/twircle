@@ -13,25 +13,22 @@ import CommentTree from "./CommentTree";
 
 interface ICommentListProps {
   postId: string;
+  rootRecentlyCreatedId: string | null;
 }
 
-export default function CommentList({ postId }: ICommentListProps) {
+export default function CommentList({
+  postId,
+  rootRecentlyCreatedId,
+}: ICommentListProps) {
   const [comments, setComments] = useState<IComment[]>([]);
   const [selectedComment, setSelectedComment] = useState<IComment | null>(null);
   const [parentId, setParentId] = useState("");
   const [conversationId, setConversationId] = useState("");
   const [recentlyCreatedId, setRecentlyCreatedId] = useState<string | null>(
-    null
+    rootRecentlyCreatedId
   );
 
-  // const rootComments = comments.filter((comment) => comment.parentId === null);
-  // 1. 모든 댓글의 id를 집합으로 만듦
-  const commentIds = comments.map((c) => c.id);
-
-  // 2. parentId가 null이거나, parentId가 현재 데이터에 없는 경우를 root로 간주
-  const rootComments = comments.filter(
-    (comment) => !comment.parentId || !commentIds.includes(comment.parentId)
-  );
+  const rootComments = comments.filter((comment) => comment.parentId === null);
 
   const repliesMap = useMemo(() => {
     const map = new Map<string, IComment[]>();
@@ -44,6 +41,12 @@ export default function CommentList({ postId }: ICommentListProps) {
     });
     return map;
   }, [comments]);
+
+  useEffect(() => {
+    if (rootRecentlyCreatedId) {
+      setRecentlyCreatedId(rootRecentlyCreatedId);
+    }
+  }, [rootRecentlyCreatedId]);
 
   const handleComment = (commentId: string, conversationId: string) => {
     setParentId(commentId);
@@ -89,7 +92,6 @@ export default function CommentList({ postId }: ICommentListProps) {
             key={comment.id}
             comment={comment}
             repliesMap={repliesMap}
-            commentIds={commentIds}
             recentlyCreatedId={recentlyCreatedId}
             handleComment={handleComment}
           />

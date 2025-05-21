@@ -12,17 +12,18 @@ import {
 import { deleteObject, ref } from "firebase/storage";
 import { db, storage } from "firebaseApp";
 import { IComment } from "pages/posts/detail";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 interface IUseActionsProps {
-  post: IPostProps | IComment;
+  post: IPostProps | IComment | null;
   postType: "posts" | "comments";
   user: User | null;
 }
 
 export function useActions({ post, postType, user }: IUseActionsProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
 
   // 좋아요 추가/삭제
   const toggleLikes = async () => {
@@ -74,7 +75,6 @@ export function useActions({ post, postType, user }: IUseActionsProps) {
         await deleteDoc(docRef);
 
         toast.success("게시글을 삭제했습니다.");
-        // navigate("/");
       }
     } catch (error) {
       console.error("문서 삭제 오류:", error);
@@ -84,6 +84,7 @@ export function useActions({ post, postType, user }: IUseActionsProps) {
     }
   };
 
+  // 댓글 삭제 (soft delete)
   const softCommentDelete = async () => {
     if (postType !== "comments") return;
     const comment = post as IComment;
@@ -97,13 +98,13 @@ export function useActions({ post, postType, user }: IUseActionsProps) {
       await updateDoc(commentRef, {
         content: "삭제된 댓글입니다.",
         isDeleted: true,
-        updatedAt: new Date().toLocaleString(),
+        deletedAt: new Date().toLocaleString(),
       });
 
       await runTransaction(db, async (transaction) => {
         const postRef = doc(db, "posts", comment.postId);
         const postSnap = await transaction.get(postRef);
-        if (!postSnap.exists()) throw new Error("댓글이 존재하지 않습니다.");
+        if (!postSnap.exists()) throw new Error("게시글이 존재하지 않습니다.");
 
         transaction.update(postRef, {
           replyCount: increment(-1),
@@ -132,11 +133,18 @@ export function useActions({ post, postType, user }: IUseActionsProps) {
     }
   };
 
+  useEffect(() => {
+    const timeout = setTimeout(() => setHasMounted(true), 100);
+    return () => clearTimeout(timeout);
+  }, []);
+
   return {
     toggleLikes,
     postDelete,
     softCommentDelete,
     isDeleting,
     setIsDeleting,
+    hasMounted,
+    setHasMounted,
   };
 }

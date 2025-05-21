@@ -5,6 +5,7 @@ import { IComment } from "pages/posts/detail";
 import PostActions from "components/posts/PostActions";
 import PostContent from "components/posts/PostContent";
 import CommentEditForm from "./CommentEditForm";
+import PostBoxHeader from "components/posts/PostBoxHeader";
 
 interface ICommentBoxProps {
   comment: IComment;
@@ -57,11 +58,7 @@ export default function CommentBox({
         </div>
         <div className={styles.commentBox}>
           <div className={styles.wrapper} onClick={() => {}}>
-            <div className={styles.profileInfo}>
-              <div className={styles.name}>{comment.userInfo.profileName}</div>
-              <div className={styles.email}>{comment.email}</div>
-              <div className={styles.createdAt}>{comment.createdAt}</div>
-            </div>
+            <PostBoxHeader post={comment} />
             {!isEdit ? (
               <>
                 <div className={styles.content}>
@@ -72,6 +69,7 @@ export default function CommentBox({
                     <img src={comment.imageUrl} alt={`${comment.id}-img`} />
                   </div>
                 )}
+                <div className={styles.createdAt}>{comment.createdAt}</div>
                 <PostActions
                   post={comment}
                   postType="comments"

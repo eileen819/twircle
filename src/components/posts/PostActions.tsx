@@ -3,7 +3,7 @@ import styles from "./postActions.module.scss";
 import { motion } from "framer-motion";
 import { IPostProps } from "components/posts/PostList";
 import { IComment } from "pages/posts/detail";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import AuthContext from "context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
@@ -23,13 +23,10 @@ export default function PostActions({
   setIsEdit,
 }: IPostActionsProps) {
   const { user } = useContext(AuthContext);
-  // const [isDeleting, setIsDeleting] = useState(false);
-  const [hasMounted, setHasMounted] = useState(false);
   const navigate = useNavigate();
   const liked = user && post.likes?.includes(user.uid);
-  const { toggleLikes, softCommentDelete, postDelete, isDeleting } = useActions(
-    { post, postType, user }
-  );
+  const { toggleLikes, softCommentDelete, postDelete, isDeleting, hasMounted } =
+    useActions({ post, postType, user });
   console.log(typeof setIsEdit);
 
   const onEdit = () => {
@@ -40,67 +37,6 @@ export default function PostActions({
       setIsEdit?.(true);
     }
   };
-
-  // const toggleLikes = async () => {
-  //   if (!post || !post.id || !user) return;
-  //   try {
-  //     await runTransaction(db, async (transaction) => {
-  //       const postRef = doc(db, postType, post.id);
-  //       const postSnap = await transaction.get(postRef);
-  //       if (!postSnap.exists()) throw new Error("게시글이 없습니다.");
-
-  //       const likes = postSnap.data().likes || [];
-
-  //       if (likes.includes(user.uid)) {
-  //         transaction.update(postRef, {
-  //           likes: arrayRemove(user.uid),
-  //           likeCount: increment(-1),
-  //         });
-  //       } else {
-  //         transaction.update(postRef, {
-  //           likes: arrayUnion(user.uid),
-  //           likeCount: increment(1),
-  //         });
-  //       }
-  //     });
-  //   } catch (error) {
-  //     console.error("좋아요 토글 실패:", error);
-  //     toast.error("좋아요 처리 중에 요류가 발생했습니다.");
-  //   }
-  // };
-
-  // const handleDelete = async () => {
-  //   const isConfirmed = window.confirm("해당 게시글을 삭제하시겠습니까?");
-  //   if (!isConfirmed || !post) return;
-  //   setIsDeleting(true);
-
-  //   try {
-  //     if (post.imagePath && post.imagePath.trim() !== "") {
-  //       try {
-  //         const imageRef = ref(storage, post.imagePath);
-  //         await deleteObject(imageRef);
-  //       } catch (error) {
-  //         console.error("이미지 삭제 오류:", error);
-  //       }
-  //     }
-
-  //     if (post.id) {
-  //       const docRef = doc(db, postType, post.id);
-  //       await deleteDoc(docRef);
-  //       toast.success("게시글을 삭제했습니다.");
-  //       // navigate("/");
-  //     }
-  //   } catch (error) {
-  //     console.error("문서 삭제 오류:", error);
-  //     toast.error("게시글 삭제에 실패했습니다.");
-  //   } finally {
-  //     setIsDeleting(false);
-  //   }
-  // };
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
 
   return (
     <div className={styles.actions}>

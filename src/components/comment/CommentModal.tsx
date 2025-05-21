@@ -69,7 +69,7 @@ export default function CommentModal({
         <div className={styles.comment}>
           <div className={styles.profileArea}>
             <div className={styles.profileImgArea}>
-              <img src={post?.userInfo.profileUrl} />
+              <img src={user?.photoURL || ""} />
             </div>
           </div>
           <CommentForm

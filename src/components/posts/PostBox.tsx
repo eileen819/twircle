@@ -5,6 +5,7 @@ import { useRef } from "react";
 import PostContent from "./PostContent";
 import { IComment } from "pages/posts/detail";
 import PostActions from "components/posts/PostActions";
+import PostBoxHeader from "./PostBoxHeader";
 
 interface IPostBoxProps {
   post: IPostProps | IComment;
@@ -40,11 +41,12 @@ export default function PostBox({ post, handleComment }: IPostBoxProps) {
         </div>
         <div className={styles.postBox}>
           <div className={styles.wrapper} onClick={handleNavigate}>
-            <div className={styles.profileInfo}>
+            {/* <div className={styles.profileInfo}>
               <div className={styles.name}>{post.userInfo.profileName}</div>
               <div className={styles.email}>{post.email}</div>
               <div className={styles.createdAt}>{post.createdAt}</div>
-            </div>
+            </div> */}
+            <PostBoxHeader post={post} />
             <div className={styles.content}>
               <PostContent content={post?.content} />
             </div>

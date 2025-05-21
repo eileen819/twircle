@@ -47,7 +47,7 @@ export default function PhotoDetail() {
       <div className={styles.footer}>
         <button className={styles.commentsBtn}>
           <FaRegComment />
-          {post?.comments || "0"}
+          {post?.replyCount || "0"}
         </button>
         <button className={`${styles.likesBtn} ${styles.active}`}>
           <AiFillHeart />

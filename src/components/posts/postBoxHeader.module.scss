@@ -1,0 +1,52 @@
+@use "../../styles/colors" as *;
+@use "../../styles/mixins" as *;
+
+.headerWrapper {
+  display: flex;
+  justify-content: space-between;
+
+  .profileInfo {
+    margin-top: 10px;
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+
+    .name {
+      font-weight: 700;
+    }
+
+    .email,
+    .createdAt {
+      font-size: 12px;
+      color: $grayText;
+      margin-right: 3px;
+    }
+  }
+
+  .followBtn {
+    @include btn;
+    align-self: self-end;
+    border: 1px solid $borderGray;
+    border-radius: 20px;
+    margin-top: 5px;
+    padding: 5px 10px;
+    color: $activeBlue;
+    font-size: 12px;
+
+    &:hover {
+      background-color: $primaryBlue;
+      color: $white;
+    }
+  }
+
+  .unFollowBtn {
+    @extend .followBtn;
+    background-color: $primaryBlue;
+    color: $white;
+
+    &:hover {
+      background-color: $activeRed;
+      color: $white;
+    }
+  }
+}
