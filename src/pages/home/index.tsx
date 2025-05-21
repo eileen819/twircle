@@ -1,34 +1,42 @@
-import HomeHeader from "components/header/HomeHeader";
+// import HomeHeader from "components/header/HomeHeader";
 import PostForm from "components/posts/PostForm";
-import PostList, { IPostProps } from "components/posts/PostList";
+import PostList from "components/posts/PostList";
+import TabList from "components/tabs/TabList";
 import AuthContext from "context/AuthContext";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "firebaseApp";
+import { TabType, useTabPosts } from "hooks/useTabPosts";
 import { useContext, useEffect, useState } from "react";
 // import PostsList from "pages/posts/list";
 
+export type HomeTabType = "all" | "following";
+
 export default function Home() {
-  const [posts, setPosts] = useState<IPostProps[]>([]);
   const { user } = useContext(AuthContext);
-  console.log(user);
+  const [activeTab, setActiveTab] = useState<TabType>(TabType.All);
+  const [followingList, setFollowingList] = useState<string[]>([]);
+  const posts = useTabPosts({ user, followingList, activeTab });
 
   useEffect(() => {
-    if (user) {
-      const postsRef = collection(db, "posts");
-      const postsQuery = query(postsRef, orderBy("createdAt", "desc"));
-      const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
-        const dataObj = snapshot.docs.map((doc) => ({
-          ...doc?.data(),
-          id: doc?.id,
-        }));
-        setPosts(dataObj as IPostProps[]);
-      });
-      return () => unsubscribe();
-    }
+    if (!user) return;
+    const followingRef = doc(db, "following", user.uid);
+    const unsubscribe = onSnapshot(followingRef, (snapshot) => {
+      const followingData = snapshot?.data()?.users || [];
+      setFollowingList(followingData);
+    });
+    return () => unsubscribe();
   }, [user]);
+
   return (
     <>
-      <HomeHeader />
+      <TabList
+        tabs={[
+          { key: TabType.All, content: "For you" },
+          { key: TabType.Following, content: "Following" },
+        ]}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
       <PostForm mode="create" />
       <PostList posts={posts} noPostsMessage="게시글이 없습니다." />
     </>
