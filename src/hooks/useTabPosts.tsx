@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 export enum TabType {
   All = "all",
   Following = "following",
-  MyPosts = "myPosts",
+  UserPosts = "userPosts",
   Liked = "liked",
 }
 
@@ -57,7 +57,7 @@ export function useTabPosts({
         );
         break;
 
-      case TabType.MyPosts:
+      case TabType.UserPosts:
         postsQuery = query(
           postsRef,
           where("uid", "==", uid),

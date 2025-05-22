@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import { deleteObject, ref } from "firebase/storage";
 import { db, storage } from "firebaseApp";
+import { createLikesNotification } from "lib/firebase/notifications";
 import { IComment } from "pages/posts/detail";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -45,6 +46,13 @@ export function useActions({ post, postType, user }: IUseActionsProps) {
           transaction.update(postRef, {
             likes: arrayUnion(user.uid),
             likeCount: increment(1),
+          });
+
+          await createLikesNotification({
+            postId: postType === "posts" ? post.id : (post as IComment).postId,
+            postContent: post.content,
+            postUid: post.uid,
+            user,
           });
         }
       });

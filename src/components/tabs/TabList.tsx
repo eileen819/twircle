@@ -31,22 +31,6 @@ export default function TabList({
             {tab.content}
           </div>
         ))}
-        {/* <div
-          onClick={() => setActiveTab("all")}
-          className={`${styles.tab} ${
-            activeTab === "all" ? styles.active : ""
-          }`}
-        >
-          For you
-        </div>
-        <div
-          onClick={() => setActiveTab("following")}
-          className={`${styles.tab} ${
-            activeTab === "following" ? styles.active : ""
-          }`}
-        >
-          Following
-        </div> */}
       </div>
     </div>
   );

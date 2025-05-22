@@ -4,6 +4,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "firebaseApp";
 import { useContext } from "react";
 import { FiUser } from "react-icons/fi";
+import { IoMdNotificationsOutline } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
 import { MdLogout } from "react-icons/md";
 import { RiHome2Line } from "react-icons/ri";
@@ -35,6 +36,12 @@ export default function MenuBar() {
         onClick={() => navigate(`/profile/${user?.uid}`)}
       >
         <FiUser />
+      </button>
+      <button
+        className={styles.icon}
+        onClick={() => navigate(`/notifications`)}
+      >
+        <IoMdNotificationsOutline />
       </button>
       <button className={styles.icon} onClick={onSignOut}>
         <MdLogout />

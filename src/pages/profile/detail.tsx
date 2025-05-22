@@ -15,7 +15,7 @@ export default function ProfileDetail() {
   const navigate = useNavigate();
   const { uid } = useParams();
   const { user } = useContext(AuthContext);
-  const [activeTab, setActiveTab] = useState<TabType>(TabType.MyPosts);
+  const [activeTab, setActiveTab] = useState<TabType>(TabType.UserPosts);
   const [userProfile, setUserProfile] = useState<IUserProps | null>(null);
   const posts = useTabPosts({ activeTab, user, uid });
 
@@ -80,7 +80,7 @@ export default function ProfileDetail() {
       </div>
       <TabList
         tabs={[
-          { key: TabType.MyPosts, content: "Posts" },
+          { key: TabType.UserPosts, content: "Posts" },
           { key: TabType.Liked, content: "Likes" },
         ]}
         activeTab={activeTab}
@@ -90,7 +90,7 @@ export default function ProfileDetail() {
         <PostList
           posts={posts}
           noPostsMessage={
-            activeTab === TabType.MyPosts ? (
+            activeTab === TabType.UserPosts ? (
               <p>
                 게시글이 없습니다.
                 <br />

@@ -15,7 +15,7 @@ import { useForm } from "react-hook-form";
 import { IoMdRefresh } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
 import { useSearchParams } from "react-router-dom";
-import { generateKeywords } from "utils";
+import { generateKeywords } from "lib/utils";
 
 interface ISearchData {
   search: string;

@@ -16,7 +16,7 @@ import {
   generateKeywords,
   highlightHashtags,
   placeCursorToEnd,
-} from "utils";
+} from "lib/utils";
 import { v4 as uuidv4 } from "uuid";
 
 interface IUsePostFormProps {

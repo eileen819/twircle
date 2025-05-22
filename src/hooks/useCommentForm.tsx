@@ -2,6 +2,7 @@ import { User } from "firebase/auth";
 import {
   collection,
   doc,
+  getDoc,
   increment,
   runTransaction,
   updateDoc,
@@ -13,6 +14,7 @@ import {
   uploadString,
 } from "firebase/storage";
 import { db, storage } from "firebaseApp";
+import { createCommentNotification } from "lib/firebase/notifications";
 import { IComment } from "pages/posts/detail";
 import { useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -21,7 +23,7 @@ import {
   generateKeywords,
   highlightHashtags,
   placeCursorToEnd,
-} from "utils";
+} from "lib/utils";
 import { v4 as uuidv4 } from "uuid";
 
 interface IUsePostFormProps {
@@ -172,8 +174,39 @@ export function useCommentForm({
           fileRef.current.value = "";
           setImageFile(null);
         }
-
         onSuccess(commentRef.id);
+
+        // 댓글 생성 알림
+        const originalPostSnap = await getDoc(doc(db, "posts", postId));
+        const originalPostUid = originalPostSnap?.data()?.uid;
+        // 게시글 작성자에게 알림
+        if (originalPostUid) {
+          await createCommentNotification({
+            toUid: originalPostUid,
+            user,
+            postId,
+            originalComment: finalContent,
+            originalCommentImgUrl: imageUrl,
+          });
+
+          if (parentId) {
+            // 부모 댓글에게 알림
+            const parentCommentRef = await getDoc(
+              doc(db, "comments", parentId)
+            );
+            const parentCommentUid = parentCommentRef?.data()?.uid;
+            if (parentCommentUid && parentCommentUid !== user.uid) {
+              await createCommentNotification({
+                toUid: parentCommentUid,
+                user,
+                postId,
+                originalComment: finalContent,
+                originalCommentImgUrl: imageUrl,
+              });
+            }
+          }
+        }
+
         toast.success("댓글을 생성했습니다.");
       } catch (error: unknown) {
         if (error instanceof Error) {

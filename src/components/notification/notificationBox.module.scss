@@ -1,0 +1,75 @@
+@use "../../styles/colors" as *;
+@use "../../styles/mixins" as *;
+
+.wrapper {
+  padding: 20px 40px;
+  border-bottom: 1px solid $borderGray;
+  position: relative;
+  cursor: pointer;
+
+  &.new {
+    background-color: rgb(241, 241, 241);
+  }
+
+  &:hover {
+    background-color: $white;
+  }
+
+  .notification__unread {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 5px;
+    height: 5px;
+    border-radius: 10px;
+    background-color: $activeRed;
+  }
+
+  .notifications {
+    .profileImg {
+      margin-bottom: 10px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      position: relative;
+      overflow: hidden;
+
+      img {
+        @include profileImg;
+      }
+    }
+
+    .notiContent {
+      font-size: 16px;
+      margin-bottom: 15px;
+
+      a {
+        font-weight: 700;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .notiPost {
+      .post {
+        font-size: 14px;
+        color: $primaryGray;
+      }
+
+      .postImg {
+        width: 100px;
+        height: 100px;
+        position: relative;
+        border-radius: 10px;
+        border: 1px solid $borderGray;
+        overflow: hidden;
+        margin-top: 10px;
+
+        img {
+          @include profileImg;
+        }
+      }
+    }
+  }
+}

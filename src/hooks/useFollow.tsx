@@ -9,6 +9,7 @@ import {
   runTransaction,
 } from "firebase/firestore";
 import { db } from "firebaseApp";
+import { createFollowNotification } from "lib/firebase/notifications";
 import { IComment } from "pages/posts/detail";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -26,6 +27,7 @@ export function useFollow({ user, post }: IUseFollowProps) {
     e.stopPropagation();
     if (!user || !post || isLoading) return;
     setIsLoading(true);
+
     try {
       await runTransaction(db, async (transaction) => {
         // 팔로잉 문서
@@ -53,7 +55,11 @@ export function useFollow({ user, post }: IUseFollowProps) {
           { merge: true }
         );
       });
-      toast.success(`${post.email}를 팔로우했습니다.`);
+
+      // 팔로우 알림 문서 생성
+      await createFollowNotification({ postUid: post.uid, user });
+
+      toast.success(`${post.email}님을 팔로우했습니다.`);
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.log(error);
@@ -98,7 +104,7 @@ export function useFollow({ user, post }: IUseFollowProps) {
           { merge: true }
         );
       });
-      toast.success(`${post.email}를 언팔로우했습니다.`);
+      toast.success(`${post.email}님을 언팔로우했습니다.`);
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.log(error);

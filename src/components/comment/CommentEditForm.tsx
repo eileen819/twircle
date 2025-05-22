@@ -5,7 +5,7 @@ import { useCommentForm } from "hooks/useCommentForm";
 import { useContext, useEffect } from "react";
 import AuthContext from "context/AuthContext";
 import { IComment } from "pages/posts/detail";
-import { highlightHashtags, placeCursorToEnd } from "utils";
+import { highlightHashtags, placeCursorToEnd } from "lib/utils";
 
 interface ICommentEditForm {
   mode: "create" | "edit";

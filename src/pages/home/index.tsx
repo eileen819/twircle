@@ -9,8 +9,6 @@ import { TabType, useTabPosts } from "hooks/useTabPosts";
 import { useContext, useEffect, useState } from "react";
 // import PostsList from "pages/posts/list";
 
-export type HomeTabType = "all" | "following";
-
 export default function Home() {
   const { user } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState<TabType>(TabType.All);
