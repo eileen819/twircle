@@ -22,6 +22,8 @@
       height: 100px;
       outline: none;
       cursor: default;
+      overflow-y: scroll;
+
       :global(.hashtag) {
         color: $primaryBlue;
       }
@@ -48,6 +50,11 @@
           right: 5px;
           cursor: pointer;
           color: $activeBlue;
+        }
+
+        @include respond(sm) {
+          width: 60px;
+          height: 60px;
         }
       }
     }

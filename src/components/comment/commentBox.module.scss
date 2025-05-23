@@ -22,6 +22,10 @@
         background-color: $primaryBlue;
       }
     }
+
+    @include respond(sm) {
+      margin-left: 0;
+    }
   }
 
   .commentBox {
@@ -57,6 +61,11 @@
           object-fit: cover;
         }
       }
+    }
+
+    @include respond(sm) {
+      padding: 5px 15px 10px 15px;
+      margin-right: 0;
     }
   }
 }

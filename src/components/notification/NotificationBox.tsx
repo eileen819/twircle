@@ -7,6 +7,7 @@ import { User } from "firebase/auth";
 import { toast } from "react-toastify";
 import { LuMessageSquareText } from "react-icons/lu";
 import { MdPersonAddAlt1 } from "react-icons/md";
+import { useTruncateName } from "hooks/useTruncateName";
 
 interface INotificationBoxProps {
   notification: INotifications;
@@ -18,6 +19,7 @@ export default function NotificationBox({
   user,
 }: INotificationBoxProps) {
   const navigate = useNavigate();
+
   const onClickNotification = async (notificationId: string, url: string) => {
     if (!user) return;
     try {
@@ -75,7 +77,7 @@ export default function NotificationBox({
             to={`/profile/${notification.fromUid}`}
             onClick={(e) => e.stopPropagation()}
           >
-            {notification.fromName}
+            {useTruncateName(notification.fromName)}
           </Link>
           <span>{notification.content}</span>
         </div>

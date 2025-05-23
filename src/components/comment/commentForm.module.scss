@@ -16,12 +16,13 @@
     word-break: break-all;
     overflow-wrap: break-word;
     width: 100%;
-    min-height: 100px;
+    height: 100px;
     background-color: transparent;
     padding: 0 18px 18px 18px;
     border: none;
     outline: none;
     font-size: 16px;
+    overflow-y: scroll;
 
     &[contentEditable="true"]:empty:not(:focus)::before {
       content: "답글 게시하기";

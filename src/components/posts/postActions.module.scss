@@ -51,6 +51,10 @@
     &:focus {
       background-color: $primaryGray;
     }
+
+    @include respond(sm) {
+      padding: 5px 10px;
+    }
   }
 
   .deleteBtn {
@@ -67,6 +71,10 @@
 
     .active {
       background-color: $primaryRed;
+    }
+
+    @include respond(sm) {
+      padding: 5px 10px;
     }
   }
 }

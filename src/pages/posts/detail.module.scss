@@ -147,4 +147,8 @@
       }
     }
   }
+
+  @include respond(sm) {
+    padding: 0 15px 60px 15px;
+  }
 }

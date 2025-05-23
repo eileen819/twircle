@@ -10,7 +10,7 @@ export function useTruncateName(name: string) {
   }, []);
 
   const truncateName = useMemo(() => {
-    const maxLength = windowWidth <= 360 ? 10 : 20;
+    const maxLength = windowWidth <= 400 ? 6 : 20;
     return name.length > maxLength ? name.slice(0, maxLength) + "..." : name;
   }, [name, windowWidth]);
 
