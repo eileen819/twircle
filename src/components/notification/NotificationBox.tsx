@@ -5,6 +5,8 @@ import { collection, doc, updateDoc } from "firebase/firestore";
 import { db } from "firebaseApp";
 import { User } from "firebase/auth";
 import { toast } from "react-toastify";
+import { LuMessageSquareText } from "react-icons/lu";
+import { MdPersonAddAlt1 } from "react-icons/md";
 
 interface INotificationBoxProps {
   notification: INotifications;
@@ -60,6 +62,15 @@ export default function NotificationBox({
           </Link>
         </div>
         <div className={styles.notiContent}>
+          <span className={styles.typeIcon}>
+            {notification.type === "likes" && "❤️"}
+            {notification.type === "comment" && (
+              <LuMessageSquareText size={20} />
+            )}
+            {notification.type === "follow" && (
+              <MdPersonAddAlt1 size={22} color="#0097e6" />
+            )}
+          </span>
           <Link
             to={`/profile/${notification.fromUid}`}
             onClick={(e) => e.stopPropagation()}
@@ -70,7 +81,7 @@ export default function NotificationBox({
         </div>
         {notification.originalPost && (
           <div className={styles.notiPost}>
-            <div className={styles.post}>{notification.originalPost}</div>{" "}
+            <div className={styles.post}>{notification.originalPost}</div>
           </div>
         )}
         {notification.originalComment && (

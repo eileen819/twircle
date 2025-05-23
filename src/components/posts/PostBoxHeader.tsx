@@ -4,6 +4,7 @@ import { IPostProps } from "./PostList";
 import { useContext } from "react";
 import AuthContext from "context/AuthContext";
 import { useFollow } from "hooks/useFollow";
+import { useTruncateName } from "hooks/useTruncateName";
 
 interface IPostBoxHeaderProps {
   post: IPostProps | IComment;
@@ -19,8 +20,10 @@ export default function PostBoxHeader({ post }: IPostBoxHeaderProps) {
   return (
     <div className={styles.headerWrapper}>
       <div className={styles.profileInfo}>
-        <div className={styles.name}>{post.userInfo.profileName}</div>
-        <div className={styles.email}>{post.email}</div>
+        <div className={styles.name}>
+          {useTruncateName(post.userInfo.profileName!)}
+        </div>
+        <div className={styles.email}>{useTruncateName(post.email)}</div>
         {/* <div className={styles.createdAt}>{post.createdAt}</div> */}
       </div>
       {user &&

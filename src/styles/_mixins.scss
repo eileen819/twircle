@@ -22,10 +22,10 @@
 }
 
 @mixin respond($bp) {
-  @if map-has-key($breakpoint, $bp) {
-    $value: map-get($breakpoint, $bp);
+  @if map-has-key($breakpoints, $bp) {
+    $value: map-get($breakpoints, $bp);
 
-    @media (min-width: $value) {
+    @media (max-width: $value) {
       @content;
     }
   } @else {
