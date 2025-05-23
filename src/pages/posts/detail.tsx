@@ -16,6 +16,7 @@ import { motion } from "framer-motion";
 import CommentList from "components/comment/CommentList";
 import { useActions } from "hooks/useActions";
 import CommentModal from "components/comment/CommentModal";
+import { useTranslation } from "hooks/useTranslation";
 
 export interface IComment {
   id: string;
@@ -59,6 +60,7 @@ export default function PostDetail() {
     post,
     postType,
   });
+  const translation = useTranslation();
 
   const handleComment = () => {
     setIsShowCommentModal(true);
@@ -112,7 +114,7 @@ export default function PostDetail() {
         <div className={styles.back__icon} onClick={() => navigate(-1)}>
           <IoArrowBack />
         </div>
-        <div className={styles.title}>Tweet</div>
+        <div className={styles.title}>{translation("HEADER_TWEET")}</div>
         {user && user.uid === post?.uid && (
           <div
             ref={dotsRef}

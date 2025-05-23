@@ -10,6 +10,7 @@ import { IUserProps } from "./edit";
 import { DEFAULT_PROFILE_IMG_URL } from "components/users/SignupForm";
 import TabList from "components/tabs/TabList";
 import { TabType, useTabPosts } from "hooks/useTabPosts";
+import { useTranslation } from "hooks/useTranslation";
 
 export default function ProfileDetail() {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function ProfileDetail() {
   const [activeTab, setActiveTab] = useState<TabType>(TabType.UserPosts);
   const [userProfile, setUserProfile] = useState<IUserProps | null>(null);
   const posts = useTabPosts({ activeTab, user, uid });
+  const translation = useTranslation();
 
   useEffect(() => {
     if (!user || !uid) return;
@@ -68,7 +70,7 @@ export default function ProfileDetail() {
               className={styles.editBtn}
               onClick={() => navigate(`/profile/${user?.uid}/edit`)}
             >
-              Profile Edit
+              {translation("BUTTON_PROFILE_EDIT")}
             </button>
           )}
         </div>
@@ -80,8 +82,8 @@ export default function ProfileDetail() {
       </div>
       <TabList
         tabs={[
-          { key: TabType.UserPosts, content: "Posts" },
-          { key: TabType.Liked, content: "Likes" },
+          { key: TabType.UserPosts, content: translation("TABS_POSTS") },
+          { key: TabType.Liked, content: translation("TABS_LIKES") },
         ]}
         activeTab={activeTab}
         setActiveTab={setActiveTab}

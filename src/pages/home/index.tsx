@@ -6,6 +6,7 @@ import AuthContext from "context/AuthContext";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "firebaseApp";
 import { TabType, useTabPosts } from "hooks/useTabPosts";
+import { useTranslation } from "hooks/useTranslation";
 import { useContext, useEffect, useState } from "react";
 // import PostsList from "pages/posts/list";
 
@@ -14,6 +15,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<TabType>(TabType.All);
   const [followingList, setFollowingList] = useState<string[]>([]);
   const posts = useTabPosts({ user, followingList, activeTab });
+  const translation = useTranslation();
 
   useEffect(() => {
     if (!user) return;
@@ -29,14 +31,21 @@ export default function Home() {
     <>
       <TabList
         tabs={[
-          { key: TabType.All, content: "For you" },
-          { key: TabType.Following, content: "Following" },
+          { key: TabType.All, content: translation("TABS_HOME") },
+          { key: TabType.Following, content: translation("TABS_FOLLOWING") },
         ]}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
       />
       <PostForm mode="create" />
-      <PostList posts={posts} noPostsMessage="게시글이 없습니다." />
+      <PostList
+        posts={posts}
+        noPostsMessage={
+          activeTab === TabType.All
+            ? "게시글이 없습니다."
+            : "팔로잉한 사용자가 없습니다."
+        }
+      />
     </>
   );
 }

@@ -7,6 +7,7 @@ import { IPostProps } from "./PostList";
 import { MdCancel } from "react-icons/md";
 import Loader from "components/loader/Loader";
 import { usePostForm } from "hooks/usePostForm";
+import { useTranslation } from "hooks/useTranslation";
 
 interface IPostFormProps {
   mode: "create" | "edit";
@@ -31,11 +32,12 @@ export default function PostForm({ mode, post }: IPostFormProps) {
     imageFile,
     content,
   } = usePostForm({ user, navigate, post, mode });
+  const translation = useTranslation();
 
   return (
     <form
       className={styles.postForm}
-      onSubmit={mode === "edit" && post ? (e) => onUpdate(e, post) : onCreate}
+      onSubmit={mode === "edit" && post ? onUpdate : onCreate}
     >
       <div
         ref={textAreaRef}
@@ -72,7 +74,13 @@ export default function PostForm({ mode, post }: IPostFormProps) {
         </div>
         <input
           type="submit"
-          value={!post ? (!isSubmitting ? "Tweet" : "Tweeting") : "Edit"}
+          value={
+            !post
+              ? !isSubmitting
+                ? translation("BUTTON_SUBMIT")
+                : translation("BUTTON_SUBMITTING")
+              : translation("BUTTON_EDIT")
+          }
           className={styles.submitBtn}
           disabled={content.trim().length === 0 || isSubmitting}
         />

@@ -8,6 +8,7 @@ import AuthContext from "context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { useActions } from "hooks/useActions";
+import { useTranslation } from "hooks/useTranslation";
 
 interface IPostActionsProps {
   post: IPostProps | IComment;
@@ -27,7 +28,7 @@ export default function PostActions({
   const liked = user && post.likes?.includes(user.uid);
   const { toggleLikes, softCommentDelete, postDelete, isDeleting, hasMounted } =
     useActions({ post, postType, user });
-  console.log(typeof setIsEdit);
+  const translation = useTranslation();
 
   const onEdit = () => {
     if (postType === "posts") {
@@ -65,14 +66,16 @@ export default function PostActions({
       {user?.uid === post?.uid && (
         <div className={styles.actions__right}>
           <button className={styles.editBtn} onClick={onEdit}>
-            Edit
+            {translation("BUTTON_EDIT")}
           </button>
           <button
             className={`${isDeleting ? styles.active : styles.deleteBtn}`}
             onClick={postType === "posts" ? postDelete : softCommentDelete}
             disabled={isDeleting}
           >
-            {isDeleting ? "Deleting..." : "Delete"}
+            {isDeleting
+              ? translation("BUTTON_DELETING")
+              : translation("BUTTON_DELETE")}
           </button>
         </div>
       )}

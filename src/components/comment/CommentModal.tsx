@@ -7,6 +7,7 @@ import CommentForm from "./CommentForm";
 import { useCommentForm } from "hooks/useCommentForm";
 import { useContext } from "react";
 import AuthContext from "context/AuthContext";
+import { useTranslation } from "hooks/useTranslation";
 
 export interface ICommentModalProps {
   mode: "create" | "edit";
@@ -47,6 +48,7 @@ export default function CommentModal({
     conversationId,
     onSuccess,
   });
+  const translation = useTranslation();
 
   return (
     <div className={styles.wrapper}>
@@ -61,6 +63,7 @@ export default function CommentModal({
           </button>
           <input
             type="submit"
+            value={translation("BUTTON_REPLY")}
             className={styles.btn__submit}
             disabled={content.trim().length === 0 || isSubmitting}
           />

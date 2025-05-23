@@ -6,11 +6,14 @@ import "styles/main.scss";
 import { AuthContextProvider } from "context/AuthContext";
 import { BrowserRouter } from "react-router-dom";
 import App from "App";
+import { LanguageContextProvider } from "context/LanguageContext";
 
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
     <AuthContextProvider>
-      <App />
+      <LanguageContextProvider>
+        <App />
+      </LanguageContextProvider>
     </AuthContextProvider>
   </BrowserRouter>
 );

@@ -6,6 +6,7 @@ import { useContext, useEffect } from "react";
 import AuthContext from "context/AuthContext";
 import { IComment } from "pages/posts/detail";
 import { highlightHashtags, placeCursorToEnd } from "lib/utils";
+import { useTranslation } from "hooks/useTranslation";
 
 interface ICommentEditForm {
   mode: "create" | "edit";
@@ -19,6 +20,7 @@ export default function CommentEditForm({
   setIsEdit,
 }: ICommentEditForm) {
   const { user } = useContext(AuthContext);
+  const translation = useTranslation();
   const onSuccess = () => {
     setIsEdit(false);
   };
@@ -95,9 +97,13 @@ export default function CommentEditForm({
             type="button"
             onClick={() => setIsEdit(false)}
           >
-            cancel
+            {translation("BUTTON_CANCEL")}
           </button>
-          <input className={styles.submitBtn} type="submit" value={"수정"} />
+          <input
+            className={styles.submitBtn}
+            type="submit"
+            value={translation("BUTTON_REPLY")}
+          />
         </div>
       </div>
     </form>

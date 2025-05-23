@@ -7,13 +7,16 @@ import { FiUser } from "react-icons/fi";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
 import { MdLogout } from "react-icons/md";
-import { RiHome2Line } from "react-icons/ri";
+import { RiEnglishInput, RiHome2Line } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { TbAlphabetKorean } from "react-icons/tb";
+import { useLanguage } from "hooks/useLanguage";
 
 export default function MenuBar() {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+  const { language, toggleLanguage } = useLanguage();
 
   const onSignOut = async () => {
     await signOut(auth);
@@ -42,6 +45,9 @@ export default function MenuBar() {
         onClick={() => navigate(`/notifications`)}
       >
         <IoMdNotificationsOutline />
+      </button>
+      <button className={styles.icon} onClick={toggleLanguage}>
+        {language === "ko" ? <TbAlphabetKorean /> : <RiEnglishInput />}
       </button>
       <button className={styles.icon} onClick={onSignOut}>
         <MdLogout />

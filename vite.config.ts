@@ -12,6 +12,8 @@ export default defineConfig({
       styles: "/src/styles",
       firebaseApp: "/src/firebaseApp",
       context: "/src/context",
+      hooks: "/src/hooks",
+      lib: "/src/lib",
     },
   },
 });

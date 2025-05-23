@@ -7,12 +7,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { db } from "firebaseApp";
+import { useTranslation } from "hooks/useTranslation";
 
 export default function PostEdit() {
   const navigate = useNavigate();
   const onPrev = () => navigate(-1);
   const { id } = useParams();
   const [post, setPost] = useState<IPostProps | null>(null);
+  const translation = useTranslation();
 
   // edit 모드일 때, 문서 데이터 가지고 오기
   useEffect(() => {
@@ -36,7 +38,7 @@ export default function PostEdit() {
     <>
       <div className={styles.header}>
         <IoArrowBack size={20} onClick={onPrev} />
-        <div className={styles.title}>Edit</div>
+        <div className={styles.title}>{translation("BUTTON_EDIT")}</div>
       </div>
       <div className={styles.wrapper}>
         <PostForm mode="edit" post={post} />
