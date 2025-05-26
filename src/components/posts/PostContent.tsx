@@ -9,7 +9,7 @@ export default function PostContent({ content }: IPostContent) {
   const parts = content.split(/(#[\w가-힣]+)/g);
   const navigate = useNavigate();
   const onLink = (event: React.MouseEvent, tag: string) => {
-    event.preventDefault();
+    // event.preventDefault();
     event.stopPropagation();
     navigate(`/search?q=${encodeURIComponent(tag)}`);
   };
@@ -19,7 +19,7 @@ export default function PostContent({ content }: IPostContent) {
         part === "" ? null : part.startsWith("#") ? (
           <span
             key={i}
-            className="hashtag-link"
+            className="hashtagLink"
             onClick={(e) => onLink(e, part)}
           >
             {part}

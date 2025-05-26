@@ -1,21 +1,14 @@
+import styles from "./searchPage.module.scss";
 import Loader from "components/loader/Loader";
-import PostList, { IPostProps } from "components/posts/PostList";
+import PostList from "components/posts/PostList";
 import AuthContext from "context/AuthContext";
-import {
-  collection,
-  getDocs,
-  limit,
-  orderBy,
-  query,
-  where,
-} from "firebase/firestore";
-import { db } from "firebaseApp";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { IoMdRefresh } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
 import { useSearchParams } from "react-router-dom";
-import { generateKeywords } from "lib/utils";
+
+import { useSearchPosts } from "hooks/useSearchPosts";
 
 interface ISearchData {
   search: string;
@@ -26,42 +19,19 @@ export default function SearchPage() {
   const [readSearchParams, setSearchParams] = useSearchParams();
   const searchHashTag = readSearchParams.get("q");
   const { user } = useContext(AuthContext);
-  const [posts, setPosts] = useState<IPostProps[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
   } = useForm<ISearchData>();
-
-  const getSearchPosts = useCallback(
-    async (searchWord: string) => {
-      setIsLoading(true);
-      const searchArray = generateKeywords(searchWord);
-      console.log(searchArray);
-      if (user && searchArray.length > 0) {
-        const docsRef = collection(db, "posts");
-        const searchQuery = query(
-          docsRef,
-          where("keywords", "array-contains-any", searchArray),
-          orderBy("createdAt", "desc"),
-          limit(20)
-        );
-        const searchSnapshot = await getDocs(searchQuery);
-        const dataObj = searchSnapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-        setPosts(dataObj as IPostProps[]);
-      }
-      setIsLoading(false);
-    },
-    [user]
-  );
+  const { getSearchPosts, isLoading, posts, setPosts } = useSearchPosts({
+    user,
+  });
 
   const onValid = async ({ search }: ISearchData) => {
-    getSearchPosts(search);
+    await getSearchPosts(search);
     setSearchParams({
       q: search,
     });
@@ -70,15 +40,20 @@ export default function SearchPage() {
 
   useEffect(() => {
     if (searchHashTag) {
-      getSearchPosts(searchHashTag);
-      setValue("search", searchHashTag);
+      (async () => {
+        await getSearchPosts(searchHashTag);
+        setValue("search", searchHashTag);
+      })();
+    } else {
+      setPosts([]);
+      setValue("search", "");
     }
-  }, [searchHashTag, getSearchPosts, setValue]);
+  }, [searchHashTag, getSearchPosts, setValue, setPosts]);
 
   return (
-    <div className="search">
-      <div className="search__header">
-        <form className="search__box" onSubmit={handleSubmit(onValid)}>
+    <div className={styles.search}>
+      <div className={styles.header}>
+        <form className={styles.searchBox} onSubmit={handleSubmit(onValid)}>
           <IoSearch size={18} />
           <input
             {...register("search", { required: "검색어를 입력해주세요." })}
@@ -86,14 +61,14 @@ export default function SearchPage() {
               register("search").ref(el);
               inputRef.current = el;
             }}
-            className="search__box__input"
+            className={styles.searchInput}
             placeholder={!errors.search ? "Search" : errors.search.message}
             autoComplete="off"
           />
           {searchHashTag && (
             <div
-              className="search__box__refresh-icon"
-              onClick={() => searchHashTag && getSearchPosts(searchHashTag)}
+              className={styles.refreshIcon}
+              onClick={() => getSearchPosts(searchHashTag)}
             >
               <IoMdRefresh size={20} />
             </div>
@@ -105,16 +80,14 @@ export default function SearchPage() {
         {isLoading ? (
           <Loader />
         ) : (
-          <>
-            <PostList
-              posts={posts}
-              noPostsMessage={
-                searchHashTag
-                  ? "검색 결과가 없습니다."
-                  : "키워드를 검색해보세요."
-              }
-            />
-          </>
+          <PostList
+            posts={posts}
+            noPostsMessage={
+              searchHashTag && posts.length === 0
+                ? "검색 결과가 없습니다."
+                : "키워드를 검색해보세요."
+            }
+          />
         )}
       </div>
     </div>

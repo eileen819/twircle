@@ -68,9 +68,6 @@
       display: flex;
       flex-direction: column;
 
-      span {
-      }
-
       .comment__image {
         margin-top: 20px;
         cursor: pointer;
@@ -82,8 +79,5 @@
         }
       }
     }
-  }
-
-  .footer {
   }
 }
