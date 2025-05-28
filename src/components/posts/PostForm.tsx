@@ -48,6 +48,7 @@ export default function PostForm({ mode, post }: IPostFormProps) {
         onInput={onInput}
         onCompositionStart={handleCompositionStart}
         onCompositionEnd={handleCompositionEnd}
+        aria-placeholder={translation("POSTFORM_PLACEHOLDER")}
       />
       {(imageFile || originalImageUrl) && (
         <div className={styles.attachment}>

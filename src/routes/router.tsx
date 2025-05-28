@@ -11,8 +11,8 @@ import ProfilePage from "pages/profile";
 import ProfileDetail from "pages/profile/detail";
 import ProfileEdit from "pages/profile/edit";
 import SearchPage from "pages/search";
-import LoginPage from "pages/users/login";
-import SignupPage from "pages/users/signup";
+import SingInPage from "pages/users/signIn";
+import SignUpPage from "pages/users/signUp";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 interface IRouterProps {
@@ -45,10 +45,10 @@ function Router({ isAuthenticated }: IRouterProps) {
       ) : (
         <>
           <Route path="/" element={<Layout />}>
-            <Route index element={<Navigate replace to="/users/login" />} />
-            <Route path="/users/login" element={<LoginPage />} />
-            <Route path="/users/signup" element={<SignupPage />} />
-            <Route path="*" element={<Navigate replace to="/users/login" />} />
+            <Route index element={<Navigate replace to="/users/signin" />} />
+            <Route path="/users/signin" element={<SingInPage />} />
+            <Route path="/users/signup" element={<SignUpPage />} />
+            <Route path="*" element={<Navigate replace to="/users/signin" />} />
           </Route>
         </>
       )}

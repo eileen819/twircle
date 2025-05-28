@@ -1,3 +1,4 @@
+import styles from "./signInForm.module.scss";
 import {
   AuthProvider,
   GithubAuthProvider,
@@ -7,6 +8,7 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "firebaseApp";
+import { useTranslation } from "hooks/useTranslation";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -16,8 +18,10 @@ interface ILoginFormData {
   password: string;
 }
 
-export default function LoginForm() {
+export default function SignInForm() {
   const navigate = useNavigate();
+  const translation = useTranslation();
+
   const {
     register,
     handleSubmit,
@@ -97,10 +101,10 @@ export default function LoginForm() {
   };
 
   return (
-    <form className="form form--lg" onSubmit={handleSubmit(onValid)}>
-      <div className="form__title">로그인</div>
-      <div className="form__block">
-        <label htmlFor="email">이메일</label>
+    <form className={styles.form} onSubmit={handleSubmit(onValid)}>
+      <div className={styles.title}>{translation("SIGNIN_TITLE")}</div>
+      <div className={styles.block}>
+        <label htmlFor="email">{translation("SIGNIN_UP_EMAIL")}</label>
         <input
           type="text"
           id="email"
@@ -116,8 +120,8 @@ export default function LoginForm() {
         />
         {errors?.email && <span>{errors?.email?.message}</span>}
       </div>
-      <div className="form__block">
-        <label htmlFor="password">비밀번호</label>
+      <div className={styles.block}>
+        <label htmlFor="password">{translation("SIGNIN_UP_PASSWORD")}</label>
         <input
           type="password"
           id="password"
@@ -132,35 +136,35 @@ export default function LoginForm() {
         />
         {errors?.password && <span>{errors?.password?.message}</span>}
       </div>
-      <div className="form__block">
-        계정이 없으신가요?
-        <Link to="/users/signup" className="form__link">
-          회원가입하기
+      <div className={styles.block}>
+        {translation("SIGNIN_CHECK_ACCOUNT")}
+        <Link to="/users/signup" className={styles.form_link}>
+          {translation("SIGNIN_GO_TO_SIGNUP")}
         </Link>
       </div>
-      <div className="form__block">
-        <button type="submit" className="form__btn--submit" disabled={!isValid}>
-          로그인
+      <div className={styles.block}>
+        <button type="submit" className={styles.btn_submit} disabled={!isValid}>
+          {translation("SIGNIN_SUBMIT")}
         </button>
       </div>
-      <div className="form__block">
+      <div className={styles.block}>
         <button
           type="button"
           name="google"
-          className="form__btn--google"
+          className={styles.btn_google}
           onClick={handleSocialSignIn}
         >
-          Google로 로그인
+          {translation("SIGNIN_GOOGLE")}
         </button>
       </div>
-      <div className="form__block">
+      <div className={styles.block}>
         <button
           type="button"
           name="github"
-          className="form__btn--github"
+          className={styles.btn_github}
           onClick={handleSocialSignIn}
         >
-          Github으로 로그인
+          {translation("SIGNIN_GITHUB")}
         </button>
       </div>
     </form>

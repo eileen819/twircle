@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { LuMessageSquareText } from "react-icons/lu";
 import { MdPersonAddAlt1 } from "react-icons/md";
 import { useTruncateName } from "hooks/useTruncateName";
+import { useTranslation } from "hooks/useTranslation";
 
 interface INotificationBoxProps {
   notification: INotifications;
@@ -19,6 +20,8 @@ export default function NotificationBox({
   user,
 }: INotificationBoxProps) {
   const navigate = useNavigate();
+  const translation = useTranslation();
+  const nameFromNoti = useTruncateName(notification.fromName);
 
   const onClickNotification = async (notificationId: string, url: string) => {
     if (!user) return;
@@ -33,7 +36,9 @@ export default function NotificationBox({
       await updateDoc(notificationSnap, {
         isRead: true,
       });
-      navigate(url);
+      if (notification.type !== "follow") {
+        navigate(url);
+      }
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(error);
@@ -64,22 +69,46 @@ export default function NotificationBox({
           </Link>
         </div>
         <div className={styles.notiContent}>
-          <span className={styles.typeIcon}>
-            {notification.type === "likes" && "❤️"}
-            {notification.type === "comment" && (
-              <LuMessageSquareText size={20} />
-            )}
-            {notification.type === "follow" && (
-              <MdPersonAddAlt1 size={22} color="#0097e6" />
-            )}
-          </span>
-          <Link
-            to={`/profile/${notification.fromUid}`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {useTruncateName(notification.fromName)}
-          </Link>
-          <span>{notification.content}</span>
+          {notification.type === "comment" && (
+            <>
+              <span className={styles.typeIcon}>
+                <LuMessageSquareText size={20} />
+              </span>
+              <Link
+                to={`/profile/${notification.fromUid}`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {nameFromNoti}
+              </Link>
+              <span>{translation("NOTIFICATION_COMMENT")}</span>
+            </>
+          )}
+          {notification.type === "likes" && (
+            <>
+              <span className={styles.typeIcon}>❤️</span>
+              <Link
+                to={`/profile/${notification.fromUid}`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {nameFromNoti}
+              </Link>
+              <span>{translation("NOTIFICATION_LIKES")}</span>
+            </>
+          )}
+          {notification.type === "follow" && (
+            <>
+              <span className={styles.typeIcon}>
+                <MdPersonAddAlt1 size={22} color="#0097e6" />
+              </span>
+              <Link
+                to={`/profile/${notification.fromUid}`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {nameFromNoti}
+              </Link>
+              <span>{translation("NOTIFICATION_FOLLOW")}</span>
+            </>
+          )}
         </div>
         {notification.originalPost && (
           <div className={styles.notiPost}>

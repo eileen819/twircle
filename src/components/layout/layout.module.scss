@@ -6,10 +6,31 @@
   min-height: 100vh;
   margin: 0 auto;
 
-  .title {
-    padding: 20px;
-    font-weight: 700;
-    font-size: 20px;
+  .header {
+    @include respond(sm) {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .title {
+      padding: 20px;
+      font-weight: 700;
+      font-size: 20px;
+    }
+    .icon {
+      display: none;
+      @include respond(sm) {
+        @include btn;
+        margin-right: 20px;
+        padding: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 20px;
+        color: $activeBlue;
+        position: relative;
+      }
+    }
   }
 
   .main {

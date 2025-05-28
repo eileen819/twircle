@@ -70,7 +70,7 @@ export default function CommentEditForm({
         {(imageFile || originalImageUrl) && (
           <div className={styles.imagePreviewArea}>
             <div className={styles.imagePreview}>
-              <img src={imageFile || ""} alt="attachment" />
+              <img src={originalImageUrl || imageFile || ""} alt="attachment" />
               <MdCancel size={18} onClick={handleClearImg} />
             </div>
           </div>

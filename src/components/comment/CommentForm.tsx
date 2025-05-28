@@ -1,6 +1,8 @@
+import { useTranslation } from "hooks/useTranslation";
 import styles from "./commentForm.module.scss";
 import { FiImage } from "react-icons/fi";
 import { MdCancel } from "react-icons/md";
+import { useLanguage } from "hooks/useLanguage";
 
 interface ICommentForm {
   commentTo: string;
@@ -27,12 +29,17 @@ export default function CommentForm({
   imageFile,
   originalImageUrl,
 }: ICommentForm) {
+  const { language } = useLanguage();
+  const translation = useTranslation();
+
   return (
     <>
       <div className={styles.commentBox}>
-        <div
-          className={styles.commentTo}
-        >{`${commentTo} 님에게 보내는 답글`}</div>
+        <div className={styles.commentTo}>
+          {language === "ko"
+            ? `${commentTo} ${translation("TO_REPLY")}`
+            : `${translation("TO_REPLY")} ${commentTo}`}
+        </div>
         <div
           ref={textAreaRef}
           id="content"
@@ -42,6 +49,7 @@ export default function CommentForm({
           onInput={onInput}
           onCompositionStart={handleCompositionStart}
           onCompositionEnd={handleCompositionEnd}
+          aria-placeholder={translation("COMMENTFORM_PLACEHOLDER")}
         />
         <div className={styles.fileArea}>
           <label htmlFor="commentFile-input">

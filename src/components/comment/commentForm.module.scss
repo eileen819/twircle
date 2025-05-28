@@ -25,8 +25,9 @@
     overflow-y: scroll;
 
     &[contentEditable="true"]:empty:not(:focus)::before {
-      content: "답글 게시하기";
+      content: attr(aria-placeholder);
       color: $grayText;
+      pointer-events: none;
     }
 
     :global(.hashtag) {

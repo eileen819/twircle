@@ -57,6 +57,90 @@ const TRANSLATIONS = {
     ko: "프로필 수정",
     en: "Profile Edit",
   },
+  POSTFORM_PLACEHOLDER: {
+    ko: "무슨 일이 일어나고 있나요?",
+    en: "What's happening?",
+  },
+  COMMENTFORM_PLACEHOLDER: {
+    ko: "답글 게시하기",
+    en: "Post your Reply",
+  },
+  TO_REPLY: {
+    ko: "님에게 보내는 답글",
+    en: "Replying to",
+  },
+  NOTIFICATION_COMMENT: {
+    ko: "님이 댓글을 남겼습니다.",
+    en: "replied to your post",
+  },
+  NOTIFICATION_LIKES: {
+    ko: "님이 좋아합니다.",
+    en: "liked your post",
+  },
+  NOTIFICATION_FOLLOW: {
+    ko: "님이 나를 팔로우 했습니다.",
+    en: "followed you",
+  },
+  SIGNIN_TITLE: {
+    ko: "로그인",
+    en: "Sign In",
+  },
+  SIGNIN_UP_EMAIL: {
+    ko: "이메일",
+    en: "E-Mail",
+  },
+  SIGNIN_UP_PASSWORD: {
+    ko: "비밀번호",
+    en: "Password",
+  },
+  SIGNIN_CHECK_ACCOUNT: {
+    ko: "계정이 없으신가요?",
+    en: "Don't you have an account?",
+  },
+  SIGNIN_GO_TO_SIGNUP: {
+    ko: "회원가입하기",
+    en: "Go to Sign up",
+  },
+  SIGNIN_SUBMIT: {
+    ko: "로그인",
+    en: "Sign In",
+  },
+  SIGNIN_GOOGLE: {
+    ko: "Google로 로그인",
+    en: "Sign in with Google",
+  },
+  SIGNIN_GITHUB: {
+    ko: "Github로 로그인",
+    en: "Sign in with Github",
+  },
+  SIGNUP_TITLE: {
+    ko: "회원가입",
+    en: "Sign Up",
+  },
+  SIGNUP_CONFIRM_PASSWORD: {
+    ko: "비밀번호 확인",
+    en: "Confirm Password",
+  },
+  SIGNUP_CHECK_ACCOUNT: {
+    ko: "계정이 있으신가요?",
+    en: "Do you have an account?",
+  },
+  SIGNUP_GO_TO_SIGNIN: {
+    ko: "로그인하기",
+    en: "Go to Sign in",
+  },
+  SIGNUP_SUBMIT: {
+    ko: "회원가입",
+    en: "Sign Up",
+  },
+  SIGNUP_GOOGLE: {
+    ko: "Google로 회원가입",
+    en: "Sign up with Google",
+  },
+  SIGNUP_GITHUB: {
+    ko: "Github로 회원가입",
+    en: "Sign up with Github",
+  },
 };
 
 export function useTranslation() {

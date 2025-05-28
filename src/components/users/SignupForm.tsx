@@ -1,3 +1,4 @@
+import styles from "./signUpForm.module.scss";
 import {
   createUserWithEmailAndPassword,
   GithubAuthProvider,
@@ -7,6 +8,7 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "firebaseApp";
+import { useTranslation } from "hooks/useTranslation";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -18,7 +20,7 @@ interface ISignUpFormData {
   confirmPassword: string;
 }
 
-export default function SignupForm() {
+export default function SignUpForm() {
   const {
     register,
     handleSubmit,
@@ -31,6 +33,7 @@ export default function SignupForm() {
   });
 
   const navigate = useNavigate();
+  const translation = useTranslation();
 
   const onValid = async ({ email, password }: ISignUpFormData) => {
     try {
@@ -135,10 +138,10 @@ export default function SignupForm() {
   };
 
   return (
-    <form className="form form--lg" onSubmit={handleSubmit(onValid)}>
-      <div className="form__title">회원가입</div>
-      <div className="form__block">
-        <label htmlFor="email">이메일</label>
+    <form className={styles.form} onSubmit={handleSubmit(onValid)}>
+      <div className={styles.title}>{translation("SIGNUP_TITLE")}</div>
+      <div className={styles.block}>
+        <label htmlFor="email">{translation("SIGNIN_UP_EMAIL")}</label>
         <input
           type="text"
           id="email"
@@ -154,8 +157,8 @@ export default function SignupForm() {
         />
         {errors?.email && <span>{errors?.email?.message}</span>}
       </div>
-      <div className="form__block">
-        <label htmlFor="password">비밀번호</label>
+      <div className={styles.block}>
+        <label htmlFor="password">{translation("SIGNIN_UP_PASSWORD")}</label>
         <input
           type="password"
           id="password"
@@ -170,8 +173,10 @@ export default function SignupForm() {
         />
         {errors?.password && <span>{errors?.password?.message}</span>}
       </div>
-      <div className="form__block">
-        <label htmlFor="confirmPassword">비밀번호 확인</label>
+      <div className={styles.block}>
+        <label htmlFor="confirmPassword">
+          {translation("SIGNUP_CONFIRM_PASSWORD")}
+        </label>
         <input
           type="password"
           id="confirmPassword"
@@ -190,35 +195,35 @@ export default function SignupForm() {
           <span>{errors?.confirmPassword?.message}</span>
         )}
       </div>
-      <div className="form__block">
-        계정이 있으신가요?
-        <Link to="/users/login" className="form__link">
-          로그인하기
+      <div className={styles.block}>
+        {translation("SIGNUP_CHECK_ACCOUNT")}
+        <Link to="/users/signin" className={styles.form_link}>
+          {translation("SIGNUP_GO_TO_SIGNIN")}
         </Link>
       </div>
-      <div className="form__block">
-        <button type="submit" className="form__btn--submit" disabled={!isValid}>
-          회원가입
+      <div className={styles.block}>
+        <button type="submit" className={styles.btn_submit} disabled={!isValid}>
+          {translation("SIGNUP_SUBMIT")}
         </button>
       </div>
-      <div className="form__block">
+      <div className={styles.block}>
         <button
           type="button"
           name="google"
-          className="form__btn--google"
+          className={styles.btn_google}
           onClick={handleSocialSignIn}
         >
-          Google로 회원가입
+          {translation("SIGNUP_GOOGLE")}
         </button>
       </div>
-      <div className="form__block">
+      <div className={styles.block}>
         <button
           type="button"
           name="github"
-          className="form__btn--github"
+          className={styles.btn_github}
           onClick={handleSocialSignIn}
         >
-          Github으로 회원가입
+          {translation("SIGNUP_GITHUB")}
         </button>
       </div>
     </form>

@@ -26,7 +26,6 @@ export async function createCommentNotification({
     originalComment,
     originalCommentImgUrl,
     url: `/posts/${postId}`,
-    content: "님이 댓글을 남겼습니다.",
     isRead: false,
     createdAt: new Date().toLocaleString(),
   });
@@ -46,7 +45,6 @@ export async function createFollowNotification({
     fromName: user.displayName,
     fromPhotoUrl: user.photoURL,
     url: `/profile/${postUid}`,
-    content: "님이 나를 팔로우 했습니다.",
     isRead: false,
     createdAt: new Date().toLocaleString(),
   });
@@ -71,7 +69,6 @@ export async function createLikesNotification({
     fromPhotoUrl: user.photoURL,
     originalPost: postContent,
     url: `/posts/${postId}`,
-    content: "님이 좋아합니다.",
     isRead: false,
     createdAt: new Date().toLocaleString(),
   });
