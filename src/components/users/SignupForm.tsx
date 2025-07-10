@@ -13,7 +13,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-export const DEFAULT_PROFILE_IMG_URL = "/public/user.png";
+export const DEFAULT_PROFILE_IMG_URL = "/user.png";
 interface ISignUpFormData {
   email: string;
   password: string;
