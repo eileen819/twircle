@@ -141,6 +141,22 @@ const TRANSLATIONS = {
     ko: "Github로 회원가입",
     en: "Sign up with Github",
   },
+  NOPOSTS_MESSAGE_HOME: {
+    ko: "게시글이 없습니다.",
+    en: "No Posts.",
+  },
+  NOPOSTS_MESSAGE_FOLLOWING: {
+    ko: "팔로잉한 사용자가 없습니다.",
+    en: "No user followed.",
+  },
+  NOPOSTS_MESSAGE_PROFILE: {
+    ko: "새로운 게시글을 작성해보세요!",
+    en: "Write a new post!",
+  },
+  NOPOSTS_MESSAGE_LIKES: {
+    ko: "'좋아요'를 누른 게시글이 없습니다.",
+    en: "No posts that have pressed 'Like'.",
+  },
 };
 
 export function useTranslation() {

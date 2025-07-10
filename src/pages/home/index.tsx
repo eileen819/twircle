@@ -42,8 +42,8 @@ export default function Home() {
         posts={posts}
         noPostsMessage={
           activeTab === TabType.All
-            ? "게시글이 없습니다."
-            : "팔로잉한 사용자가 없습니다."
+            ? translation("NOPOSTS_MESSAGE_HOME")
+            : translation("NOPOSTS_MESSAGE_FOLLOWING")
         }
       />
     </>

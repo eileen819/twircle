@@ -1,4 +1,5 @@
 @use "./variables" as *;
+@use "sass:map";
 
 @mixin btn {
   border: none;
@@ -22,8 +23,8 @@
 }
 
 @mixin respond($bp) {
-  @if map-has-key($breakpoints, $bp) {
-    $value: map-get($breakpoints, $bp);
+  @if map.has-key($breakpoints, $bp) {
+    $value: map.get($breakpoints, $bp);
 
     @media (max-width: $value) {
       @content;

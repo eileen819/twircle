@@ -1,9 +1,8 @@
+import { TabType } from "hooks/useTabPosts";
 import styles from "./homeHeader.module.scss";
-import { HomeTabType } from "pages/home";
-
 interface IHomeHeaderProps {
-  activeTab: HomeTabType;
-  setActiveTab: React.Dispatch<React.SetStateAction<HomeTabType>>;
+  activeTab: TabType;
+  setActiveTab: React.Dispatch<React.SetStateAction<TabType>>;
 }
 
 export default function HomeHeader({
@@ -14,7 +13,7 @@ export default function HomeHeader({
     <div className={styles.home__header}>
       <div className={styles.tabs}>
         <div
-          onClick={() => setActiveTab("all")}
+          onClick={() => setActiveTab(TabType.All)}
           className={`${styles.tab} ${
             activeTab === "all" ? styles.active : ""
           }`}
@@ -22,7 +21,7 @@ export default function HomeHeader({
           For you
         </div>
         <div
-          onClick={() => setActiveTab("following")}
+          onClick={() => setActiveTab(TabType.Following)}
           className={`${styles.tab} ${
             activeTab === "following" ? styles.active : ""
           }`}

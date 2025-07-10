@@ -94,12 +94,12 @@ export default function ProfileDetail() {
           noPostsMessage={
             activeTab === TabType.UserPosts ? (
               <p>
-                게시글이 없습니다.
+                {translation("NOPOSTS_MESSAGE_HOME")}
                 <br />
-                새로운 게시글을 작성해보세요!
+                {translation("NOPOSTS_MESSAGE_PROFILE")}
               </p>
             ) : (
-              "'좋아요'를 누른 게시글이 없습니다."
+              translation("NOPOSTS_MESSAGE_LIKES")
             )
           }
         />
