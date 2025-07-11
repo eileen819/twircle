@@ -1,5 +1,5 @@
 import { User } from "firebase/auth";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "firebaseApp";
 
 export async function createCommentNotification({
@@ -27,7 +27,7 @@ export async function createCommentNotification({
     originalCommentImgUrl,
     url: `/posts/${postId}`,
     isRead: false,
-    createdAt: new Date().toLocaleString(),
+    createdAt: serverTimestamp(),
   });
 }
 
@@ -46,7 +46,7 @@ export async function createFollowNotification({
     fromPhotoUrl: user.photoURL,
     url: `/profile/${postUid}`,
     isRead: false,
-    createdAt: new Date().toLocaleString(),
+    createdAt: serverTimestamp(),
   });
 }
 
@@ -70,6 +70,6 @@ export async function createLikesNotification({
     originalPost: postContent,
     url: `/posts/${postId}`,
     isRead: false,
-    createdAt: new Date().toLocaleString(),
+    createdAt: serverTimestamp(),
   });
 }

@@ -3,7 +3,7 @@ import Loader from "components/loader/Loader";
 import PostContent from "components/posts/PostContent";
 import { IPostProps } from "components/posts/PostList";
 import AuthContext from "context/AuthContext";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot, Timestamp } from "firebase/firestore";
 import { db } from "firebaseApp";
 import { useContext, useEffect, useRef, useState } from "react";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
@@ -22,7 +22,7 @@ export interface IComment {
   id: string;
   email: string;
   content: string;
-  createdAt: string;
+  createdAt: Timestamp;
   uid: string;
   userInfo: {
     profileName?: string;
@@ -163,7 +163,9 @@ export default function PostDetail() {
                 </div>
               )}
             </div>
-            <div className={styles.date}>{post?.createdAt}</div>
+            <div className={styles.date}>
+              {post?.createdAt.toDate().toLocaleString()}
+            </div>
             <div className={styles.footer}>
               <button className={styles.commentsBtn} onClick={handleComment}>
                 <FaRegComment />

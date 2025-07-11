@@ -2,7 +2,13 @@ import { IoArrowBack } from "react-icons/io5";
 import styles from "./notificationsPage.module.scss";
 import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  Timestamp,
+} from "firebase/firestore";
 import AuthContext from "context/AuthContext";
 import { db } from "firebaseApp";
 import NotificationBox from "components/notification/NotificationBox";
@@ -21,7 +27,7 @@ export interface INotifications {
   url: string;
   content: string;
   isRead: boolean;
-  createdAt: string;
+  createdAt: Timestamp;
 }
 
 export default function NotificationsPage() {

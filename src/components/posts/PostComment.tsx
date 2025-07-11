@@ -44,7 +44,9 @@ export default function PostComment({
             {comment.userInfo.profileName}
           </div>
           <div className={styles.profileEmail}>{comment.email}</div>
-          <div className={styles.profileCreatedAt}>{comment.createdAt}</div>
+          <div className={styles.profileCreatedAt}>
+            {comment.createdAt.toDate().toLocaleString()}
+          </div>
         </div>
         <div className={styles.comment__content}>
           <span>{comment.content}</span>

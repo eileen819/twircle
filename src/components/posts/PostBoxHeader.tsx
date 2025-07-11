@@ -24,7 +24,7 @@ export default function PostBoxHeader({ post }: IPostBoxHeaderProps) {
           {useTruncateName(post.userInfo.profileName!)}
         </div>
         <div className={styles.email}>{useTruncateName(post.email)}</div>
-        {/* <div className={styles.createdAt}>{post.createdAt}</div> */}
+        {/* <div className={styles.createdAt}>{post.createdAt.toDate().toLocaleString()}</div> */}
       </div>
       {user &&
         post.uid !== user.uid &&

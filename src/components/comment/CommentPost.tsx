@@ -25,7 +25,9 @@ export default function CommentPost({ post }: ICommentPostProps) {
         <div className={styles.post__profile}>
           <div className={styles.profileName}>{post.userInfo.profileName}</div>
           <div className={styles.profileEmail}>{post.email}</div>
-          <div className={styles.profileCreatedAt}>{post.createdAt}</div>
+          <div className={styles.profileCreatedAt}>
+            {post.createdAt.toDate().toLocaleString()}
+          </div>
         </div>
         <div className={styles.post__content}>
           <span>{post.content}</span>

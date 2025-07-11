@@ -2,12 +2,13 @@ import styles from "./postList.module.scss";
 import { ReactNode, useState } from "react";
 import PostBox from "./PostBox";
 import CommentModal from "components/comment/CommentModal";
+import { Timestamp } from "firebase/firestore";
 
 export interface IPostProps {
   id: string;
   email: string;
   content: string;
-  createdAt: string;
+  createdAt: Timestamp;
   uid: string;
   userInfo: {
     profileName?: string;

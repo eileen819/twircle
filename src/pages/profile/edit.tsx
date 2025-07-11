@@ -21,6 +21,7 @@ import {
   getDocs,
   query,
   serverTimestamp,
+  Timestamp,
   updateDoc,
   where,
   writeBatch,
@@ -41,7 +42,7 @@ export interface IUserProps {
   bio: string;
   photoURL: string;
   photoPath: string;
-  updatedAt: string;
+  updatedAt: Timestamp;
 }
 
 const STORAGE_DOWNLOAD_URL_STR = "https://firebasestorage.googleapis.com";

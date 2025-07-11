@@ -44,7 +44,7 @@ export default function PostBox({ post, handleComment }: IPostBoxProps) {
             {/* <div className={styles.profileInfo}>
               <div className={styles.name}>{post.userInfo.profileName}</div>
               <div className={styles.email}>{post.email}</div>
-              <div className={styles.createdAt}>{post.createdAt}</div>
+              <div className={styles.createdAt}>{post.createdAt.toDate().toLocaleString()}</div>
             </div> */}
             <PostBoxHeader post={post} />
             <div className={styles.content}>

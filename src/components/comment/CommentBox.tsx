@@ -69,7 +69,9 @@ export default function CommentBox({
                     <img src={comment.imageUrl} alt={`${comment.id}-img`} />
                   </div>
                 )}
-                <div className={styles.createdAt}>{comment.createdAt}</div>
+                <div className={styles.createdAt}>
+                  {comment.createdAt.toDate().toLocaleString()}
+                </div>
                 <PostActions
                   post={comment}
                   postType="comments"
