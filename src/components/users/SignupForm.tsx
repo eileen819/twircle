@@ -6,7 +6,7 @@ import {
   signInWithPopup,
   updateProfile,
 } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth, db } from "firebaseApp";
 import { useTranslation } from "hooks/useTranslation";
 import { useForm } from "react-hook-form";
@@ -58,7 +58,7 @@ export default function SignUpForm() {
           bio: "",
           photoURL: user.photoURL,
           photoPath: "",
-          updatedAt: new Date().toLocaleString(),
+          updatedAt: serverTimestamp(),
         },
         { merge: true }
       );

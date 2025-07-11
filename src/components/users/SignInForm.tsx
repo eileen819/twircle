@@ -6,7 +6,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth, db } from "firebaseApp";
 import { useTranslation } from "hooks/useTranslation";
 import { useForm } from "react-hook-form";
@@ -81,7 +81,7 @@ export default function SignInForm() {
           bio: "",
           photoURL: user.photoURL,
           photoPath: "",
-          updatedAt: new Date().toLocaleString(),
+          updatedAt: serverTimestamp(),
         });
         if (!user.displayName) {
           navigate("/profile/edit", { replace: true });

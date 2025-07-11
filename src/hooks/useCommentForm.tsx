@@ -5,6 +5,7 @@ import {
   getDoc,
   increment,
   runTransaction,
+  serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
 import {
@@ -141,7 +142,7 @@ export function useCommentForm({
             content: finalContent,
             keywords,
             hashTags,
-            createdAt: new Date().toLocaleString(),
+            createdAt: serverTimestamp(),
             uid: user?.uid,
             email: user?.email,
             imageUrl,
@@ -274,7 +275,7 @@ export function useCommentForm({
         await updateDoc(editCommentRef, {
           content: finalContent,
           hashTags,
-          updatedAt: new Date().toLocaleString(),
+          updatedAt: serverTimestamp(),
           keywords,
           imageUrl,
           imagePath,

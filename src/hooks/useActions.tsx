@@ -7,6 +7,7 @@ import {
   doc,
   increment,
   runTransaction,
+  serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
 import { deleteObject, ref } from "firebase/storage";
@@ -106,7 +107,7 @@ export function useActions({ post, postType, user }: IUseActionsProps) {
       await updateDoc(commentRef, {
         content: "삭제된 댓글입니다.",
         isDeleted: true,
-        deletedAt: new Date().toLocaleString(),
+        deletedAt: serverTimestamp(),
       });
 
       await runTransaction(db, async (transaction) => {

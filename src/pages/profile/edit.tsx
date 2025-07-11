@@ -20,6 +20,7 @@ import {
   getDoc,
   getDocs,
   query,
+  serverTimestamp,
   updateDoc,
   where,
   writeBatch,
@@ -124,7 +125,7 @@ export default function ProfileEdit() {
             bio,
             photoURL: profileImageUrl,
             photoPath: profileImagePath,
-            updatedAt: new Date().toLocaleString(),
+            updatedAt: serverTimestamp(),
           });
 
           // firestore의 user가 작성한 posts 컬렉션의 문서들의 프로필 정보 수정

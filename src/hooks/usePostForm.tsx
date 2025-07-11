@@ -1,6 +1,12 @@
 import { IPostProps } from "components/posts/PostList";
 import { User } from "firebase/auth";
-import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import {
   deleteObject,
   getDownloadURL,
@@ -111,7 +117,7 @@ export function usePostForm({ user, navigate, mode, post }: IUsePostFormProps) {
           content: finalContent,
           keywords,
           hashTags,
-          createdAt: new Date().toLocaleString(),
+          createdAt: serverTimestamp(),
           uid: user?.uid,
           email: user?.email,
           imageUrl,
@@ -197,7 +203,7 @@ export function usePostForm({ user, navigate, mode, post }: IUsePostFormProps) {
         await updateDoc(editDocRef, {
           content: finalContent,
           hashTags,
-          updatedAt: new Date().toLocaleString(),
+          updatedAt: serverTimestamp(),
           keywords,
           imageUrl,
           imagePath,
