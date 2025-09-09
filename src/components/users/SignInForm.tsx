@@ -33,7 +33,7 @@ export default function SignInForm() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       reset();
-      navigate("/", { replace: true });
+      // navigate("/", { replace: true });
       toast.success("성공적으로 로그인이 되었습니다.");
     } catch (error: unknown) {
       if (error instanceof Error) {

@@ -64,7 +64,7 @@ export default function SignUpForm() {
       );
 
       reset();
-      navigate("/", { replace: true });
+      // navigate("/", { replace: true });
       toast.success("성공적으로 회원가입이 되었습니다.");
     } catch (error: unknown) {
       if (error instanceof Error) {
