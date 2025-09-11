@@ -4,6 +4,7 @@
 .form {
   width: 100%;
   margin: 0 auto;
+  margin-bottom: 20px;
   padding: 20px;
   padding-top: 40px;
   display: flex;
@@ -98,5 +99,10 @@
     &:focus {
       background-color: #3f4548;
     }
+  }
+  .error_message {
+    color: $activeRed;
+    font-size: 14px;
+    margin-top: 12px;
   }
 }

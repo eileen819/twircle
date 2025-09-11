@@ -1,16 +1,10 @@
 import styles from "./signInForm.module.scss";
-import {
-  AuthProvider,
-  GithubAuthProvider,
-  GoogleAuthProvider,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-} from "firebase/auth";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
-import { auth, db } from "firebaseApp";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "firebaseApp";
+import useSocialSignIn from "hooks/useSocialSignIn";
 import { useTranslation } from "hooks/useTranslation";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 interface ILoginFormData {
@@ -19,8 +13,8 @@ interface ILoginFormData {
 }
 
 export default function SignInForm() {
-  const navigate = useNavigate();
   const translation = useTranslation();
+  const { handleSocialSignIn, isLoading, error } = useSocialSignIn();
 
   const {
     register,
@@ -33,66 +27,10 @@ export default function SignInForm() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       reset();
-      // navigate("/", { replace: true });
       toast.success("성공적으로 로그인이 되었습니다.");
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.log(error);
-        toast.error(error.message);
-      } else {
-        toast.error("로그인 중 오류가 발생했습니다.");
-      }
-    }
-  };
-
-  const handleSocialSignIn = async (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    const {
-      currentTarget: { name },
-    } = event;
-
-    let provider: AuthProvider | undefined;
-    if (name === "google") {
-      provider = new GoogleAuthProvider();
-    } else if (name === "github") {
-      provider = new GithubAuthProvider();
-    }
-
-    if (!provider) {
-      toast.error("지원하지 않는 로그인 방식입니다.");
-      return;
-    }
-
-    try {
-      const result = await signInWithPopup(
-        auth,
-        provider as GithubAuthProvider | GoogleAuthProvider
-      );
-      const user = result.user;
-
-      const userDocRef = doc(db, "users", user.uid);
-      const userDocSnap = await getDoc(userDocRef);
-      if (!userDocSnap.exists()) {
-        await setDoc(userDocRef, {
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          bio: "",
-          photoURL: user.photoURL,
-          photoPath: "",
-          updatedAt: serverTimestamp(),
-        });
-        if (!user.displayName) {
-          navigate("/profile/edit", { replace: true });
-        }
-      } else {
-        navigate("/", { replace: true });
-        toast.success("로그인 되었습니다.");
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error(error);
         toast.error(error.message);
       } else {
         toast.error("로그인 중 오류가 발생했습니다.");
@@ -153,6 +91,7 @@ export default function SignInForm() {
           name="google"
           className={styles.btn_google}
           onClick={handleSocialSignIn}
+          disabled={isLoading}
         >
           {translation("SIGNIN_GOOGLE")}
         </button>
@@ -163,10 +102,12 @@ export default function SignInForm() {
           name="github"
           className={styles.btn_github}
           onClick={handleSocialSignIn}
+          disabled={isLoading}
         >
           {translation("SIGNIN_GITHUB")}
         </button>
       </div>
+      {error && <div className={styles.error_message}>{error.message}</div>}
     </form>
   );
 }

@@ -1,16 +1,11 @@
 import styles from "./signUpForm.module.scss";
-import {
-  createUserWithEmailAndPassword,
-  GithubAuthProvider,
-  GoogleAuthProvider,
-  signInWithPopup,
-  updateProfile,
-} from "firebase/auth";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth, db } from "firebaseApp";
+import useSocialSignIn from "hooks/useSocialSignIn";
 import { useTranslation } from "hooks/useTranslation";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export const DEFAULT_PROFILE_IMG_URL = "/user.png";
@@ -21,18 +16,19 @@ interface ISignUpFormData {
 }
 
 export default function SignUpForm() {
+  const { handleSocialSignIn, isLoading, error } = useSocialSignIn();
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors, isValid },
     reset,
+    getValues,
   } = useForm<ISignUpFormData>({
     mode: "onChange",
+    reValidateMode: "onChange",
     criteriaMode: "all",
   });
 
-  const navigate = useNavigate();
   const translation = useTranslation();
 
   const onValid = async ({ email, password }: ISignUpFormData) => {
@@ -58,13 +54,13 @@ export default function SignUpForm() {
           bio: "",
           photoURL: user.photoURL,
           photoPath: "",
+          createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         },
         { merge: true }
       );
 
       reset();
-      // navigate("/", { replace: true });
       toast.success("성공적으로 회원가입이 되었습니다.");
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -73,66 +69,6 @@ export default function SignUpForm() {
       } else {
         toast.error("회원가입 중 오류가 발생했습니다.");
         console.log(error);
-      }
-    }
-  };
-
-  const handleSocialSignIn = async (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    const {
-      currentTarget: { name },
-    } = event;
-
-    let provider;
-    if (name === "google") {
-      provider = new GoogleAuthProvider();
-    }
-
-    if (name === "github") {
-      provider = new GithubAuthProvider();
-    }
-
-    if (!provider) {
-      toast.error("지원하지 않는 로그인 방식입니다.");
-      return;
-    }
-
-    try {
-      const result = await signInWithPopup(
-        auth,
-        provider as GithubAuthProvider | GoogleAuthProvider
-      );
-      const user = result.user;
-
-      if (!user.displayName || !user.photoURL) {
-        await updateProfile(user, {
-          displayName: user.displayName || user.email,
-          photoURL: user.photoURL || DEFAULT_PROFILE_IMG_URL,
-        });
-      }
-
-      const userDocRef = doc(db, "users", user.uid);
-      const userDocSnap = await getDoc(userDocRef);
-      if (!userDocSnap.exists()) {
-        await setDoc(userDocRef, {
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          bio: "",
-          photoURL: user.photoURL || DEFAULT_PROFILE_IMG_URL,
-          photoPath: "",
-          updatedAt: new Date().toLocaleString(),
-        });
-      }
-      navigate("/", { replace: true });
-      toast.success("로그인 되었습니다.");
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error(error);
-        toast.error(error.message);
-      } else {
-        toast.error("로그인 중 오류가 발생했습니다.");
       }
     }
   };
@@ -169,6 +105,14 @@ export default function SignUpForm() {
               value: 8,
               message: "비밀번호는 8자리 이상 입력해주세요.",
             },
+            validate: (value) => {
+              const confirmPw = getValues("confirmPassword");
+              if (confirmPw === "") return true;
+              return (
+                value === confirmPw || "비밀번호 확인과 일치하지 않습니다."
+              );
+            },
+            deps: ["confirmPassword"],
           })}
         />
         {errors?.password && <span>{errors?.password?.message}</span>}
@@ -187,8 +131,12 @@ export default function SignUpForm() {
               value: 8,
               message: "비밀번호는 8자리 이상 입력해주세요.",
             },
-            validate: (value) =>
-              value === watch("password") || "비밀번호가 일치하지 않습니다.",
+            validate: (value) => {
+              const pw = getValues("password");
+              if (pw === "") return true;
+              return value === pw || "비밀번호와 일치하지 않습니다.";
+            },
+            deps: ["password"],
           })}
         />
         {errors?.confirmPassword && (
@@ -212,6 +160,7 @@ export default function SignUpForm() {
           name="google"
           className={styles.btn_google}
           onClick={handleSocialSignIn}
+          disabled={isLoading}
         >
           {translation("SIGNUP_GOOGLE")}
         </button>
@@ -222,10 +171,12 @@ export default function SignUpForm() {
           name="github"
           className={styles.btn_github}
           onClick={handleSocialSignIn}
+          disabled={isLoading}
         >
           {translation("SIGNUP_GITHUB")}
         </button>
       </div>
+      {error && <div className={styles.error_message}>{error.message}</div>}
     </form>
   );
 }
