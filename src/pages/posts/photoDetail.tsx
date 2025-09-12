@@ -15,6 +15,7 @@ export default function PhotoDetail() {
   const {
     state: { image },
   } = useLocation();
+  console.log(image);
   const [post, setPost] = useState<IPostProps | null>(null);
 
   useEffect(() => {

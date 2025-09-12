@@ -28,6 +28,7 @@ import {
 } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { DEFAULT_PROFILE_IMG_URL } from "components/users/SignupForm";
+import Loader from "components/loader/Loader";
 
 interface IProfileForm {
   userName: string;
@@ -50,11 +51,17 @@ const STORAGE_DOWNLOAD_URL_STR = "https://firebasestorage.googleapis.com";
 export default function ProfileEdit() {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
-  const [previewImage, setpreviewImage] = useState<string | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<IUserProps | null>(null);
-  const { register, handleSubmit, setValue, reset, watch } =
-    useForm<IProfileForm>();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    watch,
+    formState: { isSubmitting },
+  } = useForm<IProfileForm>();
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const {
@@ -66,7 +73,7 @@ export default function ProfileEdit() {
     const reader = new FileReader();
     reader.onloadend = () => {
       if (typeof reader.result === "string") {
-        setpreviewImage(reader.result); // 업로드 되기 전 이미지를 선택했을 때 이미지 미리보기 용으로 필요함
+        setPreviewImage(reader.result); // 업로드 되기 전 이미지를 선택했을 때 이미지 미리보기 용으로 필요함
         setValue("imageFile", reader.result); // 이 부분이 필요한가? -> 변환파일을 넣어주지 않으면 나중에 onValid에서 imageFile을 사용할 수 없음
         if (originalImageUrl) {
           setOriginalImageUrl(null);
@@ -83,34 +90,30 @@ export default function ProfileEdit() {
     if (user) {
       try {
         if (userProfile) {
-          let profileImageUrl = userProfile.photoURL;
-          let profileImagePath = userProfile.photoPath;
           // 프로필 이미지의 수정
           // 1. 기존의 프로필 이미지를 유지할 경우
           // -> photoURL을 넣어줌, originalImageUrl / imageFile의 값은 없음 즉, preview 이미지 값이 없음
-          if (originalImageUrl && !imageFile) {
-            // 기존의 값을 유지
-            profileImageUrl = userProfile.photoURL;
-            profileImagePath = userProfile.photoPath;
-          } else {
-            // 2. 새로운 프로필 이미지를 등록하는 경우
-            if (imageFile && !originalImageUrl) {
-              if (
-                userProfile.photoURL &&
-                userProfile.photoURL.includes(STORAGE_DOWNLOAD_URL_STR)
-              ) {
-                // 기존 이미지 삭제
-                const oldProfileImageRef = ref(
-                  storage,
-                  userProfile.photoPath || userProfile.photoURL
-                );
-                await deleteObject(oldProfileImageRef);
-              }
-              profileImagePath = `${user.uid}/${uuidv4()}`;
-              const storageRef = ref(storage, profileImagePath);
-              await uploadString(storageRef, imageFile, "data_url");
-              profileImageUrl = await getDownloadURL(storageRef);
+          // 기본값을 미리 설정해두어 따로 분기처리할 필요 없음
+          let profileImageUrl = userProfile.photoURL ?? null;
+          let profileImagePath = userProfile.photoPath ?? null;
+
+          // 2. 새로운 프로필 이미지를 등록하는 경우
+          if (imageFile && !originalImageUrl) {
+            if (
+              userProfile.photoURL &&
+              userProfile.photoURL.includes(STORAGE_DOWNLOAD_URL_STR)
+            ) {
+              // 기존 이미지 삭제
+              const oldProfileImageRef = ref(
+                storage,
+                userProfile.photoPath || userProfile.photoURL
+              );
+              await deleteObject(oldProfileImageRef);
             }
+            profileImagePath = `${user.uid}/${uuidv4()}`;
+            const storageRef = ref(storage, profileImagePath);
+            await uploadString(storageRef, imageFile, "data_url");
+            profileImageUrl = await getDownloadURL(storageRef);
           }
 
           // auth의 프로필 수정
@@ -147,7 +150,7 @@ export default function ProfileEdit() {
           });
           await batch.commit();
 
-          setpreviewImage(null);
+          setPreviewImage(null);
           reset();
           navigate(`/profile/${user.uid}`, { replace: true });
           toast.success("프로필을 수정했습니다.");
@@ -197,7 +200,12 @@ export default function ProfileEdit() {
           <IoArrowBack size={20} />
         </div>
         <div className={styles.title}>Profile Edit</div>
-        <input type="submit" className={styles.submitBtn} value="Edit" />
+        <input
+          type="submit"
+          className={styles.submitBtn}
+          value="Edit"
+          disabled={isSubmitting}
+        />
       </div>
       <div className={styles.wrapper}>
         <div className={styles.imageArea}>
@@ -265,6 +273,7 @@ export default function ProfileEdit() {
           </div>
         </div>
       </div>
+      {isSubmitting ? <Loader /> : null}
     </form>
   );
 }

@@ -39,7 +39,6 @@ export default function MenuBar() {
     setActiveIcon(tabName);
     navigate(url);
   };
-  console.log(activeIcon);
 
   const onSignOut = async () => {
     await signOut(auth);

@@ -188,7 +188,7 @@ export function usePostForm({ user, navigate, mode, post }: IUsePostFormProps) {
           imageUrl = post.imageUrl;
           imagePath = post.imagePath;
         } else {
-          // 게시글 이미지의 교체 또는 추가
+          // 게시글 이미지의 교체
           if (imageFile && !originalImageUrl) {
             if (post.imageUrl && post.imagePath) {
               await deleteObject(ref(storage, post.imagePath));

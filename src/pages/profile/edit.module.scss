@@ -2,6 +2,8 @@
 @use "../../styles/mixins" as *;
 
 .editForm {
+  position: relative;
+
   .header {
     @include header;
     display: flex;
@@ -26,6 +28,13 @@
       padding: 5px 10px;
       color: $white;
       background-color: $primaryBlue;
+
+      &:disabled,
+      &:disabled:hover,
+      &:disabled:focus {
+        background-color: $activeGray;
+      }
+
       &:hover,
       &:focus {
         background-color: $activeBlue;
