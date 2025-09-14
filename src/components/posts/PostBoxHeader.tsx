@@ -5,6 +5,7 @@ import { useContext } from "react";
 import AuthContext from "context/AuthContext";
 import { useFollow } from "hooks/useFollow";
 import { useTruncateName } from "hooks/useTruncateName";
+import FollowingContext from "context/FollowingContext";
 
 interface IPostBoxHeaderProps {
   post: IPostProps | IComment;
@@ -12,7 +13,8 @@ interface IPostBoxHeaderProps {
 
 export default function PostBoxHeader({ post }: IPostBoxHeaderProps) {
   const { user } = useContext(AuthContext);
-  const { onFollow, onUnFollow, postFollowers, isLoading } = useFollow({
+  const { followingList } = useContext(FollowingContext);
+  const { onFollow, onUnFollow, isLoading } = useFollow({
     user,
     post,
   });
@@ -24,11 +26,13 @@ export default function PostBoxHeader({ post }: IPostBoxHeaderProps) {
           {useTruncateName(post.userInfo.profileName!)}
         </div>
         <div className={styles.email}>{useTruncateName(post.email)}</div>
-        {/* <div className={styles.createdAt}>{post.createdAt.toDate().toLocaleString()}</div> */}
+        <div className={styles.createdAt}>
+          {post?.createdAt?.toDate()?.toLocaleString()}
+        </div>
       </div>
       {user &&
         post.uid !== user.uid &&
-        (user.uid && postFollowers.includes(user.uid) ? (
+        (post.uid && followingList.includes(post.uid) ? (
           <button
             className={styles.unFollowBtn}
             disabled={isLoading}

@@ -5,13 +5,12 @@ import {
   arrayUnion,
   doc,
   increment,
-  onSnapshot,
   runTransaction,
 } from "firebase/firestore";
 import { db } from "firebaseApp";
 import { createFollowNotification } from "lib/firebase/notifications";
 import { IComment } from "pages/posts/detail";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 
 interface IUseFollowProps {
@@ -21,7 +20,6 @@ interface IUseFollowProps {
 
 export function useFollow({ user, post }: IUseFollowProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [postFollowers, setPostFollowers] = useState<string[]>([]);
 
   const onFollow = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -117,16 +115,5 @@ export function useFollow({ user, post }: IUseFollowProps) {
     }
   };
 
-  useEffect(() => {
-    if (!post.uid) return;
-    const postFollowersRef = doc(db, "followers", post.uid);
-    const unsubscribe = onSnapshot(postFollowersRef, (snapshot) => {
-      const followersData = snapshot.data()?.users || [];
-      setPostFollowers(followersData);
-    });
-
-    return () => unsubscribe();
-  }, [post.uid]);
-
-  return { onFollow, onUnFollow, postFollowers, isLoading };
+  return { onFollow, onUnFollow, isLoading };
 }

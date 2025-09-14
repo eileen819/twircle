@@ -1,31 +1,18 @@
-// import HomeHeader from "components/header/HomeHeader";
 import PostForm from "components/posts/PostForm";
 import PostList from "components/posts/PostList";
 import TabList from "components/tabs/TabList";
 import AuthContext from "context/AuthContext";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "firebaseApp";
+import FollowingContext from "context/FollowingContext";
 import { TabType, useTabPosts } from "hooks/useTabPosts";
 import { useTranslation } from "hooks/useTranslation";
-import { useContext, useEffect, useState } from "react";
-// import PostsList from "pages/posts/list";
+import { useContext, useState } from "react";
 
 export default function Home() {
   const { user } = useContext(AuthContext);
+  const { followingList } = useContext(FollowingContext);
   const [activeTab, setActiveTab] = useState<TabType>(TabType.All);
-  const [followingList, setFollowingList] = useState<string[]>([]);
   const posts = useTabPosts({ user, followingList, activeTab });
   const translation = useTranslation();
-
-  useEffect(() => {
-    if (!user) return;
-    const followingRef = doc(db, "following", user.uid);
-    const unsubscribe = onSnapshot(followingRef, (snapshot) => {
-      const followingData = snapshot?.data()?.users || [];
-      setFollowingList(followingData);
-    });
-    return () => unsubscribe();
-  }, [user]);
 
   return (
     <>

@@ -5,13 +5,16 @@ import { AuthContextProvider } from "context/AuthContext";
 import { BrowserRouter } from "react-router-dom";
 import App from "App";
 import { LanguageContextProvider } from "context/LanguageContext";
+import { FollowingProvider } from "context/FollowingContext";
 
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
     <AuthContextProvider>
-      <LanguageContextProvider>
-        <App />
-      </LanguageContextProvider>
+      <FollowingProvider>
+        <LanguageContextProvider>
+          <App />
+        </LanguageContextProvider>
+      </FollowingProvider>
     </AuthContextProvider>
   </BrowserRouter>
 );
