@@ -65,10 +65,15 @@ export default function NotificationsPage() {
         </div>
       </div>
       <div className={styles.main}>
-        {notifications?.length !== 0 &&
+        {notifications?.length !== 0 ? (
           notifications?.map((noti) => (
             <NotificationBox key={noti.id} notification={noti} user={user} />
-          ))}
+          ))
+        ) : (
+          <div className={styles.noti_message}>
+            {translation("NONOTI_MESSAGE")}
+          </div>
+        )}
       </div>
     </div>
   );

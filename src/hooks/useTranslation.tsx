@@ -81,6 +81,10 @@ const TRANSLATIONS = {
     ko: "님이 나를 팔로우 했습니다.",
     en: "followed you",
   },
+  NONOTI_MESSAGE: {
+    ko: "알림이 없습니다.",
+    en: "No notifications.",
+  },
   SIGNIN_TITLE: {
     ko: "로그인",
     en: "Sign In",

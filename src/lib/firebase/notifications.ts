@@ -44,7 +44,7 @@ export async function createFollowNotification({
     fromUid: user.uid,
     fromName: user.displayName,
     fromPhotoUrl: user.photoURL,
-    url: `/profile/${postUid}`,
+    url: `/profile/${user.uid}`,
     isRead: false,
     createdAt: serverTimestamp(),
   });
