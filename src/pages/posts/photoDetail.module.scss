@@ -14,34 +14,11 @@
 
 .originalImg {
   padding: 0px 40px;
+  margin-top: 10px;
+  margin-bottom: 40px;
 
   img {
     width: 100%;
     object-fit: contain;
-  }
-}
-
-.footer {
-  padding: 10px 40px 20px 40px;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 20px;
-
-  .commentsBtn,
-  .likesBtn {
-    @include btn;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    padding: 0;
-    color: $activeGray;
-    font-size: 14px;
-
-    &:hover,
-    &:focus {
-      color: $primaryGray;
-    }
   }
 }

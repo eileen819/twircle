@@ -159,25 +159,6 @@ export default function ProfileEdit() {
     }
   };
 
-  // useEffect(() => {
-  //   const getUser = async (uid: string) => {
-  //     const userDocRef = doc(db, "users", uid);
-  //     const docSnap = await getDoc(userDocRef);
-  //     if (docSnap.exists()) {
-  //       const userData = {
-  //         ...docSnap.data(),
-  //       } as IUserProps;
-  //       setUserProfile(userData);
-  //     } else {
-  //       toast.error("해당 프로필을 찾을 수 없습니다.");
-  //       navigate("/profile");
-  //     }
-  //   };
-  //   if (user && user?.uid) {
-  //     getUser(user.uid);
-  //   }
-  // }, [user, user?.uid, navigate]);
-
   useEffect(() => {
     if (userProfile) {
       setValue("userName", userProfile.displayName);

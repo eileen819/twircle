@@ -16,27 +16,8 @@ export default function ProfileDetail() {
   const { user } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState<TabType>(TabType.UserPosts);
   const { userProfile } = useUserProfile(uid);
-  // const [userProfile, setUserProfile] = useState<IUserProps | null>(null);
   const posts = useTabPosts({ activeTab, user, uid });
   const translation = useTranslation();
-
-  // useEffect(() => {
-  //   if (!user || !uid) return;
-
-  //   const getUser = async (uid: string) => {
-  //     const userRef = doc(db, "users", uid);
-  //     const userDocSnap = await getDoc(userRef);
-  //     if (userDocSnap.exists()) {
-  //       const userDate = {
-  //         ...userDocSnap.data(),
-  //       } as IUserProps;
-  //       setUserProfile(userDate);
-  //     }
-  //   };
-  //   if (uid) {
-  //     getUser(uid);
-  //   }
-  // }, [uid, user]);
 
   if (!user) return;
 
