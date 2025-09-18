@@ -6,6 +6,8 @@ import PostActions from "components/posts/PostActions";
 import PostContent from "components/posts/PostContent";
 import CommentEditForm from "./CommentEditForm";
 import PostBoxHeader from "components/posts/PostBoxHeader";
+import { DEFAULT_PROFILE_IMG_URL } from "constants/constant";
+import { useUserProfile } from "hooks/useUserProfile";
 
 interface ICommentBoxProps {
   comment: IComment;
@@ -21,6 +23,7 @@ export default function CommentBox({
   const postRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const [isEdit, setIsEdit] = useState(false);
+  const { userProfile } = useUserProfile(comment.uid);
 
   // const handleNavigate = () => {
   //   if ("postId" in post) {
@@ -52,7 +55,14 @@ export default function CommentBox({
         <div className={styles.profile}>
           <Link to={`/profile/${comment.uid}`}>
             <div className={styles.profile__img}>
-              <img src={comment.userInfo.profileUrl} alt="profile" />
+              <img
+                src={
+                  userProfile?.photoURL
+                    ? userProfile.photoURL
+                    : DEFAULT_PROFILE_IMG_URL
+                }
+                alt="profile"
+              />
             </div>
           </Link>
         </div>

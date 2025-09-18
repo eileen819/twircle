@@ -1,3 +1,4 @@
+import { DEFAULT_PROFILE_IMG_URL } from "constants/constant";
 import styles from "./signUpForm.module.scss";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
@@ -8,7 +9,6 @@ import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
-export const DEFAULT_PROFILE_IMG_URL = "/user.png";
 interface ISignUpFormData {
   email: string;
   password: string;
@@ -154,6 +154,7 @@ export default function SignUpForm() {
           {translation("SIGNUP_SUBMIT")}
         </button>
       </div>
+      <div className={styles.line}>{translation("BLOCK_LINE")}</div>
       <div className={styles.block}>
         <button
           type="button"

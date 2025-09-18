@@ -9,6 +9,8 @@ import { LuMessageSquareText } from "react-icons/lu";
 import { MdPersonAddAlt1 } from "react-icons/md";
 import { useTruncateName } from "hooks/useTruncateName";
 import { useTranslation } from "hooks/useTranslation";
+import { DEFAULT_PROFILE_IMG_URL } from "constants/constant";
+import { useUserProfile } from "hooks/useUserProfile";
 
 interface INotificationBoxProps {
   notification: INotifications;
@@ -21,7 +23,8 @@ export default function NotificationBox({
 }: INotificationBoxProps) {
   const navigate = useNavigate();
   const translation = useTranslation();
-  const nameFromNoti = useTruncateName(notification.fromName);
+  const { userProfile } = useUserProfile(notification.fromUid);
+  const nameFromNoti = useTruncateName(userProfile?.displayName || "사용자");
 
   const onClickNotification = async (notificationId: string, url: string) => {
     if (!user) return;
@@ -65,7 +68,14 @@ export default function NotificationBox({
             to={`/profile/${notification.fromUid}`}
             onClick={(e) => e.stopPropagation()}
           >
-            <img src={notification.fromPhotoUrl} alt="profile_image" />
+            <img
+              src={
+                userProfile?.photoURL
+                  ? userProfile.photoURL
+                  : DEFAULT_PROFILE_IMG_URL
+              }
+              alt="profile_image"
+            />
           </Link>
         </div>
         <div className={styles.notiContent}>

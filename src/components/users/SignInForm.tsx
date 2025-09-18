@@ -85,6 +85,7 @@ export default function SignInForm() {
           {translation("SIGNIN_SUBMIT")}
         </button>
       </div>
+      <div className={styles.line}>{translation("BLOCK_LINE")}</div>
       <div className={styles.block}>
         <button
           type="button"

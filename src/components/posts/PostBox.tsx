@@ -6,6 +6,8 @@ import PostContent from "./PostContent";
 import { IComment } from "pages/posts/detail";
 import PostActions from "components/posts/PostActions";
 import PostBoxHeader from "./PostBoxHeader";
+import { DEFAULT_PROFILE_IMG_URL } from "constants/constant";
+import { useUserProfile } from "hooks/useUserProfile";
 
 interface IPostBoxProps {
   post: IPostProps | IComment;
@@ -15,6 +17,7 @@ interface IPostBoxProps {
 export default function PostBox({ post, handleComment }: IPostBoxProps) {
   const postRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { userProfile } = useUserProfile(post.uid);
 
   const handleNavigate = () => {
     if ("postId" in post) {
@@ -35,7 +38,14 @@ export default function PostBox({ post, handleComment }: IPostBoxProps) {
         <div className={styles.profile}>
           <Link to={`/profile/${post.uid}`}>
             <div className={styles.profile__img}>
-              <img src={post.userInfo.profileUrl} alt="profile" />
+              <img
+                src={
+                  userProfile?.photoURL
+                    ? userProfile.photoURL
+                    : DEFAULT_PROFILE_IMG_URL
+                }
+                alt="profile"
+              />
             </div>
           </Link>
         </div>

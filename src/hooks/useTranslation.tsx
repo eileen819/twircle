@@ -137,6 +137,10 @@ const TRANSLATIONS = {
     ko: "회원가입",
     en: "Sign Up",
   },
+  BLOCK_LINE: {
+    ko: "또는",
+    en: "or",
+  },
   SIGNUP_GOOGLE: {
     ko: "Google로 회원가입",
     en: "Sign up with Google",

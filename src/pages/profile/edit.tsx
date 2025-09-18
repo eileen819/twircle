@@ -14,21 +14,11 @@ import {
   uploadString,
 } from "firebase/storage";
 import { db, storage } from "firebaseApp";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  serverTimestamp,
-  Timestamp,
-  updateDoc,
-  where,
-  writeBatch,
-} from "firebase/firestore";
+import { doc, serverTimestamp, Timestamp, updateDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
-import { DEFAULT_PROFILE_IMG_URL } from "components/users/SignupForm";
+import { DEFAULT_PROFILE_IMG_URL } from "constants/constant";
 import Loader from "components/loader/Loader";
+import { useUserProfile } from "hooks/useUserProfile";
 
 interface IProfileForm {
   userName: string;
@@ -51,9 +41,10 @@ const STORAGE_DOWNLOAD_URL_STR = "https://firebasestorage.googleapis.com";
 export default function ProfileEdit() {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+  const { userProfile } = useUserProfile(user?.uid);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
-  const [userProfile, setUserProfile] = useState<IUserProps | null>(null);
+  // const [userProfile, setUserProfile] = useState<IUserProps | null>(null);
   const {
     register,
     handleSubmit,
@@ -82,9 +73,6 @@ export default function ProfileEdit() {
     };
     reader.readAsDataURL(file);
   };
-  // console.log(imageFile);
-  // console.log(originalImageUrl);
-  // console.log(userProfile);
 
   const onValid = async ({ userName, imageFile, bio }: IProfileForm) => {
     if (user) {
@@ -132,23 +120,28 @@ export default function ProfileEdit() {
             updatedAt: serverTimestamp(),
           });
 
-          // firestore의 user가 작성한 posts 컬렉션의 문서들의 프로필 정보 수정
-          const userPostsRef = query(
-            collection(db, "posts"),
-            where("uid", "==", user.uid)
-          );
-          const userPostSnap = await getDocs(userPostsRef);
-          const batch = writeBatch(db);
-          userPostSnap.forEach((docSnap) => {
-            const userPostRef = doc(db, "posts", docSnap.id);
-            batch.update(userPostRef, {
-              userInfo: {
-                profileName: userName,
-                profileUrl: profileImageUrl,
-              },
-            });
-          });
-          await batch.commit();
+          // const userPostsRef = query(
+          //   collection(db, "posts"),
+          //   where("uid", "==", user.uid)
+          // );
+          // const userPostSnap = await getDocs(userPostsRef);
+
+          // const batch = writeBatch(db);
+          // // firestore의 user가 작성한 posts 컬렉션의 문서들의 프로필 정보 수정
+          // userPostSnap.forEach((docSnap) => {
+          //   const userPostRef = doc(db, "posts", docSnap.id);
+          //   batch.update(userPostRef, {
+          //     userInfo: {
+          //       profileName: userName,
+          //       profileUrl: profileImageUrl,
+          //     },
+          //   });
+          // });
+          // await batch.commit();
+
+          // // firestore의 comment 문서들의 프로필 정보 수정
+
+          // // firestore의 users/(uid)/notifications 문서들의 프로필 정보 수정
 
           setPreviewImage(null);
           reset();
@@ -166,24 +159,24 @@ export default function ProfileEdit() {
     }
   };
 
-  useEffect(() => {
-    const getUser = async (uid: string) => {
-      const userDocRef = doc(db, "users", uid);
-      const docSnap = await getDoc(userDocRef);
-      if (docSnap.exists()) {
-        const userData = {
-          ...docSnap.data(),
-        } as IUserProps;
-        setUserProfile(userData);
-      } else {
-        toast.error("해당 프로필을 찾을 수 없습니다.");
-        navigate("/profile");
-      }
-    };
-    if (user && user?.uid) {
-      getUser(user.uid);
-    }
-  }, [user, user?.uid, navigate]);
+  // useEffect(() => {
+  //   const getUser = async (uid: string) => {
+  //     const userDocRef = doc(db, "users", uid);
+  //     const docSnap = await getDoc(userDocRef);
+  //     if (docSnap.exists()) {
+  //       const userData = {
+  //         ...docSnap.data(),
+  //       } as IUserProps;
+  //       setUserProfile(userData);
+  //     } else {
+  //       toast.error("해당 프로필을 찾을 수 없습니다.");
+  //       navigate("/profile");
+  //     }
+  //   };
+  //   if (user && user?.uid) {
+  //     getUser(user.uid);
+  //   }
+  // }, [user, user?.uid, navigate]);
 
   useEffect(() => {
     if (userProfile) {

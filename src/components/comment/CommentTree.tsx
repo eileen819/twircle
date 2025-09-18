@@ -19,7 +19,16 @@ export default function CommentTree({
   return (
     <>
       {comment.isDeleted ? (
-        <p>삭제된 댓글입니다.</p>
+        <p
+          style={{
+            border: "1px solid #dcdde1",
+            borderRadius: 10,
+            padding: 20,
+            marginTop: 10,
+          }}
+        >
+          삭제된 댓글입니다.
+        </p>
       ) : (
         <CommentBox
           comment={comment}

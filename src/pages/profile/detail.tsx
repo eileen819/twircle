@@ -1,43 +1,44 @@
 import styles from "./detail.module.scss";
 import PostList from "components/posts/PostList";
 import AuthContext from "context/AuthContext";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "firebaseApp";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { IoArrowBack } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
-import { IUserProps } from "./edit";
-import { DEFAULT_PROFILE_IMG_URL } from "components/users/SignupForm";
+import { DEFAULT_PROFILE_IMG_URL } from "constants/constant";
 import TabList from "components/tabs/TabList";
 import { TabType, useTabPosts } from "hooks/useTabPosts";
 import { useTranslation } from "hooks/useTranslation";
+import { useUserProfile } from "hooks/useUserProfile";
 
 export default function ProfileDetail() {
   const navigate = useNavigate();
   const { uid } = useParams();
   const { user } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState<TabType>(TabType.UserPosts);
-  const [userProfile, setUserProfile] = useState<IUserProps | null>(null);
+  const { userProfile } = useUserProfile(uid);
+  // const [userProfile, setUserProfile] = useState<IUserProps | null>(null);
   const posts = useTabPosts({ activeTab, user, uid });
   const translation = useTranslation();
 
-  useEffect(() => {
-    if (!user || !uid) return;
+  // useEffect(() => {
+  //   if (!user || !uid) return;
 
-    const getUser = async (uid: string) => {
-      const userRef = doc(db, "users", uid);
-      const userDocSnap = await getDoc(userRef);
-      if (userDocSnap.exists()) {
-        const userDate = {
-          ...userDocSnap.data(),
-        } as IUserProps;
-        setUserProfile(userDate);
-      }
-    };
-    if (uid) {
-      getUser(uid);
-    }
-  }, [uid, user]);
+  //   const getUser = async (uid: string) => {
+  //     const userRef = doc(db, "users", uid);
+  //     const userDocSnap = await getDoc(userRef);
+  //     if (userDocSnap.exists()) {
+  //       const userDate = {
+  //         ...userDocSnap.data(),
+  //       } as IUserProps;
+  //       setUserProfile(userDate);
+  //     }
+  //   };
+  //   if (uid) {
+  //     getUser(uid);
+  //   }
+  // }, [uid, user]);
+
+  if (!user) return;
 
   return (
     <>

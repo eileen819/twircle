@@ -1,4 +1,4 @@
-import { DEFAULT_PROFILE_IMG_URL } from "components/users/SignupForm";
+import { DEFAULT_PROFILE_IMG_URL } from "constants/constant";
 import {
   AuthProvider,
   getAdditionalUserInfo,

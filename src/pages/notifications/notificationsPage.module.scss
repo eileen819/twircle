@@ -21,8 +21,11 @@
 }
 
 .main {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 30vh;
+  .noti_message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 30vh;
+  }
 }

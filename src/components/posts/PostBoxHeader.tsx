@@ -6,6 +6,7 @@ import AuthContext from "context/AuthContext";
 import { useFollow } from "hooks/useFollow";
 import { useTruncateName } from "hooks/useTruncateName";
 import FollowingContext from "context/FollowingContext";
+import { useUserProfile } from "hooks/useUserProfile";
 
 interface IPostBoxHeaderProps {
   post: IPostProps | IComment;
@@ -18,12 +19,13 @@ export default function PostBoxHeader({ post }: IPostBoxHeaderProps) {
     user,
     post,
   });
+  const { userProfile } = useUserProfile(post.uid);
 
   return (
     <div className={styles.headerWrapper}>
       <div className={styles.profileInfo}>
         <div className={styles.name}>
-          {useTruncateName(post.userInfo.profileName!)}
+          {useTruncateName(userProfile?.displayName || "사용자")}
         </div>
         <div className={styles.email}>{useTruncateName(post.email)}</div>
         <div className={styles.createdAt}>

@@ -17,6 +17,8 @@ import CommentList from "components/comment/CommentList";
 import { useActions } from "hooks/useActions";
 import CommentModal from "components/comment/CommentModal";
 import { useTranslation } from "hooks/useTranslation";
+import { useUserProfile } from "hooks/useUserProfile";
+import { DEFAULT_PROFILE_IMG_URL } from "constants/constant";
 
 export interface IComment {
   id: string;
@@ -48,6 +50,8 @@ export default function PostDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState<IPostProps | null>(null);
+  const { userProfile } = useUserProfile(post?.uid);
+
   const [isShowMenu, setIsShowMenu] = useState(false);
   const [isShowCommentModal, setIsShowCommentModal] = useState(false);
   const [rootRecentlyCreatedId, setRootRecentlyCreatedId] = useState<
@@ -145,10 +149,17 @@ export default function PostDetail() {
             <Link to={`/profile/${post.uid}`}>
               <div className={styles.profileBox}>
                 <div className={styles.profileBox__img}>
-                  <img src={post?.userInfo.profileUrl} alt="profile" />
+                  <img
+                    src={
+                      userProfile?.photoURL
+                        ? userProfile.photoURL
+                        : DEFAULT_PROFILE_IMG_URL
+                    }
+                    alt="profile"
+                  />
                 </div>
                 <div className={styles.profileBox__info}>
-                  <div className={styles.name}>{post.userInfo.profileName}</div>
+                  <div className={styles.name}>{userProfile?.displayName}</div>
                   <div className={styles.email}>{post?.email}</div>
                 </div>
               </div>

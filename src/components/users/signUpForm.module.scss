@@ -47,6 +47,34 @@
     }
   }
 
+  .line {
+    margin-top: 30px;
+    color: $borderColor;
+    position: relative;
+    text-align: center;
+    width: 100%;
+
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 40%;
+      height: 1px;
+      background: #ccc;
+    }
+
+    &::before {
+      left: 0;
+      margin-left: 20px;
+    }
+
+    &::after {
+      right: 0;
+      margin-right: 20px;
+    }
+  }
+
   .form_link {
     margin-left: 10px;
     color: $grayText;
