@@ -1,6 +1,10 @@
 import { DEFAULT_PROFILE_IMG_URL } from "constants/constant";
 import styles from "./signUpForm.module.scss";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import {
+  AuthError,
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth, db } from "firebaseApp";
 import useSocialSignIn from "hooks/useSocialSignIn";
@@ -8,6 +12,7 @@ import { useTranslation } from "hooks/useTranslation";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useState } from "react";
 
 interface ISignUpFormData {
   email: string;
@@ -16,6 +21,9 @@ interface ISignUpFormData {
 }
 
 export default function SignUpForm() {
+  const [errorMessage, setErrorMessage] = useState<
+    AuthError | Error | string | null
+  >(null);
   const { handleSocialSignIn, isLoading, error } = useSocialSignIn();
   const {
     register,
@@ -32,6 +40,7 @@ export default function SignUpForm() {
   const translation = useTranslation();
 
   const onValid = async ({ email, password }: ISignUpFormData) => {
+    setErrorMessage(null);
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -63,12 +72,15 @@ export default function SignUpForm() {
       reset();
       toast.success("성공적으로 회원가입이 되었습니다.");
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.log(error);
-        toast.error(error.message);
+      const err = error as AuthError;
+
+      if (err.code === "auth/email-already-in-use") {
+        setErrorMessage("이미 같은 이메일로 가입한 계정이 있습니다.");
+        toast.error("이미 같은 이메일로 가입한 계정이 있습니다.");
       } else {
+        setErrorMessage(new Error("회원가입 중 오류가 발생했습니다."));
         toast.error("회원가입 중 오류가 발생했습니다.");
-        console.log(error);
+        console.log(err.code);
       }
     }
   };
@@ -177,7 +189,10 @@ export default function SignUpForm() {
           {translation("SIGNUP_GITHUB")}
         </button>
       </div>
-      {error && <div className={styles.error_message}>{error.message}</div>}
+      {error && <div className={styles.error_message}>{error.toString()}</div>}
+      {errorMessage && (
+        <div className={styles.error_message}>{errorMessage.toString()}</div>
+      )}
     </form>
   );
 }

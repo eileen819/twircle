@@ -1,5 +1,6 @@
 import { DEFAULT_PROFILE_IMG_URL } from "constants/constant";
 import {
+  AuthError,
   AuthProvider,
   getAdditionalUserInfo,
   GithubAuthProvider,
@@ -14,7 +15,7 @@ import { toast } from "react-toastify";
 
 export default function useSocialSignIn() {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<AuthError | Error | string | null>(null);
 
   const handleSocialSignIn = async (
     event: React.MouseEvent<HTMLButtonElement>
@@ -75,13 +76,22 @@ export default function useSocialSignIn() {
       );
 
       toast.success("로그인 되었습니다.");
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        setError(error);
-        toast.error(error.message);
+    } catch (error) {
+      const err = error as AuthError;
+      const email = err.customData.email;
+
+      if (err.code === "auth/account-exists-with-different-credential") {
+        if (email) {
+          setError(`이미 ${email}의 계정이 있습니다.`);
+          toast.error(`이미 ${email}의 계정이 있습니다.`);
+        } else {
+          setError("이미 같은 이메일의 계정이 있습니다.");
+          toast.error("이미 같은 이메일의 계정이 있습니다.");
+        }
       } else {
         setError(new Error("로그인 중 오류가 발생했습니다."));
         toast.error("로그인 중 오류가 발생했습니다.");
+        console.log(err.code);
       }
     } finally {
       setIsLoading(false);

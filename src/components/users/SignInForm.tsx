@@ -31,7 +31,7 @@ export default function SignInForm() {
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.log(error);
-        toast.error(error.message);
+        toast.error("로그인에 실패하였습니다.");
       } else {
         toast.error("로그인 중 오류가 발생했습니다.");
       }
@@ -108,7 +108,7 @@ export default function SignInForm() {
           {translation("SIGNIN_GITHUB")}
         </button>
       </div>
-      {error && <div className={styles.error_message}>{error.message}</div>}
+      {error && <div className={styles.error_message}>{error.toString()}</div>}
     </form>
   );
 }

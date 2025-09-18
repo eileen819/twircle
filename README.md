@@ -8,8 +8,7 @@
 ## 📌 프로젝트 개요
 
 - **twircle**은 사용자의 일상과 생각을 공유할 수 있는 **트위터(Twitter) 클론형 소셜 네트워크 서비스**입니다.
-- 사용자는 글 작성 및 검색, 이미지 업로드, 댓글/대댓글, 좋아요, 팔로우, 실시간 알림 기능을 통해  
-  실제 SNS와 유사한 경험을 할 수 있습니다.
+- 사용자는 글 작성 및 검색, 이미지 업로드, 댓글/대댓글, 좋아요, 팔로우, 실시간 알림 기능을 통해 실제 SNS와 유사한 경험을 할 수 있습니다.
 - 특히 Firebase Firestore 실시간 구독(`onSnapshot`)을 활용하여 타임라인, 댓글, 알림이 즉시 반영되도록 구현했으며, Firebase Auth 기반으로 로그인/회원가입을 구현하고, Context API를 활용해 글로벌 상태를 구현했습니다. 이 외에도 해시태그 기반 검색을 지원합니다.
 - 본 프로젝트는 단순 UI 복제를 넘어, **실시간 데이터 처리·상태 관리 최적화·접근성·성능 개선** 등 최신 프론트엔드 트렌드에 필요한 역량을 종합적으로 보여주는 데 목적이 있습니다.  
   <br />
@@ -25,10 +24,12 @@
 
 - Firebase Auth의 OAuth Provider(Google, GitHub)를 연동하여, 별도 회원가입 절차 없이 소셜 계정으로 로그인할 수 있습니다.
 
-### ✅ 해시태그 기반 검색
+### ✅ 해시태그 하이라이팅 (contentEditable 기반) 및 검색
 
-- 게시글 내 해시태그를 클릭하면 해당 해시태그로 검색 결과를 확인할 수 있습니다.
-- 전체 트윗 검색 기능도 지원합니다.
+- `contentEditable` 편집 영역에서 입력 중 **해시태그(#tag)** 를 자동 감지해 색상 하이라이트 처리합니다.
+- **한국어 입력기(IME)** 사용 시 `composition` 이벤트를 감지해, 입력이 확정된 후에만 파싱 및 하이라이팅이 적용되도록 했습니다.
+- 게시글 내 해시태그를 클릭하면 해당 해시태그 검색 결과를 확인할 수 있습니다.
+- 검색 정확도를 높이기 위해 게시글 텍스트를 **검색 인덱스로 토큰화**하여 전체 트윗 검색이 가능하게 하였습니다.
 
 ### ✅ 팔로우/팔로잉 기능
 
@@ -56,6 +57,25 @@
 
 ## 🔎 역할과 기여도
 
+- 개인 프로젝트로 **기획부터 설계, 개발, 배포까지 프론트엔드 전 과정을 단독으로 주도**하였습니다.
+- **React + TypeScript 기반 아키텍처 설계**를 통해 컴포넌트 재사용성과 유지보수성을 확보하였습니다.
+- **실시간 데이터 처리**
+  - Firestore `onSnapshot`을 적용해 타임라인, 댓글, 알림이 즉시 반영되도록 구현
+  - 지연 없는 데이터 반영으로 SNS 특유의 **실시간성 UX**를 제공
+- **소셜 로그인 및 인증**
+  - Firebase Auth + Google/GitHub OAuth 연동
+  - 별도의 회원가입 절차 없이 **간편 로그인 UX**를 구축
+- **댓글 & 대댓글 트리 구조**
+  - `parentId`, `conversationId` 기반 데이터 모델링으로 계층형 대화 흐름을 지원
+  - 삭제 댓글은 “삭제된 댓글입니다”로 표시해 **대화 맥락을 유지**
+- **해시태그 기반 검색**
+  - `contentEditable` 기반 에디터를 구현하여 입력 시 해시태그 자동 하이라이팅
+  - 해시태그/키워드 검색을 지원해 **콘텐츠 탐색 경험**을 강화
+- **실시간 알림(Notification)**
+
+  - 댓글, 좋아요, 팔로우 이벤트 발생 시 `/users/{uid}/notifications` 경로에 알림 생성
+  - Firestore `onSnapshot`을 활용해 알림을 실시간 전달, **사용자 간 상호작용을 강화**
+
   <br/>
 
 ## 🛠️ 사용한 기술 스택
@@ -74,120 +94,7 @@
 ## 📁 프로젝트 구조
 
 ```
-src
- ┣ components
- ┃ ┣ comment
- ┃ ┃ ┣ CommentBox.tsx
- ┃ ┃ ┣ CommentEditForm.tsx
- ┃ ┃ ┣ CommentForm.tsx
- ┃ ┃ ┣ CommentList.tsx
- ┃ ┃ ┣ CommentModal.tsx
- ┃ ┃ ┣ CommentPost.tsx
- ┃ ┃ ┣ CommentTree.tsx
- ┃ ┃ ┣ commentBox.module.scss
- ┃ ┃ ┣ commentEditForm.module.scss
- ┃ ┃ ┣ commentForm.module.scss
- ┃ ┃ ┣ commentModal.module.scss
- ┃ ┃ ┗ commentPost.module.scss
- ┃ ┣ header
- ┃ ┃ ┣ HomeHeader.tsx
- ┃ ┃ ┗ homeHeader.module.scss
- ┃ ┣ layout
- ┃ ┃ ┣ Layout.tsx
- ┃ ┃ ┗ layout.module.scss
- ┃ ┣ loader
- ┃ ┃ ┣ Loader.tsx
- ┃ ┃ ┗ loader.module.scss
- ┃ ┣ menu
- ┃ ┃ ┣ Menu.tsx
- ┃ ┃ ┗ menu.module.scss
- ┃ ┣ notification
- ┃ ┃ ┣ NotificationBox.tsx
- ┃ ┃ ┗ notificationBox.module.scss
- ┃ ┣ posts
- ┃ ┃ ┣ PostActions.tsx
- ┃ ┃ ┣ PostBox.tsx
- ┃ ┃ ┣ PostBoxHeader.tsx
- ┃ ┃ ┣ PostComment.tsx
- ┃ ┃ ┣ PostContent.tsx
- ┃ ┃ ┣ PostForm.tsx
- ┃ ┃ ┣ PostList.tsx
- ┃ ┃ ┣ postActions.module.scss
- ┃ ┃ ┣ postBox.module.scss
- ┃ ┃ ┣ postBoxHeader.module.scss
- ┃ ┃ ┣ postComment.module.scss
- ┃ ┃ ┣ postForm.module.scss
- ┃ ┃ ┗ postList.module.scss
- ┃ ┣ tabs
- ┃ ┃ ┣ TabList.tsx
- ┃ ┃ ┗ tabList.module.scss
- ┃ ┗ users
- ┃ ┃ ┣ SignInForm.tsx
- ┃ ┃ ┣ SignupForm.tsx
- ┃ ┃ ┣ signInForm.module.scss
- ┃ ┃ ┗ signUpForm.module.scss
- ┣ context
- ┃ ┣ AuthContext.tsx
- ┃ ┣ FollowingContext.tsx
- ┃ ┗ LanguageContext.tsx
- ┣ hooks
- ┃ ┣ useActions.tsx
- ┃ ┣ useCommentForm.tsx
- ┃ ┣ useFollow.tsx
- ┃ ┣ useLanguage.tsx
- ┃ ┣ usePostForm.tsx
- ┃ ┣ useSearchPosts.tsx
- ┃ ┣ useSocialSignIn.tsx
- ┃ ┣ useTabPosts.tsx
- ┃ ┣ useTranslation.tsx
- ┃ ┣ useTruncateName.tsx
- ┃ ┗ useUnReadNotifications.tsx
- ┣ lib
- ┃ ┣ firebase
- ┃ ┃ ┗ notifications.ts
- ┃ ┗ utils.tsx
- ┣ pages
- ┃ ┣ home
- ┃ ┃ ┗ index.tsx
- ┃ ┣ notifications
- ┃ ┃ ┣ index.tsx
- ┃ ┃ ┗ notificationsPage.module.scss
- ┃ ┣ posts
- ┃ ┃ ┣ .DS_Store
- ┃ ┃ ┣ detail.module.scss
- ┃ ┃ ┣ detail.tsx
- ┃ ┃ ┣ edit.module.scss
- ┃ ┃ ┣ edit.tsx
- ┃ ┃ ┣ index.tsx
- ┃ ┃ ┣ list.tsx
- ┃ ┃ ┣ new.tsx
- ┃ ┃ ┣ photoDetail.module.scss
- ┃ ┃ ┗ photoDetail.tsx
- ┃ ┣ profile
- ┃ ┃ ┣ detail.module.scss
- ┃ ┃ ┣ detail.tsx
- ┃ ┃ ┣ edit.module.scss
- ┃ ┃ ┣ edit.tsx
- ┃ ┃ ┗ index.tsx
- ┃ ┣ search
- ┃ ┃ ┣ index.tsx
- ┃ ┃ ┗ searchPage.module.scss
- ┃ ┣ users
- ┃ ┃ ┣ index.tsx
- ┃ ┃ ┣ signIn.tsx
- ┃ ┃ ┗ signUp.tsx
- ┃ ┗ .DS_Store
- ┣ routes
- ┃ ┗ Router.tsx
- ┣ styles
- ┃ ┣ _colors.scss
- ┃ ┣ _mixins.scss
- ┃ ┣ _variables.scss
- ┃ ┣ main.scss
- ┃ ┗ reset.css
- ┣ App.tsx
- ┣ firebaseApp.tsx
- ┗ main.tsx
+
 ```
 
   <br/>
@@ -242,6 +149,48 @@ npm run preview
 
 ## 🔄 개선 예정 기능 (업데이트 계획)
 
+### ✔️ 리트윗 기능
+
+- 다른 사용자의 게시글을 자신의 피드에 공유할 수 있도록 구현 예정
+- 사용자 간 상호작용과 콘텐츠 확산 강화
+
+### ✔️ 북마크 기능
+
+- 마음에 드는 게시글을 저장하고 모아볼 수 있도록 구현 예정
+- 개인화된 콘텐츠 관리 경험 제공
+
+### ✔️ 다크모드 / 라이트모드
+
+- 다크모드/라이트모드 전환 기능을 지원 예정
+- 접근성과 가독성을 개선하여 다양한 사용자 환경에 대응
+
+### ✔️ 실시간 채팅 기능
+
+- Firebase Realtime Database 또는 Firestore `onSnapshot`을 활용해 1:1 및 그룹 채팅 구현 예정
+- 즉각적인 메시지 송수신과 읽음 표시를 통해 실시간 커뮤니케이션 경험 제공
+
   <br/>
 
 ## 📚 기술적 학습 및 인사이트
+
+### 📍 실시간 데이터 처리 경험
+
+- Firestore `onSnapshot`을 적용해 단순 CRUD를 넘어 **실시간 이벤트 흐름 관리**를 경험했습니다.
+- 중복 구독으로 인한 성능 저하 문제를 겪으며, 구독 최적화와 리소스 관리의 중요성을 배웠습니다.
+
+### 📍 OAuth 인증 흐름 이해
+
+(이 부분 수정 필요)
+
+- Firebase Auth로 Google/GitHub 소셜 로그인을 구현하면서 사용자 경험을 개선하였습니다.
+- 이를 통해 OAuth Provider 간 계정 충돌 케이스를 다루는 패턴을 습득했습니다.
+
+### 📍 에디터 UX 개선과 IME 처리
+
+- `contentEditable` 기반 해시태그 하이라이팅을 구현하며, 한국어 입력 시 `composition` 이벤트를 고려하지 않으면 버그가 발생한다는 점을 배웠습니다.
+- 이를 통해 **실제 사용자 입력 흐름에 맞춘 에디터 로직 설계**의 중요성을 체감했습니다.
+
+### 📍 동시성 문제와 데이터 일관성
+
+- 다수 사용자가 동시에 좋아요를 누를 때 상태 불일치가 발생해, Firestore `transaction`으로 동시성 문제를 해결했습니다.
+- 이를 통해 **데이터 일관성 보장과 에러 핸들링 전략**의 필요성을 학습했습니다.
