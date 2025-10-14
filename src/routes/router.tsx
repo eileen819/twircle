@@ -1,4 +1,5 @@
 import Layout from "components/layout/Layout";
+import About from "pages/about";
 import Home from "pages/home";
 import NotificationsPage from "pages/notifications";
 import PostsPage from "pages/posts";
@@ -39,6 +40,7 @@ function Router({ isAuthenticated }: IRouterProps) {
             </Route>
             <Route path="search" element={<SearchPage />} />
             <Route path="notifications" element={<NotificationsPage />} />
+            <Route path="about" element={<About />} />
             <Route path="*" element={<Navigate replace to="/" />} />
           </Route>
         </>

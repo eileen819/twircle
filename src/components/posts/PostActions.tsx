@@ -34,7 +34,6 @@ export default function PostActions({
     if (postType === "posts") {
       navigate(`/posts/edit/${post?.id}`);
     } else if (postType === "comments") {
-      console.log("edit");
       setIsEdit?.(true);
     }
   };

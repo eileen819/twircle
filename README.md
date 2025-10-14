@@ -94,7 +94,127 @@
 ## 📁 프로젝트 구조
 
 ```
-
+src
+ ┣ components
+ ┃ ┣ comment
+ ┃ ┃ ┣ CommentBox.tsx
+ ┃ ┃ ┣ CommentEditForm.tsx
+ ┃ ┃ ┣ CommentForm.tsx
+ ┃ ┃ ┣ CommentList.tsx
+ ┃ ┃ ┣ CommentModal.tsx
+ ┃ ┃ ┣ CommentPost.tsx
+ ┃ ┃ ┣ CommentTree.tsx
+ ┃ ┃ ┣ commentBox.module.scss
+ ┃ ┃ ┣ commentEditForm.module.scss
+ ┃ ┃ ┣ commentForm.module.scss
+ ┃ ┃ ┣ commentModal.module.scss
+ ┃ ┃ ┗ commentPost.module.scss
+ ┃ ┣ header
+ ┃ ┃ ┣ HomeHeader.tsx
+ ┃ ┃ ┗ homeHeader.module.scss
+ ┃ ┣ layout
+ ┃ ┃ ┣ Layout.tsx
+ ┃ ┃ ┗ layout.module.scss
+ ┃ ┣ loader
+ ┃ ┃ ┣ Loader.tsx
+ ┃ ┃ ┗ loader.module.scss
+ ┃ ┣ menu
+ ┃ ┃ ┣ Menu.tsx
+ ┃ ┃ ┗ menu.module.scss
+ ┃ ┣ notification
+ ┃ ┃ ┣ NotificationBox.tsx
+ ┃ ┃ ┗ notificationBox.module.scss
+ ┃ ┣ posts
+ ┃ ┃ ┣ PostActions.tsx
+ ┃ ┃ ┣ PostBox.tsx
+ ┃ ┃ ┣ PostBoxHeader.tsx
+ ┃ ┃ ┣ PostComment.tsx
+ ┃ ┃ ┣ PostContent.tsx
+ ┃ ┃ ┣ PostForm.tsx
+ ┃ ┃ ┣ PostList.tsx
+ ┃ ┃ ┣ postActions.module.scss
+ ┃ ┃ ┣ postBox.module.scss
+ ┃ ┃ ┣ postBoxHeader.module.scss
+ ┃ ┃ ┣ postComment.module.scss
+ ┃ ┃ ┣ postForm.module.scss
+ ┃ ┃ ┗ postList.module.scss
+ ┃ ┣ tabs
+ ┃ ┃ ┣ TabList.tsx
+ ┃ ┃ ┗ tabList.module.scss
+ ┃ ┗ users
+ ┃ ┃ ┣ SignInForm.tsx
+ ┃ ┃ ┣ SignupForm.tsx
+ ┃ ┃ ┣ signInForm.module.scss
+ ┃ ┃ ┗ signUpForm.module.scss
+ ┣ constants
+ ┃ ┗ constant.ts
+ ┣ context
+ ┃ ┣ AuthContext.tsx
+ ┃ ┣ FollowingContext.tsx
+ ┃ ┗ LanguageContext.tsx
+ ┣ hooks
+ ┃ ┣ useActions.tsx
+ ┃ ┣ useCommentForm.tsx
+ ┃ ┣ useFollow.tsx
+ ┃ ┣ useGetPost.tsx
+ ┃ ┣ useLanguage.tsx
+ ┃ ┣ usePostForm.tsx
+ ┃ ┣ useSearchPosts.tsx
+ ┃ ┣ useSocialSignIn.tsx
+ ┃ ┣ useTabPosts.tsx
+ ┃ ┣ useTranslation.tsx
+ ┃ ┣ useTruncateName.tsx
+ ┃ ┣ useUnReadNotifications.tsx
+ ┃ ┗ useUserProfile.tsx
+ ┣ lib
+ ┃ ┣ firebase
+ ┃ ┃ ┗ notifications.ts
+ ┃ ┗ utils.tsx
+ ┣ pages
+ ┃ ┣ about
+ ┃ ┃ ┣ index.module.scss
+ ┃ ┃ ┗ index.tsx
+ ┃ ┣ home
+ ┃ ┃ ┗ index.tsx
+ ┃ ┣ notifications
+ ┃ ┃ ┣ index.tsx
+ ┃ ┃ ┗ notificationsPage.module.scss
+ ┃ ┣ posts
+ ┃ ┃ ┣ .DS_Store
+ ┃ ┃ ┣ detail.module.scss
+ ┃ ┃ ┣ detail.tsx
+ ┃ ┃ ┣ edit.module.scss
+ ┃ ┃ ┣ edit.tsx
+ ┃ ┃ ┣ index.tsx
+ ┃ ┃ ┣ list.tsx
+ ┃ ┃ ┣ new.tsx
+ ┃ ┃ ┣ photoDetail.module.scss
+ ┃ ┃ ┗ photoDetail.tsx
+ ┃ ┣ profile
+ ┃ ┃ ┣ detail.module.scss
+ ┃ ┃ ┣ detail.tsx
+ ┃ ┃ ┣ edit.module.scss
+ ┃ ┃ ┣ edit.tsx
+ ┃ ┃ ┗ index.tsx
+ ┃ ┣ search
+ ┃ ┃ ┣ index.tsx
+ ┃ ┃ ┗ searchPage.module.scss
+ ┃ ┣ users
+ ┃ ┃ ┣ index.tsx
+ ┃ ┃ ┣ signIn.tsx
+ ┃ ┃ ┗ signUp.tsx
+ ┃ ┗ .DS_Store
+ ┣ routes
+ ┃ ┗ Router.tsx
+ ┣ styles
+ ┃ ┣ _colors.scss
+ ┃ ┣ _mixins.scss
+ ┃ ┣ _variables.scss
+ ┃ ┣ main.scss
+ ┃ ┗ reset.css
+ ┣ App.tsx
+ ┣ firebaseApp.tsx
+ ┗ main.tsx
 ```
 
   <br/>
@@ -180,10 +300,8 @@ npm run preview
 
 ### 📍 OAuth 인증 흐름 이해
 
-(이 부분 수정 필요)
-
-- Firebase Auth로 Google/GitHub 소셜 로그인을 구현하면서 사용자 경험을 개선하였습니다.
-- 이를 통해 OAuth Provider 간 계정 충돌 케이스를 다루는 패턴을 습득했습니다.
+- Firebase Auth로 Google/GitHub 소셜 로그인을 구현하는 과정에서 **Provider 간 계정 충돌 문제**를 직접 해결했습니다.
+- `account-exists-with-different-credential` 에러를 다루며 **안정적인 인증 UX 설계**의 필요성을 이해했습니다.
 
 ### 📍 에디터 UX 개선과 IME 처리
 

@@ -33,3 +33,15 @@
     @warn "⚠️ '#{$bp}' is not a valid breakpoint.";
   }
 }
+
+@mixin respond-min($bp) {
+  @if map.has-key($breakpoints, $bp) {
+    $value: map.get($breakpoints, $bp);
+
+    @media (min-width: $value) {
+      @content;
+    }
+  } @else {
+    @warn "⚠️ '#{$bp}' is not a valid breakpoint.";
+  }
+}

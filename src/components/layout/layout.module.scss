@@ -7,29 +7,42 @@
   margin: 0 auto;
 
   .header {
-    @include respond(sm) {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
     .title {
       padding: 20px;
       font-weight: 700;
       font-size: 20px;
       pointer-events: none;
     }
-    .icon {
-      display: none;
-      @include respond(sm) {
+    .header__right {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .link__about {
         @include btn;
-        margin-right: 20px;
-        padding: 5px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 20px;
-        color: $activeBlue;
-        position: relative;
+        @include respond-min(sm) {
+          margin-right: 20px;
+        }
+        color: $primaryBlue;
+      }
+
+      .icon {
+        display: none;
+        @include respond(sm) {
+          @include btn;
+          margin-right: 20px;
+          padding: 5px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 20px;
+          color: $activeBlue;
+          position: relative;
+        }
       }
     }
   }
@@ -43,11 +56,55 @@
 
       @include respond(sm) {
         padding: 0;
+        margin-bottom: 15px;
       }
     }
 
     @include respond(sm) {
       flex-direction: column;
+    }
+  }
+
+  .footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 40px;
+    padding: 20px 0px;
+    color: $primaryGray;
+
+    .copyright {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+
+      span {
+        font-weight: 600;
+      }
+
+      p {
+        font-size: 14px;
+        color: #797979;
+      }
+    }
+
+    .github {
+      img {
+        width: 25px;
+        height: 25px;
+      }
+    }
+
+    .mail {
+      span {
+        font-size: 25px;
+      }
+    }
+
+    @include respond(sm) {
+      padding: 20px;
     }
   }
 }
