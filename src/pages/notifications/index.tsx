@@ -55,26 +55,29 @@ export default function NotificationsPage() {
   }, [user]);
 
   return (
-    <div>
-      <div className={styles.header}>
-        <div className={styles.back__icon} onClick={() => navigate(-1)}>
-          <IoArrowBack size={20} />
-        </div>
-        <div className={styles.title}>
-          {translation("HEADER_NOTIFICATIONS")}
-        </div>
-      </div>
-      <div className={styles.main}>
-        {notifications?.length !== 0 ? (
-          notifications?.map((noti) => (
-            <NotificationBox key={noti.id} notification={noti} user={user} />
-          ))
-        ) : (
-          <div className={styles.noti_message}>
-            {translation("NONOTI_MESSAGE")}
+    <>
+      <title>Twircle | Notifications</title>
+      <div>
+        <div className={styles.header}>
+          <div className={styles.back__icon} onClick={() => navigate(-1)}>
+            <IoArrowBack size={20} />
           </div>
-        )}
+          <div className={styles.title}>
+            {translation("HEADER_NOTIFICATIONS")}
+          </div>
+        </div>
+        <div className={styles.main}>
+          {notifications?.length !== 0 ? (
+            notifications?.map((noti) => (
+              <NotificationBox key={noti.id} notification={noti} user={user} />
+            ))
+          ) : (
+            <div className={styles.noti_message}>
+              {translation("NONOTI_MESSAGE")}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -16,6 +16,7 @@ export default function Home() {
 
   return (
     <>
+      <title>Twircle | Home</title>
       <TabList
         tabs={[
           { key: TabType.All, content: translation("TABS_HOME") },

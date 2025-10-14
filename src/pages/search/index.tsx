@@ -51,45 +51,48 @@ export default function SearchPage() {
   }, [searchHashTag, getSearchPosts, setValue, setPosts]);
 
   return (
-    <div className={styles.search}>
-      <div className={styles.header}>
-        <form className={styles.searchBox} onSubmit={handleSubmit(onValid)}>
-          <IoSearch size={18} />
-          <input
-            {...register("search", { required: "검색어를 입력해주세요." })}
-            ref={(el) => {
-              register("search").ref(el);
-              inputRef.current = el;
-            }}
-            className={styles.searchInput}
-            placeholder={!errors.search ? "Search" : errors.search.message}
-            autoComplete="off"
-          />
-          {searchHashTag && (
-            <div
-              className={styles.refreshIcon}
-              onClick={() => getSearchPosts(searchHashTag)}
-            >
-              <IoMdRefresh size={20} />
-            </div>
-          )}
-        </form>
-      </div>
+    <>
+      <title>Twircle | Search</title>
+      <div className={styles.search}>
+        <div className={styles.header}>
+          <form className={styles.searchBox} onSubmit={handleSubmit(onValid)}>
+            <IoSearch size={18} />
+            <input
+              {...register("search", { required: "검색어를 입력해주세요." })}
+              ref={(el) => {
+                register("search").ref(el);
+                inputRef.current = el;
+              }}
+              className={styles.searchInput}
+              placeholder={!errors.search ? "Search" : errors.search.message}
+              autoComplete="off"
+            />
+            {searchHashTag && (
+              <div
+                className={styles.refreshIcon}
+                onClick={() => getSearchPosts(searchHashTag)}
+              >
+                <IoMdRefresh size={20} />
+              </div>
+            )}
+          </form>
+        </div>
 
-      <div className="search-post">
-        {isLoading ? (
-          <Loader />
-        ) : (
-          <PostList
-            posts={posts}
-            noPostsMessage={
-              searchHashTag && posts.length === 0
-                ? "검색 결과가 없습니다."
-                : "키워드를 검색해보세요."
-            }
-          />
-        )}
+        <div className="search-post">
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <PostList
+              posts={posts}
+              noPostsMessage={
+                searchHashTag && posts.length === 0
+                  ? "검색 결과가 없습니다."
+                  : "키워드를 검색해보세요."
+              }
+            />
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
