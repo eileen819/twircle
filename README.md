@@ -1,16 +1,16 @@
 # 💬 twircle
 
-사이트 주소와 화면 캡쳐해서 넣기  
-🔗 **배포 주소:** [twircle](https://twircle.vercel.app/)
+![UI Preview](./public/preview.png)
+🔗 **Demo:** [twircle](https://twircle.vercel.app/)
 
   <br/>
 
 ## 📌 프로젝트 개요
 
-- **twircle**은 사용자의 일상과 생각을 공유할 수 있는 **트위터(Twitter) 클론형 소셜 네트워크 서비스**입니다.
+- **twircle**은 사용자의 일상과 생각을 공유할 수 있는 **트위터 UX를 모티브로 한 실시간 반응형 소셜 네트워크 서비스**입니다.
 - 사용자는 글 작성 및 검색, 이미지 업로드, 댓글/대댓글, 좋아요, 팔로우, 실시간 알림 기능을 통해 실제 SNS와 유사한 경험을 할 수 있습니다.
-- 특히 Firebase Firestore 실시간 구독(`onSnapshot`)을 활용하여 타임라인, 댓글, 알림이 즉시 반영되도록 구현했으며, Firebase Auth 기반으로 로그인/회원가입을 구현하고, Context API를 활용해 글로벌 상태를 구현했습니다. 이 외에도 해시태그 기반 검색을 지원합니다.
-- 본 프로젝트는 단순 UI 복제를 넘어, **실시간 데이터 처리·상태 관리 최적화·접근성·성능 개선** 등 최신 프론트엔드 트렌드에 필요한 역량을 종합적으로 보여주는 데 목적이 있습니다.  
+- 특히 Firebase Firestore 실시간 구독(`onSnapshot`)을 활용하여 타임라인, 댓글, 알림이 즉시 반영되도록 구현했으며, Firebase Auth 기반으로 로그인/회원가입을 구현하고, Context API로 인증/팔로우/언어 상태를 전역 관리해 불필요한 리렌더링을 최소화했습니다. 이 외에도 해시태그 기반 검색을 지원합니다.
+- 본 프로젝트는 단순 UI 복제를 넘어, 실시간 데이터 흐름과 일관된 상태 관리, UX 최적화를 통해 현대 프론트엔드 개발의 핵심 역량을 종합적으로 구현했습니다.
   <br />
 
 ## 💡 주요 기능
@@ -22,14 +22,14 @@
 
 ### ✅ 소셜 계정(OAuth) 간편 로그인
 
-- Firebase Auth의 OAuth Provider(Google, GitHub)를 연동하여, 별도 회원가입 절차 없이 소셜 계정으로 로그인할 수 있습니다.
+- Firebase Auth의 OAuth Provider(Google, GitHub)를 Promise 기반 인증 흐름으로 안전하게 연결하여, 별도 회원가입 절차 없이 소셜 계정으로 로그인할 수 있습니다.
 
 ### ✅ 해시태그 하이라이팅 (contentEditable 기반) 및 검색
 
 - `contentEditable` 편집 영역에서 입력 중 **해시태그(#tag)** 를 자동 감지해 색상 하이라이트 처리합니다.
-- **한국어 입력기(IME)** 사용 시 `composition` 이벤트를 감지해, 입력이 확정된 후에만 파싱 및 하이라이팅이 적용되도록 했습니다.
+- **한국어 입력기(IME)** 사용 시 IME 입력 확정(`compositionend`) 타이밍을 감지하여, 입력이 확정된 후에만 파싱 및 하이라이팅이 적용되도록 했습니다.
 - 게시글 내 해시태그를 클릭하면 해당 해시태그 검색 결과를 확인할 수 있습니다.
-- 검색 정확도를 높이기 위해 게시글 텍스트를 **검색 인덱스로 토큰화**하여 전체 트윗 검색이 가능하게 하였습니다.
+- 검색 정확도를 높이기 위해 게시글 텍스트를 토큰화하였으며, Firestore 문서에 keywords 필드에 저장하여 전역 검색이 가능하도록 했습니다.
 
 ### ✅ 팔로우/팔로잉 기능
 
@@ -40,7 +40,7 @@
 
 - 모든 게시글에 댓글 작성이 가능하며, 각 댓글에 대댓글(계층형 댓글)을 작성할 수 있습니다.
 - 댓글과 대댓글은 **parentId**와 **conversationId** 기반 트리 구조로 관리되어 대화 흐름을 직관적으로 파악할 수 있습니다.
-- 삭제된 댓글은 “삭제된 댓글입니다”로 표시되어, 대화 맥락이 끊기지 않도록 처리됩니다.
+- 삭제된 댓글은 ‘삭제된 댓글입니다’로 대체 렌더링하여 트리 구조와 대화 맥락을 유지했습니다.
 
 ### ✅ 실시간 알림(Notification)
 
@@ -66,7 +66,7 @@
   - Firebase Auth + Google/GitHub OAuth 연동
   - 별도의 회원가입 절차 없이 **간편 로그인 UX**를 구축
 - **댓글 & 대댓글 트리 구조**
-  - `parentId`, `conversationId` 기반 데이터 모델링으로 계층형 대화 흐름을 지원
+  - `parentId`, `conversationId`를 이용한 재귀 렌더링 트리 구조로 계층형 대화 지원
   - 삭제 댓글은 “삭제된 댓글입니다”로 표시해 **대화 맥락을 유지**
 - **해시태그 기반 검색**
   - `contentEditable` 기반 에디터를 구현하여 입력 시 해시태그 자동 하이라이팅
@@ -78,144 +78,43 @@
 
   <br/>
 
-## 🛠️ 사용한 기술 스택
+## 🏗️ 시스템 아키텍처
 
-| 분류               | 기술/도구                                        |
-| ------------------ | ------------------------------------------------ |
-| **Frontend**       | React, TypeScript, React Router DOM              |
-| **State & Data**   | Firebase (Auth, Firestore, Storage), Context API |
-| **Form & Utility** | React Hook Form, uuid                            |
-| **UI & Styling**   | SCSS, react-icons, React Toastify                |
-| **Animation**      | Framer Motion                                    |
-| **Deployment**     | Vercel                                           |
-
-  <br/>
+![Architecture Diagram](./public/architecture.png)  
+ <br/>
 
 ## 📁 프로젝트 구조
 
+> 기능 단위로 폴더를 분리한 **Feature-based 구조**로 설계하였으며,  
+> 컴포넌트, 상태, 훅, 라우팅이 명확히 구분되도록 구성했습니다.
+
 ```
 src
- ┣ components
- ┃ ┣ comment
- ┃ ┃ ┣ CommentBox.tsx
- ┃ ┃ ┣ CommentEditForm.tsx
- ┃ ┃ ┣ CommentForm.tsx
- ┃ ┃ ┣ CommentList.tsx
- ┃ ┃ ┣ CommentModal.tsx
- ┃ ┃ ┣ CommentPost.tsx
- ┃ ┃ ┣ CommentTree.tsx
- ┃ ┃ ┣ commentBox.module.scss
- ┃ ┃ ┣ commentEditForm.module.scss
- ┃ ┃ ┣ commentForm.module.scss
- ┃ ┃ ┣ commentModal.module.scss
- ┃ ┃ ┗ commentPost.module.scss
- ┃ ┣ header
- ┃ ┃ ┣ HomeHeader.tsx
- ┃ ┃ ┗ homeHeader.module.scss
- ┃ ┣ layout
- ┃ ┃ ┣ Layout.tsx
- ┃ ┃ ┗ layout.module.scss
- ┃ ┣ loader
- ┃ ┃ ┣ Loader.tsx
- ┃ ┃ ┗ loader.module.scss
- ┃ ┣ menu
- ┃ ┃ ┣ Menu.tsx
- ┃ ┃ ┗ menu.module.scss
- ┃ ┣ notification
- ┃ ┃ ┣ NotificationBox.tsx
- ┃ ┃ ┗ notificationBox.module.scss
- ┃ ┣ posts
- ┃ ┃ ┣ PostActions.tsx
- ┃ ┃ ┣ PostBox.tsx
- ┃ ┃ ┣ PostBoxHeader.tsx
- ┃ ┃ ┣ PostComment.tsx
- ┃ ┃ ┣ PostContent.tsx
- ┃ ┃ ┣ PostForm.tsx
- ┃ ┃ ┣ PostList.tsx
- ┃ ┃ ┣ postActions.module.scss
- ┃ ┃ ┣ postBox.module.scss
- ┃ ┃ ┣ postBoxHeader.module.scss
- ┃ ┃ ┣ postComment.module.scss
- ┃ ┃ ┣ postForm.module.scss
- ┃ ┃ ┗ postList.module.scss
- ┃ ┣ tabs
- ┃ ┃ ┣ TabList.tsx
- ┃ ┃ ┗ tabList.module.scss
- ┃ ┗ users
- ┃ ┃ ┣ SignInForm.tsx
- ┃ ┃ ┣ SignupForm.tsx
- ┃ ┃ ┣ signInForm.module.scss
- ┃ ┃ ┗ signUpForm.module.scss
- ┣ constants
- ┃ ┗ constant.ts
- ┣ context
- ┃ ┣ AuthContext.tsx
- ┃ ┣ FollowingContext.tsx
- ┃ ┗ LanguageContext.tsx
- ┣ hooks
- ┃ ┣ useActions.tsx
- ┃ ┣ useCommentForm.tsx
- ┃ ┣ useFollow.tsx
- ┃ ┣ useGetPost.tsx
- ┃ ┣ useLanguage.tsx
- ┃ ┣ usePostForm.tsx
- ┃ ┣ useSearchPosts.tsx
- ┃ ┣ useSocialSignIn.tsx
- ┃ ┣ useTabPosts.tsx
- ┃ ┣ useTranslation.tsx
- ┃ ┣ useTruncateName.tsx
- ┃ ┣ useUnReadNotifications.tsx
- ┃ ┗ useUserProfile.tsx
- ┣ lib
- ┃ ┣ firebase
- ┃ ┃ ┗ notifications.ts
- ┃ ┗ utils.tsx
- ┣ pages
- ┃ ┣ about
- ┃ ┃ ┣ index.module.scss
- ┃ ┃ ┗ index.tsx
- ┃ ┣ home
- ┃ ┃ ┗ index.tsx
- ┃ ┣ notifications
- ┃ ┃ ┣ index.tsx
- ┃ ┃ ┗ notificationsPage.module.scss
- ┃ ┣ posts
- ┃ ┃ ┣ .DS_Store
- ┃ ┃ ┣ detail.module.scss
- ┃ ┃ ┣ detail.tsx
- ┃ ┃ ┣ edit.module.scss
- ┃ ┃ ┣ edit.tsx
- ┃ ┃ ┣ index.tsx
- ┃ ┃ ┣ list.tsx
- ┃ ┃ ┣ new.tsx
- ┃ ┃ ┣ photoDetail.module.scss
- ┃ ┃ ┗ photoDetail.tsx
- ┃ ┣ profile
- ┃ ┃ ┣ detail.module.scss
- ┃ ┃ ┣ detail.tsx
- ┃ ┃ ┣ edit.module.scss
- ┃ ┃ ┣ edit.tsx
- ┃ ┃ ┗ index.tsx
- ┃ ┣ search
- ┃ ┃ ┣ index.tsx
- ┃ ┃ ┗ searchPage.module.scss
- ┃ ┣ users
- ┃ ┃ ┣ index.tsx
- ┃ ┃ ┣ signIn.tsx
- ┃ ┃ ┗ signUp.tsx
- ┃ ┗ .DS_Store
- ┣ routes
- ┃ ┗ Router.tsx
- ┣ styles
- ┃ ┣ _colors.scss
- ┃ ┣ _mixins.scss
- ┃ ┣ _variables.scss
- ┃ ┣ main.scss
- ┃ ┗ reset.css
- ┣ App.tsx
- ┣ firebaseApp.tsx
- ┗ main.tsx
+┣ components/ # UI 단위 컴포넌트 (Menu, Post, Comment 등)
+┣ constants/ # 상수 정의
+┣ context/ # 전역 상태 (Auth, Following, Language)
+┣ hooks/ # 커스텀 훅 (데이터 처리, 폼, 액션 로직 분리)
+┣ lib/ # 텍스트 파싱 및 커서 제어 유틸리티, Firebase 연동 로직 (댓글, 팔로우, 좋아요 알림 로직)
+┣ pages/ # 라우팅별 페이지 (home, posts, profile, search 등)
+┣ routes/ # React Router 설정
+┣ styles/ # 전역 스타일, SCSS 변수 및 믹스인 관리
+┣ firebaseApp.tsx # Firebase 초기화 및 환경 설정
+┣ App.tsx # 루트 컴포넌트
+┗ main.tsx # 진입 파일
 ```
+
+<br/>
+
+## 🛠️ 사용한 기술 스택
+
+| 분류                 | 기술/도구                                                |
+| -------------------- | -------------------------------------------------------- |
+| **Frontend**         | React, TypeScript, React Router DOM                      |
+| **State Management** | Context API                                              |
+| **Database & Auth**  | Firebase (Auth, Firestore, Storage)                      |
+| **UI / Animation**   | SCSS Modules, Framer Motion, react-icons, React Toastify |
+| **Form & Utility**   | React Hook Form, uuid                                    |
+| **Deployment**       | Vercel                                                   |
 
   <br/>
 
@@ -233,7 +132,6 @@ src
 - Vercel CLI를 이용해 로컬에서 직접 배포할 수 있습니다.
 
 ```bash
-npm run build
 vercel        # Preview 배포
 vercel --prod # Production 배포
 ```
@@ -295,13 +193,13 @@ npm run preview
 
 ### 📍 실시간 데이터 처리 경험
 
-- Firestore `onSnapshot`을 적용해 단순 CRUD를 넘어 **실시간 이벤트 흐름 관리**를 경험했습니다.
+- Firestore `onSnapshot`을 적용해 실시간 데이터 구조 설계와 리소스 최적화에 대한 감각을 키웠습니다.
 - 중복 구독으로 인한 성능 저하 문제를 겪으며, 구독 최적화와 리소스 관리의 중요성을 배웠습니다.
 
 ### 📍 OAuth 인증 흐름 이해
 
 - Firebase Auth로 Google/GitHub 소셜 로그인을 구현하는 과정에서 **Provider 간 계정 충돌 문제**를 직접 해결했습니다.
-- `account-exists-with-different-credential` 에러를 다루며 **안정적인 인증 UX 설계**의 필요성을 이해했습니다.
+- `account-exists-with-different-credential` 에러를 다루며 **안정적인 인증 UX 설계**의 필요성과 예외 상황 중심 설계(Exception-driven design)의 중요성을 체득했습니다.
 
 ### 📍 에디터 UX 개선과 IME 처리
 
@@ -310,5 +208,5 @@ npm run preview
 
 ### 📍 동시성 문제와 데이터 일관성
 
-- 다수 사용자가 동시에 좋아요를 누를 때 상태 불일치가 발생해, Firestore `transaction`으로 동시성 문제를 해결했습니다.
-- 이를 통해 **데이터 일관성 보장과 에러 핸들링 전략**의 필요성을 학습했습니다.
+- 다수 사용자가 동시에 좋아요를 누를 때 상태 불일치가 발생해, Firestore `transaction`으로 다중 사용자 환경에서 데이터 정합성(Consistency) 보장의 핵심 개념을 학습했습니다.
+- 이를 통해 데이터 정합성 보장 및 예외 중심 설계(Exception-driven design)의 중요성을 체득했습니다.
