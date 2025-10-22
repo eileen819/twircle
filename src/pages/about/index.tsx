@@ -15,6 +15,13 @@ export default function About() {
           “Twitter”, “X” 및 관련 상표는 각 소유자에게 귀속되며, 본 프로젝트는
           무관합니다.
         </p>
+        <br />
+        <p className={`${styles.about} ${styles.en}`}>
+          This project is a clone created solely for personal learning and
+          portfolio purposes. “Twitter”, “X”, and all related trademarks are the
+          property of their respective owners, and this project is not
+          affiliated with or endorsed by them.
+        </p>
 
         <h2 className={styles.h2}>👤 Creator</h2>
         <p className={styles.creator}>
